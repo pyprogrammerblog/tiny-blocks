@@ -1,0 +1,16 @@
+default_language_version:
+  python: python3
+
+repos:
+- repo: https://github.com/ambv/black
+  rev: stable
+  hooks:
+  - id: black
+    args: [--line-length=79]
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: check-json
+  - id: flake8

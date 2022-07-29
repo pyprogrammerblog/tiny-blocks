@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    environment:
+      - DOCKER=True
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=$PYTHONPATH:/code
+      - POETRY_VIRTUALENVS_IN_PROJECT=true
+      - SHELL=/bin/bash
+    ports:
+      - "8888:8888"  # for jupyter notebooks
+    volumes:
+      - ./:/code

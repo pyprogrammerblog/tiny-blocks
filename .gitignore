@@ -1,0 +1,94 @@
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+static_build_files/
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# eventual secrets file used in dynaconf (these usually contain passwords which should not be stored in the version control system)
+.secrets.*
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Flask:
+instance/
+.webassets-cache
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Environments
+# files created with the virtual environment (these are dependent on the developer environment so they should not be stored in the version control system) 
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# files related with IDE VSC or IntelliJ
+.idea/*
+.vscode/*
+**/.password
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+
+**/__pycache__
+# db config file
+odi_db_config.yml
+config/db_config.yml
+design/.DS_Store
+.DS_Store
+flake8.txt
