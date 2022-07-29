@@ -39,6 +39,7 @@ class ExtractBlock(BaseBlock):
     """
     Extract Base Block
     """
+
     source: AnySource = Field(..., description="Source Data")
 
     @abc.abstractmethod

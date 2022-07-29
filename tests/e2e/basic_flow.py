@@ -1,11 +1,10 @@
 import pandas as pd
 
-from blocks.etl.extract.read_csv import ReadCsvBlock
+from blocks.etl.extract.read_csv import ReadCSVBlock
 from blocks.etl.extract.read_sql import ReadSQLBlock
 from blocks.etl.transform.merge import MergeBlock
 from blocks.etl.transform.fillna import FillnaBlock
 from blocks.etl.transform.insert import InsertFromAPIBlock
-from blocks.etl.load.to_sql import WriteSQLBlock
 from blocks.etl.load.to_csv import WriteCSVBlock
 
 
@@ -15,7 +14,7 @@ def test_basic_flow(source_sql, source_csv, tempdir):
     """
 
     # extract from two sources
-    read_from_csv = ReadCsvBlock()
+    read_from_csv = ReadCSVBlock()
     read_from_sql = ReadSQLBlock()
 
     # transform
@@ -26,8 +25,10 @@ def test_basic_flow(source_sql, source_csv, tempdir):
     # load into a csv
     write_to_csv = WriteCSVBlock()
 
+    ###########
     # Pipeline
-    [read_from_csv, read_from_sql] >> merge >> fill_na >> enrich >> write_to_csv
+    sources = [read_from_csv, read_from_sql]
+    sources >> merge >> fill_na >> enrich >> write_to_csv
 
     # result is at
     assert write_to_csv.sink.path.exists()

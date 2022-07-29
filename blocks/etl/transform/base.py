@@ -19,8 +19,11 @@ class TransformBlock(BaseBlock):
     """
     Extract Base Block
     """
+
     @abc.abstractmethod
-    def get_iter(self, **blocks: Iterator[pd.DataFrame]):
+    def get_iter(
+        self, **iterators: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         raise NotImplementedError
 
     @abc.abstractmethod

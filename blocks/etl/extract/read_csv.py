@@ -1,8 +1,6 @@
 import logging
-from abc import ABC
-from typing import Dict, List, Literal, Union, Iterator
-
 import pandas as pd
+from typing import List, Literal, Union, Iterator
 from pydantic import Field
 from blocks.sources.csv import CSVSource
 from blocks.etl.extract.base import check_types
@@ -33,12 +31,15 @@ class ReadCSVBlock(ExtractBlock):
     """
     ReadCSV Block
     """
+
     name: Literal["read_csv"] = "read_csv"
     kwargs: KwargsReadCSV = KwargsReadCSV()
     source: CSVSource = Field(..., description="Source Data")
 
+    @check_types
     def get_iter(self, chunksize: int = 10000) -> Iterator[pd.DataFrame]:
-        for chunk in pd.read_csv(self.source.path, chunksize=chunksize, **kwargs):
+        kwargs = self.kwargs.to_dict() | {"chunksize": chunksize}
+        for chunk in pd.read_csv(self.source.path, **kwargs):
             yield chunk
 
     @check_types

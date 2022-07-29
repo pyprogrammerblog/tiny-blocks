@@ -43,7 +43,9 @@ class FillnaBlock(TransformBlock):
     kwargs: KwargsFillNa = KwargsDelayedFillna()
     kwargs_delayed: KwargsDelayedFillna = KwargsDelayedFillna()
 
-    def get_iter(self, generator: Iterator[pd.DataFrame]) -> Iterator[pd.DataFrame]:
+    def get_iter(
+        self, generator: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         """
         FillNa operation
         """

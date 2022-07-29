@@ -28,6 +28,7 @@ class BaseBlock(BaseModel):
     """
     Base DelayedTask class
     """
+
     uuid: UUID = Field(default_factory=uuid4, description="UUID")
     name: Literal["base"] = "base"
     description: str = Field(default=None, description="Description")
