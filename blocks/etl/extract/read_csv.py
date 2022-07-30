@@ -25,6 +25,7 @@ class KwargsReadCSV(KwargsExtractBlock):
     names: List[str] = None
     usecols: List[str] = None
     engine: Literal["c", "pyarrow", "python"] = "pyarrow"
+    chunksize: int = 1000
 
 
 class ReadCSVBlock(ExtractBlock):
@@ -32,21 +33,11 @@ class ReadCSVBlock(ExtractBlock):
     ReadCSV Block
     """
 
-    name: Literal["read_csv"] = "read_csv"
-    kwargs: KwargsReadCSV = KwargsReadCSV()
+    identifier: Literal["read_csv"] = "read_csv"
     source: CSVSource = Field(..., description="Source Data")
+    kwargs: KwargsReadCSV = KwargsReadCSV()
 
     @check_types
-    def get_iter(self, chunksize: int = 10000) -> Iterator[pd.DataFrame]:
-        kwargs = self.kwargs.to_dict() | {"chunksize": chunksize}
-        for chunk in pd.read_csv(self.source.path, **kwargs):
+    def process(self) -> Iterator[pd.DataFrame]:
+        for chunk in pd.read_csv(self.source.path, **self.kwargs.to_dict()):
             yield chunk
-
-    @check_types
-    def process(self) -> pd.DataFrame:
-        """
-        Read CSV
-        """
-        kwargs = self.kwargs.to_dict()
-        df = pd.read_csv(self.source.path, **kwargs)
-        return df
