@@ -41,7 +41,6 @@ class ReadSQLQueryBlock(ExtractBlock):
         """
         Read SQL
         """
-        for chunk in pd.read_sql_query(
-            self.source.conn, **self.kwargs.to_dict()
-        ):
+        kwargs = self.kwargs.to_dict()
+        for chunk in pd.read_sql_query(self.source.conn, **kwargs):
             yield chunk
