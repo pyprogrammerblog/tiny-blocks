@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
-from typing import List, Literal, Iterator
+from sqlite3 import connect
+from tempfile import TemporaryFile
+from typing import Literal, Iterator
 from blocks.etl.transform.base import (
     KwargsTransformBlock,
     TransformBlock,
@@ -18,15 +20,9 @@ class KwargsMerge(KwargsTransformBlock):
     """
 
     how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
-    on: str | List[str] = None
-    left_on: str = None
-    right_on: str = None
-    left_index: bool = False
-    right_index: bool = False
-    suffixes: tuple = None
-    indicator: Literal["_merge", "left_only", "right_only"] = None
-    npartitions: int = None
-    shuffle: Literal["disk", "task"] = None
+    left_on: str
+    right_on: str
+    chunksize: int = 1000
 
 
 class MergeBlock(TransformBlock):
@@ -35,12 +31,35 @@ class MergeBlock(TransformBlock):
     """
 
     name: Literal["merge"] = "merge"
-    kwargs: KwargsMerge = KwargsMerge()
+    kwargs: KwargsMerge
 
     def process(
-        self, *generator: Iterator[pd.DataFrame]
+        self,
+        left_generator: Iterator[pd.DataFrame],
+        right_generator: Iterator[pd.DataFrame],
     ) -> Iterator[pd.DataFrame]:
         """
-        Merge
+        Drop Duplicates
         """
-        pass
+        with TemporaryFile(suffix=".sqlite") as file, connect(file) as con:
+
+            # send records to a temp database (exhaust the generators)
+            for chunk in left_generator:
+                chunk.to_sql(name="TEMP_TABLE_LEFT", con=con)
+
+            for chunk in right_generator:
+                chunk.to_sql(name="TEMP_TABLE_RIGHT", con=con)
+
+            # select non-duplicated rows.
+            # It is possible select a non-duplicated subset of rows.
+            sql = (
+                f"SELECT * FROM TEMP_TABLE_LEFT "
+                f"{self.kwargs.how} JOIN TEMP_TABLE_RIGHT "
+                f"ON TEMP_TABLE_LEFT.{self.kwargs.left_on}"
+                f" = TEMP_TABLE_RIGHT.{self.kwargs.right_on}"
+            )
+
+            # yield joined records
+            chunk = self.kwargs.chunksize
+            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
+                yield chunk

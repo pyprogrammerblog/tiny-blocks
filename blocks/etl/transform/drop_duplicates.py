@@ -41,14 +41,14 @@ class DropDuplicatesBlock(TransformBlock):
 
             # send records to a temp database (exhaust the generator)
             for chunk in generator:
-                chunk.to_sql("TEMP_TABLE", con=con)
+                chunk.to_sql(name="TEMP_TABLE", con=con)
 
             # check if subset exist in columns
             if not_exist := self.kwargs.subset - set(chunk.columns.to_list()):
                 raise ValueError(f"'{', '.join(not_exist)}' do not exist!")
 
             # select non-duplicated rows.
-            # It is possible select a non-duplicated rows from a subset.
+            # It is possible select a non-duplicated subset of rows.
             sql = (
                 f"SELECT * FROM temp "
                 f"WHERE rowid not in "
