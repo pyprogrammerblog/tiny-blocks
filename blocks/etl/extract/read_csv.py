@@ -33,7 +33,7 @@ class ReadCSVBlock(ExtractBlock):
     ReadCSV Block
     """
 
-    identifier: Literal["read_csv"] = "read_csv"
+    id: Literal["read_csv"] = "read_csv"
     source: CSVSource = Field(..., description="Source Data")
     kwargs: KwargsReadCSV = KwargsReadCSV()
 
