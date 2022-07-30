@@ -21,11 +21,7 @@ class TransformBlock(BaseBlock):
     """
 
     @abc.abstractmethod
-    def get_iter(
-        self, **iterators: Iterator[pd.DataFrame]
+    def process(
+        self, **generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def process(self, **blocks: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError

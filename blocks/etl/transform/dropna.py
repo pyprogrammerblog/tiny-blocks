@@ -1,13 +1,11 @@
 import logging
-from typing import Literal
-
-import dask.dataframe as dd
 import pandas as pd
-from smart_stream.models.blocks.transform.base import (
+
+from typing import Literal, Iterator
+from blocks.etl.transform.base import (
     KwargsTransformBlock,
     TransformBlock,
 )
-from smart_stream.models.blocks.dependencies import OneInput
 
 
 __all__ = ["KwargsDropNa"]
@@ -18,33 +16,26 @@ logger = logging.getLogger(__name__)
 
 class KwargsDropNa(KwargsTransformBlock):
     """
-    Kwargs for DropDuplicatesBlock
+    Kwargs for DropNa
     """
 
     ignore_index: bool = None
 
 
-class DropDuplicatesBlock(TransformBlock):
+class DropNaBlock(TransformBlock):
     """
-    Operator DropDuplicatesBlock
+    Operator DropNa
     """
 
-    name: Literal["drop_duplicates"]
+    name: Literal["drop_na"] = "drop_na"
     kwargs: KwargsDropNa
-    input: OneInput
 
-    def delayed(self, block: dd.DataFrame) -> dd.DataFrame:
+    def process(
+        self, generator: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         """
-        Drop_duplicates
+        Drop NaN
         """
-        kwargs = self.kwargs.to_dict()
-        block = block.dropna(**kwargs)
-        return block
-
-    def dispatch(self, block: pd.DataFrame) -> pd.DataFrame:
-        """
-        Drop_duplicates
-        """
-        kwargs = self.kwargs.to_dict()
-        block = block.dropna(**kwargs)
-        return block
+        for chunk in generator:
+            chunk = chunk.dropna(**self.kwargs.to_dict())
+            yield chunk

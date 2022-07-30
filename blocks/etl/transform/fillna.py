@@ -9,7 +9,7 @@ from blocks.etl.transform.base import (
 )
 
 
-__all__ = ["FillnaBlock", "KwargsDelayedFillna", "KwargsFillNa"]
+__all__ = ["FillnaBlock", "KwargsFillNa"]
 
 
 logger = logging.getLogger(__name__)
@@ -26,36 +26,20 @@ class KwargsFillNa(KwargsTransformBlock):
     axis: int = None
 
 
-class KwargsDelayedFillna(KwargsTransformBlock):
-    """
-    Kwargs Delayed for FillNa Block
-    """
-
-    pass
-
-
 class FillnaBlock(TransformBlock):
     """
     Fillna Block
     """
 
-    name: Literal["fillna"]
-    kwargs: KwargsFillNa = KwargsDelayedFillna()
-    kwargs_delayed: KwargsDelayedFillna = KwargsDelayedFillna()
+    name: Literal["fillna"] = "fillna"
+    kwargs: KwargsFillNa = KwargsFillNa()
 
-    def get_iter(
+    def process(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        FillNa operation
+        Drop NaN
         """
         for chunk in generator:
-            yield self.process(block=chunk)
-
-    def process(self, block: pd.DataFrame) -> pd.DataFrame:
-        """
-        FillNa operation
-        """
-        kwargs = self.kwargs.to_dict()
-        block = block.fillna(**kwargs)
-        return block
+            chunk = chunk.fillna(**self.kwargs.to_dict())
+            yield chunk

@@ -1,13 +1,10 @@
 import logging
-from typing import List, Literal, Union
-
-import dask.dataframe as dd
 import pandas as pd
-from smart_stream.models.blocks.transform.base import (
+from typing import List, Literal, Iterator
+from blocks.etl.transform.base import (
     KwargsTransformBlock,
     TransformBlock,
 )
-from smart_stream.models.blocks.dependencies import TwoInputs
 
 
 __all__ = ["MergeBlock"]
@@ -21,7 +18,7 @@ class KwargsMerge(KwargsTransformBlock):
     """
 
     how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
-    on: Union[str, List[str]] = None
+    on: str | List[str] = None
     left_on: str = None
     right_on: str = None
     left_index: bool = False
@@ -31,35 +28,19 @@ class KwargsMerge(KwargsTransformBlock):
     npartitions: int = None
     shuffle: Literal["disk", "task"] = None
 
-    # TODO: Validate kwargs when merging on index, columns etc.
-    #  Some options exclude others, So the interface must be aware.
-
 
 class MergeBlock(TransformBlock):
     """
     Merge Block
     """
 
-    name: Literal["merge"]
-    kwargs: KwargsMerge
-    input: TwoInputs
+    name: Literal["merge"] = "merge"
+    kwargs: KwargsMerge = KwargsMerge()
 
-    def delayed(
-        self, left_block: dd.DataFrame, right_block: dd.DataFrame
-    ) -> dd.DataFrame:
+    def process(
+        self, *generator: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         """
-        Merge operation between two DataFrames
+        Merge
         """
-        kwargs = self.kwargs.to_dict()
-        block = dd.merge(left=left_block, right=right_block, **kwargs)
-        return block
-
-    def dispatch(
-        self, left_block: pd.DataFrame, right_block: pd.DataFrame
-    ) -> pd.DataFrame:
-        """
-        Merge operation between two DataFrames
-        """
-        kwargs = self.kwargs.to_dict()
-        block = pd.merge(left=left_block, right=right_block, **kwargs)
-        return block
+        pass
