@@ -1,12 +1,11 @@
 import logging
-from typing import Literal
-
-import dask.dataframe as dd
-from smart_stream.models.sinks.sql import SQLSink
 import pandas as pd
-from smart_stream.models.blocks.load.base import LoadBlock, KwargsLoadBlock
+from typing import Literal, Iterator
+from blocks.sinks.sql import SQLSink
+from blocks.etl.load.base import LoadBlock, KwargsLoadBlock
 
-__all__ = ["WriteSQLBlock", "KwargsWriteSQL", "KwargsDelayedWriteSQL"]
+__all__ = ["WriteSQLBlock", "KwargsWriteSQL"]
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,15 +15,7 @@ class KwargsWriteSQL(KwargsLoadBlock):
     Kwargs for WriteSQL Block
     """
 
-    pass
-
-
-class KwargsDelayedWriteSQL(KwargsLoadBlock):
-    """
-    Kwargs for WriteSQL Block
-    """
-
-    pass
+    chunksize: int = 1000
 
 
 class WriteSQLBlock(LoadBlock):
@@ -32,21 +23,15 @@ class WriteSQLBlock(LoadBlock):
     WriteSQL Block
     """
 
-    name: Literal["to_sql"]
+    name: Literal["to_sql"] = "to_sql"
     kwargs: KwargsWriteSQL = KwargsWriteSQL()
-    kwargs_delayed: KwargsDelayedWriteSQL = KwargsDelayedWriteSQL()
     sink: SQLSink
 
-    def delayed(self, block: dd.DataFrame):
+    def process(self, generator: Iterator[pd.DataFrame]):
         """
-        Write SQL operation
-        """
-        kwargs = self.kwargs.to_dict() | self.kwargs_delayed.to_dict()
-        return block.to_sql(self.sink.conn, **kwargs)
+        Write SQL Operation.
 
-    def dispatch(self, block: pd.DataFrame):
+        Exhaust the generator writing chucks to the Database
         """
-        Write SQL Operation
-        """
-        kwargs = self.kwargs.to_dict()
-        return block.to_sql(self.sink.conn, **kwargs)
+        for chunk in generator:
+            chunk.to_sql(self.sink.path, **self.kwargs.to_dict())

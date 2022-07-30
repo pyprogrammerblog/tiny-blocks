@@ -1,9 +1,7 @@
 import logging
-from smart_stream.models.blocks.base import BaseBlock
-from smart_stream.models.blocks.dependencies import OneInput
-from smart_stream.models.blocks.base import KwargsBase
+from blocks.etl.base import BaseBlock
+from blocks.etl.base import KwargsBase
 import pandas as pd
-import dask.dataframe as dd
 import abc
 
 
@@ -23,9 +21,5 @@ class LoadBlock(BaseBlock):
     """
 
     @abc.abstractmethod
-    def delayed(self, **blocks: dd.DataFrame):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def dispatch(self, **blocks: pd.DataFrame):
+    def process(self, **blocks: pd.DataFrame):
         raise NotImplementedError
