@@ -47,6 +47,8 @@ class DropDuplicatesBlock(TransformBlock):
             if not_exist := self.kwargs.subset - set(chunk.columns.to_list()):
                 raise ValueError(f"'{', '.join(not_exist)}' do not exist!")
 
+            # select non-duplicated rows.
+            # It is possible select a non-duplicated rows from a subset.
             sql = (
                 f"SELECT * FROM temp "
                 f"WHERE rowid not in "
