@@ -19,6 +19,7 @@ class KwargsLoadSQL(KwargsLoadBase):
     name: str = Field(..., description="Destination table name")
     chunksize: int = 1000
     index: bool = False
+    if_exists: Literal["fail", "replace", "append"] = "replace"
 
 
 class LoadSQL(LoadBase):
