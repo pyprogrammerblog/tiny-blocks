@@ -1,5 +1,5 @@
 import pandas as pd
-from blocks.etl.extract.read_csv import ReadCSVBlock
+from blocks.etl.extract.from_csv import ReadCSVBlock
 
 
 def test_extract_from_csv(source_csv):

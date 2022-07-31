@@ -1,8 +1,7 @@
 import logging
-from typing import Literal, Iterator
-
-from pydantic import Field
 import pandas as pd
+from typing import Literal, Iterator
+from pydantic import Field
 from blocks.sinks.csv import CSVSink
 from blocks.etl.load.base import LoadBlock, KwargsLoadBlock
 

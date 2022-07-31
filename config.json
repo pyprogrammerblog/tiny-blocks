@@ -1,3 +1,0 @@
-{
-  "mongo_connection": "mongodb://user:pass@mongo:27017"
-}

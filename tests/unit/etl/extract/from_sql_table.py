@@ -1,5 +1,5 @@
 import pandas as pd
-from blocks.etl.extract.read_sql_table import (
+from blocks.etl.extract.from_sql_table import (
     ReadSQLTableBlock,
     KwargsReadSQLTable,
 )
