@@ -1,6 +1,6 @@
 import logging
 from typing import List, Literal, Iterator
-from tiny_blocks.sources.sql import SQLSource
+from tiny_blocks.sources import SQLSource
 from pydantic import Field
 from tiny_blocks.etl.extract.base import check_types
 import pandas as pd
@@ -41,6 +41,7 @@ class ExtractSQLTable(ExtractBase):
         """
         Read SQL
         """
-        with self.source.connect() as conn:
-            for chunk in pd.read_sql_table(con=conn, **self.kwargs.to_dict()):
-                yield chunk
+        for chunk in pd.read_sql_table(
+            con=self.source.connection_string, **self.kwargs.to_dict()
+        ):
+            yield chunk

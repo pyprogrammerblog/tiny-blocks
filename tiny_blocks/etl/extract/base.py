@@ -3,7 +3,7 @@ import logging
 import functools
 from typing import Iterator
 from tiny_blocks.etl.base import BaseBlock, KwargsBase
-from tiny_blocks.sources import AnySource
+from tiny_blocks.sources import Source
 
 import pandas as pd
 
@@ -38,7 +38,7 @@ class ExtractBase(BaseBlock):
     Extract Base Block
     """
 
-    source: AnySource
+    source: Source
 
     @abc.abstractmethod
     @check_types

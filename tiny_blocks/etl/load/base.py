@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Iterator
 from tiny_blocks.etl.base import BaseBlock
 from tiny_blocks.etl.base import KwargsBase
-from tiny_blocks.sinks import AnySink
+from tiny_blocks.sinks import Sink
 
 
 __all__ = ["LoadBase", "KwargsLoadBase"]
@@ -22,7 +22,7 @@ class LoadBase(BaseBlock):
     Load Base Block
     """
 
-    sink: AnySink
+    sink: Sink
 
     @abc.abstractmethod
     def exhaust(self, generator: Iterator[pd.DataFrame]):

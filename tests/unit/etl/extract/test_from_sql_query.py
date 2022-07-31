@@ -13,5 +13,5 @@ def test_extract_from_sql(sql_source):
 
     # exhaust the generator and validate
     df = pd.concat(generator)
-    assert df.columnsto_list() == ["a", "b", "c"]
+    assert df.columns.to_list() == ["c", "d", "e"]
     assert df.shape == (3, 3)

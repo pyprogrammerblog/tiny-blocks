@@ -1,6 +1,6 @@
 import logging
 from typing import List, Literal, Iterator
-from tiny_blocks.sources.sql import SQLiteSource
+from tiny_blocks.sources import SQLSource
 from pydantic import Field
 from tiny_blocks.etl.extract.base import check_types
 import pandas as pd
@@ -32,15 +32,16 @@ class ExtractSQLQuery(ExtractBase):
     ReadSQL Block
     """
 
-    name: Literal["read_sql"]
+    name: Literal["read_sql"] = "read_sql"
     kwargs: KwargsExtractSQLQuery
-    source: SQLiteSource = Field(..., description="Source Data")
+    source: SQLSource = Field(..., description="Source Data")
 
     @check_types
     def get_iter(self) -> Iterator[pd.DataFrame]:
         """
         Read SQL
         """
-        with self.source.connect() as conn:
-            for chunk in pd.read_sql_query(con=conn, **self.kwargs.to_dict()):
-                yield chunk
+        for chunk in pd.read_sql_query(
+            con=self.source.connection_string, **self.kwargs.to_dict()
+        ):
+            yield chunk
