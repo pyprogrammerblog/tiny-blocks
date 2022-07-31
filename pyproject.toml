@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "tiny-blocks"
+name = "tiny_blocks"
 version = "0.1.0"
-description = ""
+description = "Tiny Block Operations for Data Pipelines"
 authors = ["Jose Vazquez <josevazjim88@gmail.com>"]
 
 [virtualenvs]
@@ -18,6 +18,9 @@ pandas = "^1.4.3"
 pytest = "^7.1.2"
 flake8 = "^4.0.1"
 black = "^22.6.0"
+ipython = "^8.4.0"
+notebook = "^6.4.12"
+SQLAlchemy = "^1.4.39"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
