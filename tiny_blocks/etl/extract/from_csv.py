@@ -2,20 +2,20 @@ import logging
 import pandas as pd
 from typing import List, Literal, Union, Iterator
 from pydantic import Field
-from blocks.sources.csv import CSVSource
-from blocks.etl.extract.base import check_types
-from blocks.etl.extract.base import (
+from tiny_blocks.sources.csv import CSVSource
+from tiny_blocks.etl.extract.base import check_types
+from tiny_blocks.etl.extract.base import (
     KwargsExtractBlock,
-    ExtractBlock,
+    ExtractBase,
 )
 
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["ReadCSVBlock", "KwargsReadCSV"]
+__all__ = ["ExtractCSV", "KwargsExtractCSV"]
 
 
-class KwargsReadCSV(KwargsExtractBlock):
+class KwargsExtractCSV(KwargsExtractBlock):
     """
     Kwargs for ReadCSV
     """
@@ -28,14 +28,14 @@ class KwargsReadCSV(KwargsExtractBlock):
     chunksize: int = 1000
 
 
-class ReadCSVBlock(ExtractBlock):
+class ExtractCSV(ExtractBase):
     """
     ReadCSV Block
     """
 
     name: Literal["read_csv"] = "read_csv"
     source: CSVSource = Field(..., description="Source Data")
-    kwargs: KwargsReadCSV = KwargsReadCSV()
+    kwargs: KwargsExtractCSV = KwargsExtractCSV()
 
     @check_types
     def get_iter(self) -> Iterator[pd.DataFrame]:

@@ -1,14 +1,14 @@
 import pandas as pd
-from blocks.etl.extract.from_sql_table import (
-    ReadSQLTableBlock,
-    KwargsReadSQLTable,
+from tiny_blocks.etl.extract.from_sql_table import (
+    ExtractSQLTable,
+    KwargsExtractSQLTable,
 )
 
 
-def test_extract_from_sql(source_sql):
+def test_extract_from_sql(sql_source):
 
-    kwargs = KwargsReadSQLTable(table_name="TEST")
-    read_sql_table = ReadSQLTableBlock(source=source_sql, kwargs=kwargs)
+    kwargs = KwargsExtractSQLTable(table_name="TEST")
+    read_sql_table = ExtractSQLTable(source=sql_source, kwargs=kwargs)
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate

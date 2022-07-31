@@ -1,10 +1,10 @@
 import pandas as pd
-from blocks.etl.extract.from_csv import ReadCSVBlock
+from tiny_blocks.etl.extract.from_csv import ExtractCSV
 
 
-def test_extract_from_csv(source_csv):
+def test_extract_from_csv(csv_source):
 
-    read_csv = ReadCSVBlock(source=source_csv)
+    read_csv = ExtractCSV(source=csv_source)
     generator = read_csv.get_iter()
 
     # exhaust the generator and validate

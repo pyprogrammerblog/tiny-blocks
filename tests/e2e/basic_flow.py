@@ -1,50 +1,50 @@
 import pandas as pd
 
-from blocks.etl.extract.read_csv import ReadCSVBlock
-from blocks.etl.extract.read_sql import ReadSQLBlock
-from blocks.etl.transform.merge import MergeBlock
-from blocks.etl.transform.fillna import FillnaBlock
-from blocks.etl.transform.insert import InsertFromAPIBlock
-from blocks.etl.load.to_csv import WriteCSVBlock
+from tiny_blocks.etl.extract.from_csv import ExtractCSV
+from tiny_blocks.etl.extract.from_sql_table import ReadSQLTableBlock
+from tiny_blocks.etl.transform.merge import MergeBlock
+from tiny_blocks.etl.transform.fillna import FillnaBlock
+from tiny_blocks.etl.transform.enrich_from_api import InsertFromAPIBlock
+from tiny_blocks.etl.load.to_csv import LoadCSVBlock
 
 
-def test_basic_flow(source_sql, source_csv, tempdir):
+def test_basic_flow(sql_source, csv_source, tempdir):
     """
     Test a basic ETL pipeline
     """
 
-    # extract from two sources
-    read_from_csv = ReadCSVBlock()
-    read_from_sql = ReadSQLBlock()
+    # 1. Extract from two sources
+    read_from_csv = ExtractCSV()
+    read_from_sql = ReadSQLTableBlock()
 
-    # transform
+    # 2. Transform
     merge = MergeBlock()
     fill_na = FillnaBlock()
     enrich = InsertFromAPIBlock()
 
-    # load into a csv
-    write_to_csv = WriteCSVBlock()
+    # 3. Load
+    write_to_csv = LoadCSVBlock()
 
     ###########
     # Pipeline
     sources = [read_from_csv, read_from_sql]
     sources >> merge >> fill_na >> enrich >> write_to_csv
 
-    # result is at
+    # testing
     assert write_to_csv.sink.path.exists()
     result = pd.read_csv(write_to_csv.sink.path)
     assert result.columns.to_list == []
     assert result.shape == (1, 0)
 
 
-def test_basic_flow_different_way_of_writting(source_sql, source_csv, tempdir):
+def test_basic_flow_different_way_of_writting(sql_source, csv_source, tempdir):
     """
     Test a basic ETL pipeline
     """
 
     # extract from two sources
-    read_from_csv = ReadCsvBlock()
-    read_from_sql = ReadSQLBlock()
+    read_from_csv = ExtractCSV()
+    read_from_sql = ReadSQLTableBlock()
 
     # transform
     merge = MergeBlock()
@@ -52,15 +52,15 @@ def test_basic_flow_different_way_of_writting(source_sql, source_csv, tempdir):
     enrich = InsertFromAPIBlock()
 
     # load into a csv
-    write_to_csv = WriteCSVBlock()
+    write_to_csv = LoadCSVBlock()
 
     # Pipeline
-    gen_1 = read_from_csv.get_iter()
-    gen_2 = read_from_sql.get_iter()
-    gen = merge.get_iter(gen_1, gen_2)
-    gen = fill_na.get_iter(gen_1, gen_2)
-    gen = enrich.get_iter(gen_1, gen_2)
-    write_to_csv.process(gen)
+    generator_1 = read_from_csv.get_iter()
+    generator_2 = read_from_sql.get_iter()
+    generator = merge.get_iter(generator_1, generator_2)
+    generator = fill_na.get_iter(generator)
+    generator = enrich.get_iter(generator)
+    write_to_csv.exhaust(generator=generator)
 
     # result is at
     assert write_to_csv.sink.path.exists()

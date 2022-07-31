@@ -2,16 +2,16 @@ import logging
 import pandas as pd
 from typing import Literal, Iterator
 from pydantic import Field
-from blocks.sinks.csv import CSVSink
-from blocks.etl.load.base import LoadBlock, KwargsLoadBlock
+from tiny_blocks.sinks.csv import CSVSink
+from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBlock
 
-__all__ = ["WriteCSVBlock", "KwargsWriteCSV"]
+__all__ = ["LoadCSV", "KwargsLoadCSV"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsWriteCSV(KwargsLoadBlock):
+class KwargsLoadCSV(KwargsLoadBlock):
     """
     Kwargs for WriteCSV Block
     """
@@ -19,13 +19,13 @@ class KwargsWriteCSV(KwargsLoadBlock):
     chunksize: int = 1000
 
 
-class WriteCSVBlock(LoadBlock):
+class LoadCSV(LoadBase):
     """
     WriteCSV Block
     """
 
     name: Literal["to_csv"] = "to_csv"
-    kwargs: KwargsWriteCSV = KwargsWriteCSV()
+    kwargs: KwargsLoadCSV = KwargsLoadCSV()
     sink: CSVSink = Field(..., description="Destination Sink")
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):

@@ -1,9 +1,9 @@
 import logging
 import pandas as pd
 from typing import Literal, Iterator
-from blocks.etl.transform.base import (
+from tiny_blocks.etl.transform.base import (
     KwargsTransformBlock,
-    TransformBlock,
+    TransformBase,
 )
 
 
@@ -21,7 +21,7 @@ class KwargsRenameBlock(KwargsTransformBlock):
     pass
 
 
-class RenameBlock(TransformBlock):
+class RenameBlock(TransformBase):
     """
     Rename Block
     """

@@ -1,4 +1,4 @@
-from blocks.sinks.base import BaseSink
+from tiny_blocks.sinks.base import BaseSink
 from pathlib import Path
 from typing import Literal
 import logging
@@ -10,6 +10,6 @@ __all__ = ["CSVSink"]
 
 
 class CSVSink(BaseSink):
-    block_name: Literal["csv"] = "csv"
+    block_name: Literal["csv"] = "csv_sink"
     path: Path
     validation_schema: str = None

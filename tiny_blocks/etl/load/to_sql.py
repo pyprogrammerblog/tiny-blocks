@@ -1,30 +1,30 @@
 import logging
 import pandas as pd
 from typing import Literal, Iterator
-from blocks.sinks.sql import SQLSink
-from blocks.etl.load.base import LoadBlock, KwargsLoadBlock
+from tiny_blocks.sinks.sql import SQLSink
+from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBlock
 
-__all__ = ["WriteSQLBlock", "KwargsWriteSQL"]
+__all__ = ["LoadSQL", "KwargsLoadSQL"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsWriteSQL(KwargsLoadBlock):
+class KwargsLoadSQL(KwargsLoadBlock):
     """
-    Kwargs for WriteSQL Block
+    Kwargs for Load SQL Block
     """
 
     chunksize: int = 1000
 
 
-class WriteSQLBlock(LoadBlock):
+class LoadSQL(LoadBase):
     """
-    WriteSQL Block
+    Load SQL Block
     """
 
     name: Literal["to_sql"] = "to_sql"
-    kwargs: KwargsWriteSQL = KwargsWriteSQL()
+    kwargs: KwargsLoadSQL = KwargsLoadSQL()
     sink: SQLSink
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
@@ -34,4 +34,4 @@ class WriteSQLBlock(LoadBlock):
         Exhaust the generator writing chucks to the Database
         """
         for chunk in generator:
-            chunk.to_sql(self.sink.path, **self.kwargs.to_dict())
+            chunk.to_sql(self.sink.conn, **self.kwargs.to_dict())

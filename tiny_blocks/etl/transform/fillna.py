@@ -3,9 +3,9 @@ import pandas as pd
 
 from typing import Literal, Union, Iterator
 from pydantic import Field
-from blocks.etl.transform.base import (
+from tiny_blocks.etl.transform.base import (
     KwargsTransformBlock,
-    TransformBlock,
+    TransformBase,
 )
 
 
@@ -26,7 +26,7 @@ class KwargsFillNa(KwargsTransformBlock):
     axis: int = None
 
 
-class FillnaBlock(TransformBlock):
+class FillnaBlock(TransformBase):
     """
     Fillna Block
     """

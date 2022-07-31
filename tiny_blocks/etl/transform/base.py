@@ -1,11 +1,11 @@
 import logging
 from typing import Iterator
-from blocks.etl.base import BaseBlock, KwargsBase
+from tiny_blocks.etl.base import BaseBlock, KwargsBase
 import pandas as pd
 import abc
 
 
-__all__ = ["TransformBlock", "KwargsTransformBlock"]
+__all__ = ["TransformBase", "KwargsTransformBlock"]
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class KwargsTransformBlock(KwargsBase):
     pass
 
 
-class TransformBlock(BaseBlock):
+class TransformBase(BaseBlock):
     """
     Extract Base Block
     """

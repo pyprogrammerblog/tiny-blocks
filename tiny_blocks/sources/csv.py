@@ -1,4 +1,4 @@
-from blocks.sources.base import BaseSource
+from tiny_blocks.sources.base import BaseSource
 from typing import Literal
 from pathlib import Path
 import logging
@@ -9,6 +9,6 @@ __all__ = ["CSVSource"]
 
 
 class CSVSource(BaseSource):
-    name: Literal["csv"]
+    name: Literal["csv_source"] = "csv_source"
     path: Path
     validation_schema: str = None  # TODO

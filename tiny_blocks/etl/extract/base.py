@@ -2,12 +2,12 @@ import abc
 import logging
 import functools
 from typing import Iterator
-from blocks.etl.base import BaseBlock, KwargsBase
-from blocks.sources import AnySource
+from tiny_blocks.etl.base import BaseBlock, KwargsBase
+from tiny_blocks.sources import AnySource
 
 import pandas as pd
 
-__all__ = ["ExtractBlock", "KwargsExtractBlock", "check_types"]
+__all__ = ["ExtractBase", "KwargsExtractBlock", "check_types"]
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def check_types(extract_func):
     @functools.wraps(extract_func)
-    def decorator(block: "ExtractBlock"):
+    def decorator(block: "ExtractBase"):
         data = extract_func(block)
         # validate after extraction (if validation_schema exists)
         if validation_schema := block.source.validation_schema:
@@ -33,7 +33,7 @@ class KwargsExtractBlock(KwargsBase):
     pass
 
 
-class ExtractBlock(BaseBlock):
+class ExtractBase(BaseBlock):
     """
     Extract Base Block
     """

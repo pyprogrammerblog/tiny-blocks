@@ -1,28 +1,28 @@
 from typing import Union
 
 # extract blocks
-from blocks.extract.read_csv import ReadCSVBlock
-from blocks.extract.read_json import ReadJSONBlock
-from blocks.extract.read_sql import ReadSQLBlock
+from tiny_blocks.extract.read_csv import ReadCSVBlock
+from tiny_blocks.extract.read_json import ReadJSONBlock
+from tiny_blocks.extract.read_sql import ReadSQLBlock
 
 # load blocks
-from blocks.load.to_csv import WriteCSVBlock
-from blocks.load.to_json import WriteJSONBlock
-from blocks.load.to_sql import WriteSQLBlock
+from tiny_blocks.load.to_csv import WriteCSVBlock
+from tiny_blocks.load.to_json import WriteJSONBlock
+from tiny_blocks.load.to_sql import WriteSQLBlock
 
 # transform blocks
-from blocks.transform.align import AlignBlock
-from blocks.transform.append import AppendBlock
-from blocks.transform.apply import ApplyBlock
-from blocks.transform.applymap import ApplyMapBlock
-from blocks.transform.drop_duplicates import (
+from tiny_blocks.transform.align import AlignBlock
+from tiny_blocks.transform.append import AppendBlock
+from tiny_blocks.transform.apply import ApplyBlock
+from tiny_blocks.transform.applymap import ApplyMapBlock
+from tiny_blocks.transform.drop_duplicates import (
     DropDuplicatesBlock,
 )
-from blocks.transform.fillna import FillnaBlock
+from tiny_blocks.transform.fillna import FillnaBlock
 
 # from blocks.groupby import GroupByBlock
 # from blocks.join import JoinBlock
-from blocks.transform.merge import MergeBlock
+from tiny_blocks.transform.merge import MergeBlock
 
 # from blocks.pivot_table import PivotTableBlock
 # from blocks.query import QueryBlock

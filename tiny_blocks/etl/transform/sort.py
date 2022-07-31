@@ -3,9 +3,9 @@ import pandas as pd
 from sqlite3 import connect
 from tempfile import TemporaryFile
 from typing import Literal, Iterator, Set
-from blocks.etl.transform.base import (
+from tiny_blocks.etl.transform.base import (
     KwargsTransformBlock,
-    TransformBlock,
+    TransformBase,
 )
 
 __all__ = ["DropDuplicatesBlock", "KwargsDropDuplicates"]
@@ -23,7 +23,7 @@ class KwargsDropDuplicates(KwargsTransformBlock):
     subset: Set[str] = {}
 
 
-class DropDuplicatesBlock(TransformBlock):
+class DropDuplicatesBlock(TransformBase):
     """
     Operator DropDuplicatesBlock
     """

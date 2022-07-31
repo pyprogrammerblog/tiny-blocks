@@ -2,12 +2,12 @@ import abc
 import logging
 import pandas as pd
 from typing import Iterator
-from blocks.etl.base import BaseBlock
-from blocks.etl.base import KwargsBase
-from blocks.sinks import AnySink
+from tiny_blocks.etl.base import BaseBlock
+from tiny_blocks.etl.base import KwargsBase
+from tiny_blocks.sinks import AnySink
 
 
-__all__ = ["LoadBlock", "KwargsLoadBlock"]
+__all__ = ["LoadBase", "KwargsLoadBlock"]
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class KwargsLoadBlock(KwargsBase):
     pass
 
 
-class LoadBlock(BaseBlock):
+class LoadBase(BaseBlock):
     """
     Load Base Block
     """

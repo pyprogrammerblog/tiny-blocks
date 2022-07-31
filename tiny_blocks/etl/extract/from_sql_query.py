@@ -2,25 +2,25 @@ import logging
 from typing import Dict, List, Literal, Iterator
 from sources.sql import SQLSource
 from pydantic import Field
-from blocks.etl.extract.base import check_types
+from tiny_blocks.etl.extract.base import check_types
 import pandas as pd
-from blocks.etl.extract.base import (
+from tiny_blocks.etl.extract.base import (
     KwargsExtractBlock,
-    ExtractBlock,
+    ExtractBase,
 )
 
-__all__ = ["ReadSQLTableBlock", "KwargsReadSQLTable"]
+__all__ = ["ExtractSQLQuery", "KwargsExtractSQLQuery"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsReadSQLTable(KwargsExtractBlock):
+class KwargsExtractSQLQuery(KwargsExtractBlock):
     """
     Kwargs for ReadSQL
     """
 
-    table_name: str
+    sql: str
     index_col: str | List[str] = None
     coerce_float: bool = True
     pare_dates: List[str] | Dict[str:str] = None
@@ -28,14 +28,14 @@ class KwargsReadSQLTable(KwargsExtractBlock):
     chunksize: int = 1000
 
 
-class ReadSQLTableBlock(ExtractBlock):
+class ExtractSQLQuery(ExtractBase):
     """
     ReadSQL Block
     """
 
-    name: Literal["read_sql_table"] = "read_sql_table"
+    name: Literal["read_sql"]
+    kwargs: KwargsExtractSQLQuery
     source: SQLSource = Field(..., description="Source Data")
-    kwargs: KwargsReadSQLTable
 
     @check_types
     def get_iter(self) -> Iterator[pd.DataFrame]:
@@ -43,5 +43,5 @@ class ReadSQLTableBlock(ExtractBlock):
         Read SQL
         """
         kwargs = self.kwargs.to_dict()
-        for chunk in pd.read_sql_table(con=self.source.conn, **kwargs):
+        for chunk in pd.read_sql_query(con=self.source.conn, **kwargs):
             yield chunk
