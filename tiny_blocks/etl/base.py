@@ -13,10 +13,10 @@ class KwargsBase(BaseModel):
     """
 
     def to_dict(self):
-        return self.dict(exclude_unset=True)
+        return self.dict(exclude_none=True)
 
     def to_json(self):
-        return self.json(exclude_unset=True)
+        return self.json(exclude_none=True)
 
 
 class BaseBlock(BaseModel):
