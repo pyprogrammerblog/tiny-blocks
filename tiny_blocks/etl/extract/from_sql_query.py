@@ -1,6 +1,6 @@
 import logging
-from typing import Dict, List, Literal, Iterator
-from sources.sql import SQLSource
+from typing import List, Literal, Iterator
+from tiny_blocks.sources.sql import SQLSource
 from pydantic import Field
 from tiny_blocks.etl.extract.base import check_types
 import pandas as pd
@@ -23,7 +23,6 @@ class KwargsExtractSQLQuery(KwargsExtractBase):
     sql: str
     index_col: str | List[str] = None
     coerce_float: bool = True
-    pare_dates: List[str] | Dict[str:str] = None
     columns: List[str] = None
     chunksize: int = 1000
 
