@@ -42,6 +42,6 @@ class ExtractSQLQuery(ExtractBase):
         Read SQL
         """
         for chunk in pd.read_sql_query(
-            con=self.source.connection_string, **self.kwargs.to_dict()
+            con=self.source.conn_string, **self.kwargs.to_dict()
         ):
             yield chunk

@@ -20,6 +20,7 @@ flake8 = "^4.0.1"
 black = "^22.6.0"
 ipython = "^8.4.0"
 notebook = "^6.4.12"
+SQLAlchemy = "^1.4.39"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

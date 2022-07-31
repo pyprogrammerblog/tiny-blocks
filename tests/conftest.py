@@ -33,12 +33,12 @@ def sql_source():
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
-    with tempfile.NamedTemporaryFile(
-        suffix=".sqlite"
-    ) as file, sqlite3.connect(file.name) as con:
+    with tempfile.NamedTemporaryFile(suffix=".db") as file, sqlite3.connect(
+        file.name
+    ) as con:
         data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, 9]}
         pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
-        yield SQLiteSource(connection_string=file.name)
+        yield SQLiteSource(conn_string=f"sqlite:///{file.name}")
 
 
 @pytest.fixture
@@ -46,5 +46,5 @@ def sql_sink():
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
-    with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
-        yield SQLiteSink(connection_string=file.name)
+    with tempfile.NamedTemporaryFile(suffix=".db") as file:
+        yield SQLiteSink(conn_string=f"sqlite:///{file.name}")

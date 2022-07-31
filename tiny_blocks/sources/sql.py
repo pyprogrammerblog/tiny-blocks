@@ -1,5 +1,3 @@
-from contextlib import contextmanager
-import sqlite3
 from tiny_blocks.sources.base import BaseSource
 from pydantic import Field
 from typing import Literal
@@ -12,12 +10,4 @@ __all__ = ["SQLiteSource"]
 
 class SQLiteSource(BaseSource):
     name: Literal["sqlite3_source"] = "sqlite3_source"
-    connection_string: str = Field(description="Connection string")
-
-    @contextmanager
-    def connect(self):
-        conn = sqlite3.connect(self.connection_string)
-        try:
-            yield conn
-        finally:
-            conn.close()
+    conn_string: str = Field(description="Connection string")
