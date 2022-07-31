@@ -11,4 +11,3 @@ __all__ = ["CSVSource"]
 class CSVSource(BaseSource):
     name: Literal["csv_source"] = "csv_source"
     path: Path
-    validation_schema: str = None  # TODO

@@ -12,4 +12,3 @@ __all__ = ["CSVSink"]
 class CSVSink(BaseSink):
     block_name: Literal["csv"] = "csv_sink"
     path: Path
-    validation_schema: str = None

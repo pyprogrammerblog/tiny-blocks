@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 from typing import Literal, Iterator
-from tiny_blocks.sinks.sql import SQLSink
+from tiny_blocks.sinks import AnySQLSink
 from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBase
 
 __all__ = ["LoadSQL", "KwargsLoadSQL"]
@@ -25,7 +25,7 @@ class LoadSQL(LoadBase):
 
     name: Literal["to_sql"] = "to_sql"
     kwargs: KwargsLoadSQL = KwargsLoadSQL()
-    sink: SQLSink
+    sink: AnySQLSink
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
@@ -33,5 +33,6 @@ class LoadSQL(LoadBase):
 
         Exhaust the generator writing chucks to the Database
         """
-        for chunk in generator:
-            chunk.to_sql(self.sink.conn, **self.kwargs.to_dict())
+        with self.sink.connect() as conn:
+            for chunk in generator:
+                chunk.to_sql(con=conn, **self.kwargs.to_dict())
