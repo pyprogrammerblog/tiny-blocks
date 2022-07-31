@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Literal, Iterator
 from pydantic import Field
 from tiny_blocks.sinks.csv import CSVSink
-from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBlock
+from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBase
 
 __all__ = ["LoadCSV", "KwargsLoadCSV"]
 
@@ -11,7 +11,7 @@ __all__ = ["LoadCSV", "KwargsLoadCSV"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadCSV(KwargsLoadBlock):
+class KwargsLoadCSV(KwargsLoadBase):
     """
     Kwargs for WriteCSV Block
     """

@@ -3,7 +3,7 @@ import pandas as pd
 
 from typing import Literal, Iterator
 from tiny_blocks.etl.transform.base import (
-    KwargsTransformBlock,
+    KwargsTransformBase,
     TransformBase,
 )
 
@@ -14,7 +14,7 @@ __all__ = ["KwargsDropNa"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsDropNa(KwargsTransformBlock):
+class KwargsDropNa(KwargsTransformBase):
     """
     Kwargs for DropNa
     """

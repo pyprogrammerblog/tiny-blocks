@@ -4,7 +4,7 @@ from sqlite3 import connect
 from tempfile import TemporaryFile
 from typing import Literal, Iterator
 from tiny_blocks.etl.transform.base import (
-    KwargsTransformBlock,
+    KwargsTransformBase,
     TransformBase,
 )
 
@@ -14,7 +14,7 @@ __all__ = ["MergeBlock"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsMerge(KwargsTransformBlock):
+class KwargsMerge(KwargsTransformBase):
     """
     Kwargs for block merge
     """

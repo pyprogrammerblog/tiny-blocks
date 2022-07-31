@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Literal, Union, Iterator
 from pydantic import Field
 from tiny_blocks.etl.transform.base import (
-    KwargsTransformBlock,
+    KwargsTransformBase,
     TransformBase,
 )
 
@@ -15,7 +15,7 @@ __all__ = ["FillnaBlock", "KwargsFillNa"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsFillNa(KwargsTransformBlock):
+class KwargsFillNa(KwargsTransformBase):
     """
     Kwargs for FillNa Block
     """

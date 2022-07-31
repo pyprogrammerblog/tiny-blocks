@@ -4,7 +4,7 @@ from sqlite3 import connect
 from tempfile import TemporaryFile
 from typing import Literal, Iterator, Set
 from tiny_blocks.etl.transform.base import (
-    KwargsTransformBlock,
+    KwargsTransformBase,
     TransformBase,
 )
 
@@ -14,7 +14,7 @@ __all__ = ["DropDuplicatesBlock", "KwargsDropDuplicates"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsDropDuplicates(KwargsTransformBlock):
+class KwargsDropDuplicates(KwargsTransformBase):
     """
     Kwargs for DropDuplicatesBlock
     """

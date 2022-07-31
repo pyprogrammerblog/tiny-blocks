@@ -7,13 +7,13 @@ from tiny_blocks.etl.base import KwargsBase
 from tiny_blocks.sinks import AnySink
 
 
-__all__ = ["LoadBase", "KwargsLoadBlock"]
+__all__ = ["LoadBase", "KwargsLoadBase"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadBlock(KwargsBase):
+class KwargsLoadBase(KwargsBase):
     pass
 
 

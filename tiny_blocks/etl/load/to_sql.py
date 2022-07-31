@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 from typing import Literal, Iterator
 from tiny_blocks.sinks.sql import SQLSink
-from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBlock
+from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBase
 
 __all__ = ["LoadSQL", "KwargsLoadSQL"]
 
@@ -10,7 +10,7 @@ __all__ = ["LoadSQL", "KwargsLoadSQL"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadSQL(KwargsLoadBlock):
+class KwargsLoadSQL(KwargsLoadBase):
     """
     Kwargs for Load SQL Block
     """

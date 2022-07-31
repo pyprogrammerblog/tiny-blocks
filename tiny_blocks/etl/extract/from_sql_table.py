@@ -5,7 +5,7 @@ from pydantic import Field
 from tiny_blocks.etl.extract.base import check_types
 import pandas as pd
 from tiny_blocks.etl.extract.base import (
-    KwargsExtractBlock,
+    KwargsExtractBase,
     ExtractBase,
 )
 
@@ -15,7 +15,7 @@ __all__ = ["ExtractSQLTable", "KwargsExtractSQLTable"]
 logger = logging.getLogger(__name__)
 
 
-class KwargsExtractSQLTable(KwargsExtractBlock):
+class KwargsExtractSQLTable(KwargsExtractBase):
     """
     Kwargs for ReadSQL
     """

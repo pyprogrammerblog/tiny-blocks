@@ -5,7 +5,7 @@ from pydantic import Field
 from tiny_blocks.sources.csv import CSVSource
 from tiny_blocks.etl.extract.base import check_types
 from tiny_blocks.etl.extract.base import (
-    KwargsExtractBlock,
+    KwargsExtractBase,
     ExtractBase,
 )
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["ExtractCSV", "KwargsExtractCSV"]
 
 
-class KwargsExtractCSV(KwargsExtractBlock):
+class KwargsExtractCSV(KwargsExtractBase):
     """
     Kwargs for ReadCSV
     """

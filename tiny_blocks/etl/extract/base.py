@@ -7,7 +7,7 @@ from tiny_blocks.sources import AnySource
 
 import pandas as pd
 
-__all__ = ["ExtractBase", "KwargsExtractBlock", "check_types"]
+__all__ = ["ExtractBase", "KwargsExtractBase", "check_types"]
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def check_types(extract_func):
     return decorator
 
 
-class KwargsExtractBlock(KwargsBase):
+class KwargsExtractBase(KwargsBase):
     """
     Kwargs Extract Block
     """

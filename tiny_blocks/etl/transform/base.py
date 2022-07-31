@@ -5,13 +5,13 @@ import pandas as pd
 import abc
 
 
-__all__ = ["TransformBase", "KwargsTransformBlock"]
+__all__ = ["TransformBase", "KwargsTransformBase"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsTransformBlock(KwargsBase):
+class KwargsTransformBase(KwargsBase):
     pass
 
 
