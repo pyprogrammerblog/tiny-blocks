@@ -9,7 +9,7 @@ from blocks.etl.extract.base import (
     ExtractBlock,
 )
 
-__all__ = ["ReadSQLQueryBlock"]
+__all__ = ["ReadSQLQueryBlock", "KwargsReadSQLQuery"]
 
 
 logger = logging.getLogger(__name__)
@@ -20,11 +20,12 @@ class KwargsReadSQLQuery(KwargsExtractBlock):
     Kwargs for ReadSQL
     """
 
+    sql: str
     index_col: str | List[str] = None
     coerce_float: bool = True
     pare_dates: List[str] | Dict[str:str] = None
     columns: List[str] = None
-    chunksize: int = None
+    chunksize: int = 1000
 
 
 class ReadSQLQueryBlock(ExtractBlock):
@@ -33,14 +34,14 @@ class ReadSQLQueryBlock(ExtractBlock):
     """
 
     name: Literal["read_sql"]
-    kwargs: KwargsReadSQLQuery = KwargsReadSQLQuery()
+    kwargs: KwargsReadSQLQuery
     source: SQLSource = Field(..., description="Source Data")
 
     @check_types
-    def process(self) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Iterator[pd.DataFrame]:
         """
         Read SQL
         """
         kwargs = self.kwargs.to_dict()
-        for chunk in pd.read_sql_query(self.source.conn, **kwargs):
+        for chunk in pd.read_sql_query(con=self.source.conn, **kwargs):
             yield chunk

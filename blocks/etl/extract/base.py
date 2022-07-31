@@ -2,9 +2,7 @@ import abc
 import logging
 import functools
 from typing import Iterator
-from pydantic import Field
 from blocks.etl.base import BaseBlock, KwargsBase
-from blocks.etl.dependencies import NoInput
 from blocks.sources import AnySource
 
 import pandas as pd
@@ -40,13 +38,9 @@ class ExtractBlock(BaseBlock):
     Extract Base Block
     """
 
-    source: AnySource = Field(..., description="Source Data")
+    source: AnySource
 
     @abc.abstractmethod
     @check_types
-    def process(self) -> pd.DataFrame:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_iter(self, chunksize: int = 10000) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Iterator[pd.DataFrame]:
         raise NotImplementedError

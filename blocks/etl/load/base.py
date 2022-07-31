@@ -1,8 +1,10 @@
+import abc
 import logging
+import pandas as pd
+from typing import Iterator
 from blocks.etl.base import BaseBlock
 from blocks.etl.base import KwargsBase
-import pandas as pd
-import abc
+from blocks.sinks import AnySink
 
 
 __all__ = ["LoadBlock", "KwargsLoadBlock"]
@@ -20,6 +22,8 @@ class LoadBlock(BaseBlock):
     Load Base Block
     """
 
+    sink: AnySink
+
     @abc.abstractmethod
-    def process(self, **blocks: pd.DataFrame):
+    def exhaust(self, generator: Iterator[pd.DataFrame]):
         raise NotImplementedError

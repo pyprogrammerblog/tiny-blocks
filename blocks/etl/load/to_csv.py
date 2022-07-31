@@ -29,9 +29,11 @@ class WriteCSVBlock(LoadBlock):
     kwargs: KwargsWriteCSV = KwargsWriteCSV()
     sink: CSVSink = Field(..., description="Destination Sink")
 
-    def process(self, generator: Iterator[pd.DataFrame]):
+    def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
-        Write CSV Operation
+        Write CSV Operation.
+
+        Exhaust the generator writing chucks to the CSV
         """
         for chunk in generator:
             chunk.to_csv(self.sink.path, **self.kwargs.to_dict())

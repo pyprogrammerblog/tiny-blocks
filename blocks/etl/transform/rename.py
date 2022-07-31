@@ -33,7 +33,7 @@ class RenameBlock(TransformBlock):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        Drop NaN
+        Rename
         """
         for chunk in generator:
             chunk = chunk.rename(**self.kwargs.to_dict())

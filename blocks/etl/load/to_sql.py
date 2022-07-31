@@ -27,7 +27,7 @@ class WriteSQLBlock(LoadBlock):
     kwargs: KwargsWriteSQL = KwargsWriteSQL()
     sink: SQLSink
 
-    def process(self, generator: Iterator[pd.DataFrame]):
+    def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
         Write SQL Operation.
 

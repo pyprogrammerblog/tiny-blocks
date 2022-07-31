@@ -12,7 +12,7 @@ from blocks.etl.extract.base import (
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["ReadCSVBlock"]
+__all__ = ["ReadCSVBlock", "KwargsReadCSV"]
 
 
 class KwargsReadCSV(KwargsExtractBlock):
@@ -33,11 +33,11 @@ class ReadCSVBlock(ExtractBlock):
     ReadCSV Block
     """
 
-    id: Literal["read_csv"] = "read_csv"
+    name: Literal["read_csv"] = "read_csv"
     source: CSVSource = Field(..., description="Source Data")
     kwargs: KwargsReadCSV = KwargsReadCSV()
 
     @check_types
-    def process(self) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Iterator[pd.DataFrame]:
         for chunk in pd.read_csv(self.source.path, **self.kwargs.to_dict()):
             yield chunk

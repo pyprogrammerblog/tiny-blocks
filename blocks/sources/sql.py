@@ -1,6 +1,5 @@
 from blocks.sources.base import BaseSource
-from pydantic import PostgresDsn, Field
-from typing import Union
+from pydantic import Field
 from typing import Literal
 import logging
 
@@ -11,5 +10,5 @@ __all__ = ["SQLSource"]
 
 class SQLSource(BaseSource):
     name: Literal["sql"]
-    conn: Union[PostgresDsn] = Field(..., description="Dsn")
+    conn: str = Field(description="Connection string")
     validation_schema: str = None  # TODO
