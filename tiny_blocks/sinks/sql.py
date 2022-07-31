@@ -6,10 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["SQLiteSink"]
+__all__ = ["SQLSink"]
 
 
-class SQLiteSink(BaseSink):
+class SQLSink(BaseSink):
 
     block_name: Literal["sql"] = "sqlite_sink"
     conn_string: str = Field(..., description="Connection string")

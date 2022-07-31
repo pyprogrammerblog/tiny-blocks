@@ -7,7 +7,7 @@ from tiny_blocks.etl.transform.fillna import FillnaBlock
 from tiny_blocks.etl.load.to_csv import LoadCSV
 
 
-def test_basic_flow(sql_source, csv_source, tempdir):
+def test_basic_flow(sql_source, csv_source):
     """
     Test a basic ETL pipeline
     """

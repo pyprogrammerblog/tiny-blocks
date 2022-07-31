@@ -5,9 +5,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["SQLiteSource"]
+__all__ = ["SQLSource"]
 
 
-class SQLiteSource(BaseSource):
-    name: Literal["sqlite3_source"] = "sqlite3_source"
+class SQLSource(BaseSource):
+    name: Literal["sql_source"] = "sql_source"
     conn_string: str = Field(description="Connection string")

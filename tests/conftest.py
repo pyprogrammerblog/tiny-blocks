@@ -3,9 +3,9 @@ import pandas as pd
 import sqlite3
 import tempfile
 from tiny_blocks.sources.csv import CSVSource
-from tiny_blocks.sources.sql import SQLiteSource
+from tiny_blocks.sources.sql import SQLSource
 from tiny_blocks.sinks.csv import CSVSink
-from tiny_blocks.sinks.sql import SQLiteSink
+from tiny_blocks.sinks.sql import SQLSink
 
 
 @pytest.fixture
@@ -38,7 +38,7 @@ def sql_source():
     ) as con:
         data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, 9]}
         pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
-        yield SQLiteSource(conn_string=f"sqlite:///{file.name}")
+        yield SQLSource(conn_string=f"sqlite:///{file.name}")
 
 
 @pytest.fixture
@@ -47,4 +47,4 @@ def sql_sink():
     Yield a SQL Sink with a connection string to an existing Table DB
     """
     with tempfile.NamedTemporaryFile(suffix=".db") as file:
-        yield SQLiteSink(conn_string=f"sqlite:///{file.name}")
+        yield SQLSink(conn_string=f"sqlite:///{file.name}")
