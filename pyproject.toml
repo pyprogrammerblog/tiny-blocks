@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tiny_blocks"
 version = "0.1.0"
-description = ""
+description = "Tiny Block Operations for Data Pipelines"
 authors = ["Jose Vazquez <josevazjim88@gmail.com>"]
 
 [virtualenvs]

@@ -14,7 +14,5 @@ ENV POETRY_VERSION=1.1.13 VENV_PATH="/code/.venv" POETRY_HOME="/opt/poetry"
 RUN curl -sSL https://install.python-poetry.org | python3 - --version $POETRY_VERSION
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# this is important, we do not copy but SHARE THE VOLUME,
-# you can change code for app :)
 VOLUME /code
 WORKDIR /code
