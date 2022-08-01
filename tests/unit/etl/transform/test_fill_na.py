@@ -9,7 +9,8 @@ def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
     extract_sql = ExtractSQLTable(source=sqlite_source, table_name="test")
     fill_na = Fillna(value="Hola Mundo")
 
-    generator = fill_na.get_iter(generator=extract_sql.get_iter())
+    generator = extract_sql.get_iter()
+    generator = fill_na.get_iter(generator=generator)
 
     # assert
     df = pd.concat(generator)
