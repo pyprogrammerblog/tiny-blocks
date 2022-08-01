@@ -20,7 +20,7 @@ class KwargsDropDuplicates(KwargsTransformBase):
     """
 
     chunksize: int = 1000
-    subset: Set[str] = None
+    subset: Set[str] = {}
 
 
 class DropDuplicates(TransformBase):
@@ -47,7 +47,10 @@ class DropDuplicates(TransformBase):
 
             # select non-duplicated rows. It is also possible to select
             # a non-duplicated subset of rows.
-            sql = f"SELECT DISTINCT {'*' or self.kwargs.subset} FROM temp"
+            sql = (
+                f"SELECT DISTINCT {'*' or ', '.join(self.kwargs.subset)} "
+                f"FROM temp"
+            )
 
             # yield records now without duplicates
             chunk = self.kwargs.chunksize
