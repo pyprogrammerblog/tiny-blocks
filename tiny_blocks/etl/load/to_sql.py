@@ -16,10 +16,9 @@ class KwargsLoadSQL(KwargsLoadBase):
     Kwargs for Load SQL Block
     """
 
-    name: str = Field(..., description="Destination table name")
     chunksize: int = 1000
     index: bool = False
-    if_exists: Literal["fail", "replace", "append"] = "replace"
+    if_exists: Literal["fail", "replace", "append"] = "append"
 
 
 class LoadSQL(LoadBase):
@@ -28,8 +27,9 @@ class LoadSQL(LoadBase):
     """
 
     name: Literal["to_sql"] = "to_sql"
-    kwargs: KwargsLoadSQL
-    sink: SQLSink
+    sink: SQLSink = Field(..., description="Destination sink")
+    table_name: str = Field(..., description="Destination Table")
+    kwargs: KwargsLoadSQL = KwargsLoadSQL()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
@@ -37,5 +37,7 @@ class LoadSQL(LoadBase):
 
         Exhaust the generator writing chucks to the Database
         """
-        for chunk in generator:
-            chunk.to_sql(con=self.sink.conn_string, **self.kwargs.to_dict())
+        with self.sink.connect() as conn:
+            kwargs = self.kwargs.to_dict()
+            for chunk in generator:
+                chunk.to_sql(name=self.table_name, con=conn, **kwargs)

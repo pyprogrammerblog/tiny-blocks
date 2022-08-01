@@ -1,109 +1,49 @@
  tiny-blocks
 =============
 
-Clone the project and move inside:
-```shell
-git clone https://github.com/pyprogrammerblog/tiny-blocks.git
-cd tiny-blocks
-```
- 
-Install the virtualenv on the root project folder:
-```shell
-docker-compose run --rm --no-deps app poetry install
-```
+Tiny Blocks to build large and complex pipelines!
 
-Check your installed dependencies for security vulnerabilities
-```shell
-docker-compose run --rm app poetry check
-```
+Installation
+-------------
 
-Finally, run the tests:
-```shell
-docker-compose run --rm app poetry run pytest
-```
-
-
-### Local development
-
-These instructions assume that ``git``, ``docker``, and ``docker-compose`` are
-installed on your host machine.
-
-This project makes use of Pipenv. If you are new to pipenv, install it and
-study the output of ``pipenv --help``, especially the commands ``pipenv lock``
-and ``pipenv sync``. Or read the [docs](https://docs.pipenv.org/).
-
-First, clone this repo and make some required directories.
+Install it using ``pip``
 
 ```shell
-git clone https://github.com/pyprogrammerblog/smart-stream.git
-cd smart-stream
+pip install tiny-blocks
 ```
 
-Then build the docker image, providing your user and group ids for correct file
-permissions.
+Basic usage example
+--------------------
 
-```shell
-docker-compose build
+```python
+from pathlib import Path
+from tiny_blocks.etl.extract.from_csv import ExtractCSV
+from tiny_blocks.etl.load.to_sql import LoadSQL
+from tiny_blocks.etl.transform.drop_duplicates import DropDuplicates
+from tiny_blocks.etl.transform.fillna import Fillna
+
+from tiny_blocks.sources.csv import CSVSource
+from tiny_blocks.sinks.sql import SQLSink
+
+# settings
+conn_string = 'psycopg2+postgres://user:pass@localhost:5432/foobar'
+csv_path = Path('/path/to/file.csv')
+
+# Source and Sink
+source = CSVSource(path=csv_path)
+sink = SQLSink(connection_string=conn_string)
+
+# ETL Blocks
+extract_from_csv = ExtractCSV(source=source)
+drop_duplicates = DropDuplicates()
+fill_na = Fillna()
+load_to_sql = LoadSQL(sink=sink)
+
+# Pipeline
+extract_from_csv >> drop_duplicates >> fill_na >> load_to_sql
 ```
 
-Then run the app and access inside the docker.
+Documentation
+--------------
 
-```shell
-docker-compose run --rm app bash
-(docker)
-```
-
-We create a Pipenv virtual environment, adding the `--site-packages` switch
-to be able to import python packages that you installed with apt inside the
-docker.
-
-```shell
-pipenv --site-packages
-```
-
-If you want to bump package versions, regenerate the `Pipfile.lock`.
-
-```shell
-pipenv lock
-```
-
-Then install the packages (including dev packages) listed in `Pipfile.lock`.
-
-```shell
-pipenv sync --dev
-```
-Then exit the docker shell (Ctrl + D)
-At this point, you may want to test your installation.
-
-```shell
-docker-compose run --rm app pipenv run pytest --cov=smart_stream
-```
-Or start working with the smart-stream right away.
-
-```shell
-docker-compose up
-```
-
-To stop all running containers without removing them, do this.
-
-```shell
-docker-compose stop
-```
-
-### Jupyter Notebook
-
-Hit the command
-
-```shell
-docker-compose run --rm -p 8888:8888 app pipenv shell
-```
-
-Then inside the docker:
-
-```shell
-jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
-```
-
-That is all!
-
-Happy Coding!
+Please visit ... :TODO

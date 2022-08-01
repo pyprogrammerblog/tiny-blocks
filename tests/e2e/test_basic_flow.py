@@ -3,11 +3,11 @@ import pandas as pd
 from tiny_blocks.etl.extract.from_csv import ExtractCSV
 from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
 from tiny_blocks.etl.transform.merge import MergeBlock
-from tiny_blocks.etl.transform.fillna import FillnaBlock
+from tiny_blocks.etl.transform.fillna import Fillna
 from tiny_blocks.etl.load.to_csv import LoadCSV
 
 
-def test_basic_flow(sql_source, csv_source):
+def test_basic_flow(sqlite_source, csv_source):
     """
     Test a basic ETL pipeline
     """
@@ -18,7 +18,7 @@ def test_basic_flow(sql_source, csv_source):
 
     # 2. Transform
     merge = MergeBlock()
-    fill_na = FillnaBlock()
+    fill_na = Fillna()
 
     # 3. Load
     write_to_csv = LoadCSV()

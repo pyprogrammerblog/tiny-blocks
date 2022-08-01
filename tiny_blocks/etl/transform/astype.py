@@ -1,50 +1,41 @@
 import logging
-from typing import Literal
 
-import dask.dataframe as dd
 import pandas as pd
-from smart_stream.models.blocks.transform.base import (
-    KwargsTransformBlock,
-    TransformBlock,
+from typing import Literal, Iterator, Dict
+from tiny_blocks.etl.transform.base import (
+    KwargsTransformBase,
+    TransformBase,
 )
-from smart_stream.models.blocks.dependencies import OneInput
 
-__all__ = ["AstypeBlock"]
+__all__ = ["Astype", "KwargsAstype"]
+
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsAstype(KwargsTransformBlock):
+class KwargsAstype(KwargsTransformBase):
     """
     Kwargs Astype
     """
 
-    dtype: str
-    copy: bool = True
-    errors: Literal["raise", "ignore"] = "raise"
+    errors: Literal["raise", "ignore"] = "ignore"
 
 
-class AstypeBlock(TransformBlock):
+class Astype(TransformBase):
     """
     Astype Block
     """
 
-    name: Literal["astype"]
-    input: OneInput
-    kwargs: KwargsAstype
+    name: Literal["astype"] = "astype"
+    dtype: Dict[str, str]
+    kwargs: KwargsAstype = KwargsAstype()
 
-    def delayed(self, block: dd.DataFrame) -> dd.DataFrame:
+    def get_iter(
+        self, generator: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         """
-        Astype operation
+        Drop NaN
         """
-        kwargs = self.kwargs.dict()
-        block = block.astype(**kwargs)
-        return block
-
-    def dispatch(self, block: dd.DataFrame) -> pd.DataFrame:
-        """
-        Astype operation
-        """
-        kwargs = self.kwargs.dict()
-        block = block.astype(**kwargs)
-        return block
+        for chunk in generator:
+            chunk = chunk.astype(dtype=self.dtype, **self.kwargs.to_dict())
+            yield chunk

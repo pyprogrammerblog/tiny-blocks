@@ -1,40 +1,41 @@
 import logging
 import pandas as pd
-from typing import Literal, Iterator
+from typing import Literal, Iterator, Dict
 from tiny_blocks.etl.transform.base import (
     KwargsTransformBase,
     TransformBase,
 )
 
 
-__all__ = ["RenameBlock", "KwargsRenameBlock"]
+__all__ = ["Rename", "KwargsRename"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsRenameBlock(KwargsTransformBase):
+class KwargsRename(KwargsTransformBase):
     """
-    Kwargs for FillNa Block
+    Kwargs for Rename Block
     """
 
     pass
 
 
-class RenameBlock(TransformBase):
+class Rename(TransformBase):
     """
     Rename Block
     """
 
     name: Literal["rename"] = "rename"
-    kwargs: KwargsRenameBlock = KwargsRenameBlock()
+    kwargs: KwargsRename = KwargsRename()
+    columns: Dict[str, str]
 
-    def process(
+    def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Rename
         """
         for chunk in generator:
-            chunk = chunk.rename(**self.kwargs.to_dict())
+            chunk = chunk.rename(columns=self.columns, **self.kwargs.to_dict())
             yield chunk

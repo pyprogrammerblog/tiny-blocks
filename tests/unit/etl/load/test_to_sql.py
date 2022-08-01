@@ -1,21 +1,52 @@
 import pandas as pd
 
-from tiny_blocks.etl.load.to_sql import LoadSQL, KwargsLoadSQL
-from tiny_blocks.etl.extract.from_sql_table import (
-    ExtractSQLTable,
-    KwargsExtractSQLTable,
-)
+from tiny_blocks.etl.load.to_sql import LoadSQL
+from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
 
 
-def test_sql_load_into_sink(sql_source, sql_sink):
+def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
 
-    extract_kwargs = KwargsExtractSQLTable(table_name="TEST")
-    extract_sql = ExtractSQLTable(source=sql_source, kwargs=extract_kwargs)
+    extract_sql = ExtractSQLTable(source=sqlite_source, table_name="test")
+    load_to_sql = LoadSQL(sink=sqlite_sink, table_name="destination")
+
     generator = extract_sql.get_iter()
-
-    load_kwargs = KwargsLoadSQL(name="TEST")
-    load_to_sql = LoadSQL(sink=sql_sink, kwargs=load_kwargs)
     load_to_sql.exhaust(generator=generator)
 
-    df = pd.read_sql_table(table_name="TEST", con=sql_sink.conn_string)
+    # assert
+    df = pd.read_sql_table(
+        table_name="destination", con=sqlite_sink.connection_string
+    )
     assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["c", "d", "e"]
+
+
+def test_sql_load_into_postgres(postgres_source, postgres_sink):
+
+    extract_sql = ExtractSQLTable(source=postgres_source, table_name="test")
+    load_to_sql = LoadSQL(sink=postgres_sink, table_name="destination")
+
+    generator = extract_sql.get_iter()
+    load_to_sql.exhaust(generator=generator)
+
+    # assert
+    df = pd.read_sql_table(
+        table_name="destination", con=postgres_sink.connection_string
+    )
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["c", "d", "e"]
+
+
+def test_sql_load_into_mysql(mysql_source, mysql_sink):
+
+    extract_sql = ExtractSQLTable(source=mysql_source, table_name="test")
+    load_to_sql = LoadSQL(sink=mysql_sink, table_name="destination")
+
+    generator = extract_sql.get_iter()
+    load_to_sql.exhaust(generator=generator)
+
+    # assert
+    df = pd.read_sql_table(
+        table_name="destination", con=mysql_sink.connection_string
+    )
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["c", "d", "e"]

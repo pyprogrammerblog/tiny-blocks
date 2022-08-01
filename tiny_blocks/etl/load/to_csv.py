@@ -35,4 +35,4 @@ class LoadCSV(LoadBase):
         Exhaust the generator writing chucks to the CSV
         """
         for chunk in generator:
-            chunk.to_csv(self.sink.path, **self.kwargs.to_dict())
+            chunk.to_csv(path_or_buf=self.sink.path, **self.kwargs.to_dict())
