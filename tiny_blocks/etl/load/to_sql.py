@@ -28,7 +28,7 @@ class LoadSQL(LoadBase):
 
     name: Literal["to_sql"] = "to_sql"
     sink: SQLSink = Field(..., description="Destination sink")
-    table_name: str = Field(..., description="Table name")
+    table_name: str = Field(..., description="Destination Table")
     kwargs: KwargsLoadSQL = KwargsLoadSQL()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
