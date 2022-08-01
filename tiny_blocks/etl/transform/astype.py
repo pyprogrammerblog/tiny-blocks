@@ -1,6 +1,5 @@
 import logging
 
-import numpy
 import pandas as pd
 from typing import Literal, Iterator, Dict
 from tiny_blocks.etl.transform.base import (
@@ -27,12 +26,9 @@ class Astype(TransformBase):
     Astype Block
     """
 
-    name: Literal["astype"]
-    dtype: Dict[str, numpy.dtype]
-    kwargs: KwargsAstype
-
-    class Config:
-        arbitrary_types_allowed = True
+    name: Literal["astype"] = "astype"
+    dtype: Dict[str, str]
+    kwargs: KwargsAstype = KwargsAstype()
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
