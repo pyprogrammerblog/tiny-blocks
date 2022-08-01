@@ -30,6 +30,7 @@ class LoadSQL(LoadBase):
     name: Literal["to_sql"] = "to_sql"
     kwargs: KwargsLoadSQL
     sink: SQLSink
+    table_name: str = Field(..., description="Table name")
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
@@ -38,5 +39,6 @@ class LoadSQL(LoadBase):
         Exhaust the generator writing chucks to the Database
         """
         with self.sink.connect() as conn:
+            kwargs = self.kwargs.to_dict()
             for chunk in generator:
-                chunk.to_sql(con=conn, **self.kwargs.to_dict())
+                chunk.to_sql(name=self.table_name, con=conn, **kwargs)

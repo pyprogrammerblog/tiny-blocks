@@ -9,7 +9,7 @@ from tiny_blocks.etl.transform.base import (
 )
 
 
-__all__ = ["MergeBlock"]
+__all__ = ["KwargsMerge", "MergeBlock"]
 
 logger = logging.getLogger(__name__)
 

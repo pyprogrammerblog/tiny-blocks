@@ -9,7 +9,7 @@ from tiny_blocks.etl.transform.base import (
 )
 
 
-__all__ = ["FillnaBlock", "KwargsFillNa"]
+__all__ = ["Fillna", "KwargsFillNa"]
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class KwargsFillNa(KwargsTransformBase):
     axis: int = None
 
 
-class FillnaBlock(TransformBase):
+class Fillna(TransformBase):
     """
     Fillna Block
     """

@@ -5,10 +5,10 @@ from tiny_blocks.etl.extract.from_sql_table import (
 )
 
 
-def test_extract_from_sql(sql_source):
+def test_extract_from_sql(sqlite_source):
 
     kwargs = KwargsExtractSQLTable(table_name="TEST")
-    read_sql_table = ExtractSQLTable(source=sql_source, kwargs=kwargs)
+    read_sql_table = ExtractSQLTable(source=sqlite_source, kwargs=kwargs)
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate

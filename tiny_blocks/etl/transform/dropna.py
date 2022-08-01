@@ -8,7 +8,7 @@ from tiny_blocks.etl.transform.base import (
 )
 
 
-__all__ = ["KwargsDropNa"]
+__all__ = ["DropNa", "KwargsDropNa"]
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class KwargsDropNa(KwargsTransformBase):
     ignore_index: bool = None
 
 
-class DropNaBlock(TransformBase):
+class DropNa(TransformBase):
     """
     Operator DropNa
     """

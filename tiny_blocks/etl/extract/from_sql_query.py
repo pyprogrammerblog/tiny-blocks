@@ -20,7 +20,6 @@ class KwargsExtractSQLQuery(KwargsExtractBase):
     Kwargs for ReadSQL
     """
 
-    sql: str
     index_col: str | List[str] = None
     coerce_float: bool = True
     columns: List[str] = None
@@ -33,8 +32,9 @@ class ExtractSQLQuery(ExtractBase):
     """
 
     name: Literal["read_sql"] = "read_sql"
-    kwargs: KwargsExtractSQLQuery
     source: SQLSource = Field(..., description="Source Data")
+    sql: str = Field(..., description="SQL Query")
+    kwargs: KwargsExtractSQLQuery = KwargsExtractSQLQuery()
 
     @check_types
     def get_iter(self) -> Iterator[pd.DataFrame]:
@@ -42,5 +42,6 @@ class ExtractSQLQuery(ExtractBase):
         Read SQL
         """
         with self.source.connect() as conn:
-            for chunk in pd.read_sql_query(con=conn, **self.kwargs.to_dict()):
+            kwargs = self.kwargs.to_dict()
+            for chunk in pd.read_sql_query(sql=self.sql, con=conn, **kwargs):
                 yield chunk

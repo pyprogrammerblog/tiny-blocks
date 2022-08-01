@@ -8,7 +8,7 @@ from tiny_blocks.etl.transform.base import (
     TransformBase,
 )
 
-__all__ = ["DropDuplicatesBlock", "KwargsDropDuplicates"]
+__all__ = ["DropDuplicates", "KwargsDropDuplicates"]
 
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class KwargsDropDuplicates(KwargsTransformBase):
     subset: Set[str] = None
 
 
-class DropDuplicatesBlock(TransformBase):
+class DropDuplicates(TransformBase):
     """
     Operator DropDuplicatesBlock
     """

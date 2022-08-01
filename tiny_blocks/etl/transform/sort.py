@@ -8,13 +8,13 @@ from tiny_blocks.etl.transform.base import (
     TransformBase,
 )
 
-__all__ = ["DropDuplicatesBlock", "KwargsDropDuplicates"]
+__all__ = ["KwargsSort", "Sort"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsDropDuplicates(KwargsTransformBase):
+class KwargsSort(KwargsTransformBase):
     """
     Kwargs for DropDuplicatesBlock
     """
@@ -23,13 +23,13 @@ class KwargsDropDuplicates(KwargsTransformBase):
     subset: Set[str] = {}
 
 
-class DropDuplicatesBlock(TransformBase):
+class Sort(TransformBase):
     """
     Operator DropDuplicatesBlock
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
-    kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
+    kwargs: KwargsSort = KwargsSort()
 
     def process(
         self, generator: Iterator[pd.DataFrame]

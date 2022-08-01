@@ -29,7 +29,7 @@ def csv_sink():
 
 
 @pytest.fixture
-def sql_source():
+def sqlite_source():
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
@@ -38,13 +38,57 @@ def sql_source():
     ) as con:
         data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, 9]}
         pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
-        yield SQLSource(conn_string=f"sqlite:///{file.name}")
+        yield SQLSource(connection_string=f"sqlite:///{file.name}")
 
 
 @pytest.fixture
-def sql_sink():
+def sqlite_sink():
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
     with tempfile.NamedTemporaryFile(suffix=".db") as file:
-        yield SQLSink(conn_string=f"sqlite:///{file.name}")
+        yield SQLSink(connection_string=f"sqlite:///{file.name}")
+
+
+@pytest.fixture
+def sql_postgres_source():
+    """
+    Yield a SQL Source with a connection string to an existing Table DB
+    """
+    with tempfile.NamedTemporaryFile(suffix=".db") as file, sqlite3.connect(
+        file.name
+    ) as con:
+        data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, 9]}
+        pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
+        yield SQLSource(connection_string=f"sqlite:///{file.name}")
+
+
+@pytest.fixture
+def sql_postgres_sink():
+    """
+    Yield a SQL Sink with a connection string to an existing Table DB
+    """
+    with tempfile.NamedTemporaryFile(suffix=".db") as file:
+        yield SQLSink(connection_string=f"sqlite:///{file.name}")
+
+
+@pytest.fixture
+def sql_mysql_source():
+    """
+    Yield a SQL Source with a connection string to an existing Table DB
+    """
+    with tempfile.NamedTemporaryFile(suffix=".db") as file, sqlite3.connect(
+        file.name
+    ) as con:
+        data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, 9]}
+        pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
+        yield SQLSource(connection_string=f"sqlite:///{file.name}")
+
+
+@pytest.fixture
+def sql_mysql_sink():
+    """
+    Yield a SQL Sink with a connection string to an existing Table DB
+    """
+    with tempfile.NamedTemporaryFile(suffix=".db") as file:
+        yield SQLSink(connection_string=f"sqlite:///{file.name}")

@@ -7,13 +7,13 @@ from tiny_blocks.etl.transform.base import (
 )
 
 
-__all__ = ["RenameBlock", "KwargsRenameBlock"]
+__all__ = ["Rename", "KwargsRename"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsRenameBlock(KwargsTransformBase):
+class KwargsRename(KwargsTransformBase):
     """
     Kwargs for FillNa Block
     """
@@ -21,13 +21,13 @@ class KwargsRenameBlock(KwargsTransformBase):
     pass
 
 
-class RenameBlock(TransformBase):
+class Rename(TransformBase):
     """
     Rename Block
     """
 
     name: Literal["rename"] = "rename"
-    kwargs: KwargsRenameBlock = KwargsRenameBlock()
+    kwargs: KwargsRename = KwargsRename()
 
     def process(
         self, generator: Iterator[pd.DataFrame]
