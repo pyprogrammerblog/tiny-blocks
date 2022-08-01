@@ -57,5 +57,3 @@ class DropDuplicates(TransformBase):
             chunk = self.kwargs.chunksize
             for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
                 yield chunk
-
-        con.close()
