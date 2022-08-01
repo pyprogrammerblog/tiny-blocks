@@ -13,4 +13,4 @@ def test_csv_load_into_sink(csv_source, csv_sink):
     load_into_csv.exhaust(generator=generator)
 
     df = pd.read_csv(csv_source.path, sep="|")
-    assert df.shape == (3, 3)
+    assert df.shape == (4, 3)

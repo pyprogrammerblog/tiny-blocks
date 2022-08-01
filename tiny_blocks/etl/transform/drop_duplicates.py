@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
-from sqlite3 import connect
-from tempfile import TemporaryFile
+import sqlite3
+import tempfile
 from typing import Literal, Iterator, Set
 from tiny_blocks.etl.transform.base import (
     KwargsTransformBase,
@@ -31,28 +31,27 @@ class DropDuplicates(TransformBase):
     name: Literal["drop_duplicates"] = "drop_duplicates"
     kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
 
-    def process(
+    def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Drop Duplicates
         """
-        with TemporaryFile(suffix=".sqlite") as file, connect(file) as con:
+        with tempfile.NamedTemporaryFile(
+            suffix=".sqlite"
+        ) as file, sqlite3.connect(file.name) as con:
 
             # send records to a temp database (exhaust the generator)
             for chunk in generator:
-                chunk.to_sql(name="TEMP_TABLE", con=con)
+                chunk.to_sql(name="temp", con=con, index=False)
 
             # select non-duplicated rows. It is also possible to select
             # a non-duplicated subset of rows.
-            sql = (
-                f"SELECT * FROM temp "
-                f"WHERE rowid not in "
-                f"(SELECT MIN(rowid) from TEMP_TABLE "
-                f"GROUP BY {'*' or self.kwargs.subset})"
-            )
+            sql = f"SELECT DISTINCT {'*' or self.kwargs.subset} FROM temp"
 
             # yield records now without duplicates
             chunk = self.kwargs.chunksize
             for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
                 yield chunk
+
+        con.close()

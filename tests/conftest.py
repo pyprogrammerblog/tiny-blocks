@@ -18,7 +18,7 @@ def csv_source():
     Yield a CSV Source with a path to an existing CSV file
     """
     with tempfile.NamedTemporaryFile(suffix=".csv") as file:
-        data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
+        data = {"a": [1, 2, 3, 3], "b": [4, 5, 6, 6], "c": [7, 8, 9, 9]}
         pd.DataFrame(data=data).to_csv(file.name, sep="|", index=False)
         yield CSVSource(path=file.name)
 
