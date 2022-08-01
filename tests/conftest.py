@@ -56,7 +56,7 @@ def sqlite_sink():
 
 @pytest.fixture(scope="function")
 def postgres_uri():
-    uri = "psycopg2+postgres://user:pass@postgres:5432/db?charset=utf8mb4"
+    uri = "postgres+psycopg2://user:pass@postgres:5432/db?charset=utf8mb4"
     yield uri
 
 
