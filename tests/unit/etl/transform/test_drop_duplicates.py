@@ -9,7 +9,7 @@ from tiny_blocks.etl.extract.from_csv import ExtractCSV
 
 @pytest.mark.parametrize(
     "subset,expected",
-    [({"a"}, (3, 3)), ({"a", "b"}, (3, 3)), ({"a", "b", "c"}, (3, 3))],
+    [({"a"}, (2, 3)), ({"a", "b"}, (1, 3)), ({"a", "b", "c"}, (1, 3))],
 )
 def test_drop_duplicates(csv_source, subset, expected):
 
@@ -23,3 +23,16 @@ def test_drop_duplicates(csv_source, subset, expected):
     # exhaust the generator and assert data
     df = pd.concat(generator)
     assert df.shape == expected
+
+
+def test_drop_duplicates_no_subset(csv_source):
+
+    extract_csv = ExtractCSV(source=csv_source)
+    drop_duplicates = DropDuplicates()
+
+    generator = extract_csv.get_iter()
+    generator = drop_duplicates.get_iter(generator=generator)
+
+    # exhaust the generator and assert data
+    df = pd.concat(generator)
+    assert df.shape == (3, 3)
