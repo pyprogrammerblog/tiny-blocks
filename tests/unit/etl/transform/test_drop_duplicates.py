@@ -8,7 +8,8 @@ from tiny_blocks.etl.extract.from_csv import ExtractCSV
 
 
 @pytest.mark.parametrize(
-    "subset,expected", [(None, (3, 3)), ({"a"}, (3, 3)), ({"a", "b"}, (3, 3))]
+    "subset,expected",
+    [({"a"}, (3, 3)), ({"a", "b"}, (3, 3)), ({"a", "b", "c"}, (3, 3))],
 )
 def test_drop_duplicates(csv_source, subset, expected):
 
