@@ -18,7 +18,7 @@ class SQLSource(BaseSource):
     def connect(self):
         engine = create_engine(self.connection_string)
         conn = engine.connect()
-        conn.execution_options(stream_results=True)
+        conn.execution_options(stream_results=True, autocommit=True)
         try:
             yield conn
         finally:

@@ -56,14 +56,15 @@ def sqlite_sink():
 
 @pytest.fixture(scope="function")
 def postgres_uri():
-    uri = "postgresql+psycopg2://user:pass@postgres:5432/db?charset=utf8mb4"
+    uri = "postgresql+psycopg2://user:pass@postgresdb:5432/db"
     yield uri
 
 
 @pytest.fixture(scope="function")
 def postgres_db(postgres_uri):
-    if not database_exists(postgres_uri):
-        create_database(postgres_uri)
+    if database_exists(postgres_uri):
+        drop_database(postgres_uri)
+    create_database(postgres_uri)
     yield
     drop_database(postgres_uri)
 
@@ -72,7 +73,7 @@ def postgres_db(postgres_uri):
 def postgres_conn(postgres_db, postgres_uri):
     engine = create_engine(postgres_uri)
     conn = engine.connect()
-    conn.execution_options(stream_results=True)
+    conn.execution_options(stream_results=True, autocommit=True)
     try:
         yield conn
     finally:
@@ -86,7 +87,7 @@ def postgres_source(postgres_db, postgres_conn, postgres_uri):
     Yield a SQL Source with a connection string to an existing Table DB
     """
     data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, None]}
-    pd.DataFrame(data=data).to_sql(name="TEST", con=postgres_conn, index=False)
+    pd.DataFrame(data=data).to_sql(name="test", con=postgres_conn, index=False)
     yield SQLSource(connection_string=postgres_uri)
 
 
@@ -106,8 +107,9 @@ def mysql_uri():
 
 @pytest.fixture(scope="function")
 def mysql_db(mysql_uri):
-    if not database_exists(mysql_uri):
-        create_database(mysql_uri)
+    if database_exists(mysql_uri):
+        drop_database(mysql_uri)
+    create_database(mysql_uri)
     yield
     drop_database(mysql_uri)
 
@@ -116,7 +118,7 @@ def mysql_db(mysql_uri):
 def mysql_conn(mysql_db, mysql_uri):
     engine = create_engine(mysql_uri)
     conn = engine.connect()
-    conn.execution_options(stream_results=True)
+    conn.execution_options(stream_results=True, autocommit=True)
     try:
         yield conn
     finally:
@@ -130,7 +132,7 @@ def mysql_source(mysql_db, mysql_conn, mysql_uri):
     Yield a SQL Source with a connection string to an existing Table DB
     """
     data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, None]}
-    pd.DataFrame(data=data).to_sql(name="TEST", con=mysql_conn, index=False)
+    pd.DataFrame(data=data).to_sql(name="test", con=mysql_conn, index=False)
     yield SQLSource(connection_string=mysql_uri)
 
 

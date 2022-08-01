@@ -12,7 +12,7 @@ services:
     ports:
       - '3306:3306'
 
-  postgres:
+  postgresdb:
     image: postgres:latest
     environment:
       POSTGRES_DB: 'db'
@@ -26,6 +26,9 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: app
+    depends_on:
+      - postgresdb
+      - mysqldb
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1

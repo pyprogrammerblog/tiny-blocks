@@ -21,7 +21,7 @@ class SQLSink(BaseSink):
     def connect(self):
         engine = create_engine(self.connection_string, echo="debug")
         conn = engine.connect()
-        conn.execution_options(stream_results=True)
+        conn.execution_options(stream_results=True, autocommit=True)
         try:
             yield conn
         finally:
