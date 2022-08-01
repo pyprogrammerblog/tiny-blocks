@@ -1,14 +1,10 @@
 import pandas as pd
-from tiny_blocks.etl.extract.from_sql_table import (
-    ExtractSQLTable,
-    KwargsExtractSQLTable,
-)
+from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
 
 
 def test_extract_from_sql(sqlite_source):
 
-    kwargs = KwargsExtractSQLTable(table_name="TEST")
-    read_sql_table = ExtractSQLTable(source=sqlite_source, kwargs=kwargs)
+    read_sql_table = ExtractSQLTable(source=sqlite_source, table_name="TEST")
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate
