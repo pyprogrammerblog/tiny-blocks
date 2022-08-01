@@ -43,13 +43,13 @@ class DropDuplicates(TransformBase):
 
             # send records to a temp database (exhaust the generator)
             for chunk in generator:
-                chunk.to_sql(name="temp", con=con, index=False)
+                chunk.to_sql(name="temp_table", con=con, index=False)
 
             # select non-duplicated rows. It is also possible to select
             # a non-duplicated subset of rows.
             sql = (
                 f"SELECT DISTINCT {'*' or ', '.join(self.kwargs.subset)} "
-                f"FROM temp"
+                f"FROM temp_table"
             )
 
             # yield records now without duplicates
