@@ -51,7 +51,7 @@ class DropDuplicates(TransformBase):
                 f"SELECT * FROM temp "
                 f"WHERE rowid not in "
                 f"(SELECT MIN(rowid) from temp "
-                f"GROUP BY {', '.join(self.kwargs.subset) or ''*''})"
+                f'GROUP BY {", ".join(self.kwargs.subset) or ""*""})'
             )
 
             # yield records now without duplicates
