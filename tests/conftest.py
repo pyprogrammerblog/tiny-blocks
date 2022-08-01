@@ -7,9 +7,12 @@ from tiny_blocks.sources.csv import CSVSource
 from tiny_blocks.sources.sql import SQLSource
 from tiny_blocks.sinks.csv import CSVSink
 from tiny_blocks.sinks.sql import SQLSink
+from sqlalchemy_utils import create_database
+from sqlalchemy_utils import database_exists
+from sqlalchemy_utils import drop_database
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def csv_source():
     """
     Yield a CSV Source with a path to an existing CSV file
@@ -20,7 +23,7 @@ def csv_source():
         yield CSVSource(path=file.name)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def csv_sink():
     """
     Yield a CSV Sink with a path to an existing CSV file
@@ -29,7 +32,7 @@ def csv_sink():
         yield CSVSink(path=file.name)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def sqlite_source():
     """
     Yield a SQL Source with a connection string to an existing Table DB
@@ -42,7 +45,7 @@ def sqlite_source():
         yield SQLSource(connection_string=f"sqlite:///{file.name}")
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def sqlite_sink():
     """
     Yield a SQL Sink with a connection string to an existing Table DB
@@ -51,14 +54,22 @@ def sqlite_sink():
         yield SQLSink(connection_string=f"sqlite:///{file.name}")
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def postgres_uri():
     uri = "psycopg2+postgres://user:pass@postgres:5432/db?charset=utf8mb4"
     yield uri
 
 
-@pytest.fixture
-def postgres_conn(postgres_uri):
+@pytest.fixture(scope="function")
+def postgres_db(postgres_uri):
+    if not database_exists(postgres_uri):
+        create_database(postgres_uri)
+    yield
+    drop_database(postgres_uri)
+
+
+@pytest.fixture(scope="function")
+def postgres_conn(postgres_db, postgres_uri):
     engine = create_engine(postgres_uri)
     conn = engine.connect()
     conn.execution_options(stream_results=True)
@@ -69,8 +80,8 @@ def postgres_conn(postgres_uri):
         engine.dispose()
 
 
-@pytest.fixture
-def postgres_source(postgres_conn, postgres_uri):
+@pytest.fixture(scope="function")
+def postgres_source(postgres_db, postgres_conn, postgres_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
@@ -79,22 +90,30 @@ def postgres_source(postgres_conn, postgres_uri):
     yield SQLSource(connection_string=postgres_uri)
 
 
-@pytest.fixture
-def postgres_sink(postgres_uri):
+@pytest.fixture(scope="function")
+def postgres_sink(postgres_db, postgres_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
     yield SQLSink(connection_string=postgres_uri)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def mysql_uri():
     uri = "mysql+pymysql://user:pass@mysqldb:3306/db?charset=utf8mb4"
     yield uri
 
 
-@pytest.fixture
-def mysql_conn(mysql_uri):
+@pytest.fixture(scope="function")
+def mysql_db(mysql_uri):
+    if not database_exists(mysql_uri):
+        create_database(mysql_uri)
+    yield
+    drop_database(mysql_uri)
+
+
+@pytest.fixture(scope="function")
+def mysql_conn(mysql_db, mysql_uri):
     engine = create_engine(mysql_uri)
     conn = engine.connect()
     conn.execution_options(stream_results=True)
@@ -105,8 +124,8 @@ def mysql_conn(mysql_uri):
         engine.dispose()
 
 
-@pytest.fixture
-def mysql_source(mysql_conn, mysql_uri):
+@pytest.fixture(scope="function")
+def mysql_source(mysql_db, mysql_conn, mysql_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
@@ -115,8 +134,8 @@ def mysql_source(mysql_conn, mysql_uri):
     yield SQLSource(connection_string=mysql_uri)
 
 
-@pytest.fixture
-def mysql_sink(mysql_uri):
+@pytest.fixture(scope="function")
+def mysql_sink(mysql_db, mysql_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
