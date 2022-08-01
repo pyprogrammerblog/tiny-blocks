@@ -47,9 +47,11 @@ class DropDuplicates(TransformBase):
 
             # select non-duplicated rows. It is also possible to select
             # a non-duplicated subset of rows.
-            sql = f"""SELECT * FROM temp WHERE rowid not in
+            sql = f"""
+            SELECT * FROM temp WHERE rowid not in
             (SELECT MIN(rowid) from temp
-            GROUP BY {", ".join(self.kwargs.subset) or "'*'"})"""
+            GROUP BY {", ".join(self.kwargs.subset) or "'*'"})
+            """
 
             # yield records now without duplicates
             chunk = self.kwargs.chunksize
