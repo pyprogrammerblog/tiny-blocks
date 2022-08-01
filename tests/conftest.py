@@ -70,7 +70,7 @@ def postgres_conn(postgres_uri):
 
 
 @pytest.fixture
-def sql_postgres_source(postgres_conn, postgres_uri):
+def postgres_source(postgres_conn, postgres_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
@@ -80,7 +80,7 @@ def sql_postgres_source(postgres_conn, postgres_uri):
 
 
 @pytest.fixture
-def sql_postgres_sink(postgres_uri):
+def postgres_sink(postgres_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
@@ -106,7 +106,7 @@ def mysql_conn(mysql_uri):
 
 
 @pytest.fixture
-def sql_mysql_source(mysql_conn, mysql_uri):
+def mysql_source(mysql_conn, mysql_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
@@ -116,7 +116,7 @@ def sql_mysql_source(mysql_conn, mysql_uri):
 
 
 @pytest.fixture
-def sql_mysql_sink(mysql_uri):
+def mysql_sink(mysql_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """

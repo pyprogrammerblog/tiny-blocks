@@ -18,7 +18,7 @@ class KwargsLoadSQL(KwargsLoadBase):
 
     chunksize: int = 1000
     index: bool = False
-    if_exists: Literal["fail", "replace", "append"] = "replace"
+    if_exists: Literal["fail", "replace", "append"] = "append"
 
 
 class LoadSQL(LoadBase):
