@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class KwargsDropDuplicates(KwargsTransformBase):
     """
-    Kwargs for DropDuplicatesBlock
+    Kwargs for DropDuplicates
     """
 
     chunksize: int = 1000
@@ -25,7 +25,7 @@ class KwargsDropDuplicates(KwargsTransformBase):
 
 class DropDuplicates(TransformBase):
     """
-    Operator DropDuplicatesBlock
+    DropDuplicates
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"

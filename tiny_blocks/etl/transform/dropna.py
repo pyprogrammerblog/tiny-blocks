@@ -28,9 +28,9 @@ class DropNa(TransformBase):
     """
 
     name: Literal["drop_na"] = "drop_na"
-    kwargs: KwargsDropNa
+    kwargs: KwargsDropNa = KwargsDropNa()
 
-    def process(
+    def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
