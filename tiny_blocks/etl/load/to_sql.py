@@ -37,5 +37,6 @@ class LoadSQL(LoadBase):
 
         Exhaust the generator writing chucks to the Database
         """
-        for chunk in generator:
-            chunk.to_sql(con=self.sink.conn_string, **self.kwargs.to_dict())
+        with self.sink.connect() as conn:
+            for chunk in generator:
+                chunk.to_sql(con=conn, **self.kwargs.to_dict())

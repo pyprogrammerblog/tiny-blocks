@@ -20,7 +20,7 @@ class KwargsDropDuplicates(KwargsTransformBase):
     """
 
     chunksize: int = 1000
-    subset: Set[str] = {}
+    subset: Set[str] = None
 
 
 class DropDuplicatesBlock(TransformBase):

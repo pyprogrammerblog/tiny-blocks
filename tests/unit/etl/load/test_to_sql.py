@@ -17,5 +17,5 @@ def test_sql_load_into_sink(sql_source, sql_sink):
     load_to_sql = LoadSQL(sink=sql_sink, kwargs=load_kwargs)
     load_to_sql.exhaust(generator=generator)
 
-    df = pd.read_sql_table(table_name="TEST", con=sql_sink.conn_string)
+    df = pd.read_sql_table(table_name="TEST", con=sql_sink.connection_string)
     assert df.shape == (3, 3)
