@@ -5,7 +5,7 @@ from tiny_blocks.transform.fillna import Fillna
 
 def test_fillna(sqlite_source, sqlite_sink):
 
-    extract_sql = ExtractSQLTable(source=sqlite_source, table_name="test")
+    extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
     fill_na = Fillna(value="Hola Mundo")
 
     generator = extract_sql.get_iter()

@@ -5,7 +5,7 @@ from tiny_blocks.transform.dropna import DropNa
 
 def test_drop_na(sqlite_source, sqlite_sink):
 
-    extract_sql = ExtractSQLTable(source=sqlite_source, table_name="test")
+    extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
     drop_na = DropNa()
 
     generator = extract_sql.get_iter()

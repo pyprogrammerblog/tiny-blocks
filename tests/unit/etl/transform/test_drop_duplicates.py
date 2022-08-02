@@ -13,7 +13,7 @@ from tiny_blocks.transform.drop_duplicates import (
 )
 def test_drop_duplicates(csv_source, subset, expected):
 
-    extract_csv = ExtractCSV(source=csv_source)
+    extract_csv = ExtractCSV(path=csv_source)
     kwargs = KwargsDropDuplicates(subset=subset)
     drop_duplicates = DropDuplicates(kwargs=kwargs)
 
@@ -27,7 +27,7 @@ def test_drop_duplicates(csv_source, subset, expected):
 
 def test_drop_duplicates_no_subset(csv_source):
 
-    extract_csv = ExtractCSV(source=csv_source)
+    extract_csv = ExtractCSV(path=csv_source)
     drop_duplicates = DropDuplicates()
 
     generator = extract_csv.get_iter()

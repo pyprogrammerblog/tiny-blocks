@@ -5,7 +5,7 @@ from tiny_blocks.transform.astype import Astype
 
 def test_astype(sqlite_source, sqlite_sink):
 
-    extract_sql = ExtractSQLTable(source=sqlite_source, table_name="test")
+    extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
     as_type = Astype(dtype={"e": "float32"})
 
     generator = extract_sql.get_iter()
