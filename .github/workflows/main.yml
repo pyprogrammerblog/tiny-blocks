@@ -28,3 +28,6 @@ jobs:
 
       - name: Flake8
         run: if docker-compose run --rm app poetry run flake8 tiny_blocks > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi
+
+      - name: Remove Services
+        run: docker-compose down

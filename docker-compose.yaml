@@ -1,7 +1,7 @@
 version: '3.3'
 services:
 
-  mysqldb:
+  mysql:
     image: mysql:latest
     command: mysqld --sql_mode=""
     environment:
@@ -12,7 +12,7 @@ services:
     ports:
       - '3306:3306'
 
-  postgresdb:
+  postgres:
     image: postgres:latest
     environment:
       POSTGRES_DB: 'db'
@@ -21,14 +21,23 @@ services:
     ports:
       - '5432:5432'
 
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: "access_key"
+      MINIO_SECRET_KEY: "secret_key"
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: app
     depends_on:
-      - postgresdb
-      - mysqldb
+      - postgres
+      - mysql
+      - minio
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1

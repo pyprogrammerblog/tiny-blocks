@@ -3,6 +3,18 @@
 
 Tiny Blocks to build large and complex pipelines!
 
+This module defines a library for streaming operations, composed using the `>>`
+operator. This allows for easy to read and write shell-like pipelines.
+
+### Pipeline Components: Sources, Pipes, and Sinks
+This library relies on a fundamental streaming abstraction consisting of three
+parts: sources, pipes, and sinks. You can view a pipeline as a source, followed
+by zero or more pipes, followed by a sink. Visually, this looks like:
+
+```python
+    source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
+```
+
 Installation
 -------------
 
@@ -16,28 +28,16 @@ Basic usage example
 --------------------
 
 ```python
-from pathlib import Path
-from tiny_blocks.etl.extract.from_csv import ExtractCSV
-from tiny_blocks.etl.load.to_sql import LoadSQL
-from tiny_blocks.etl.transform.drop_duplicates import DropDuplicates
-from tiny_blocks.etl.transform.fillna import Fillna
-
-from tiny_blocks.sources.csv import CSVSource
-from tiny_blocks.sinks.sql import SQLSink
-
-# settings
-conn_string = 'psycopg2+postgres://user:pass@localhost:5432/foobar'
-csv_path = Path('/path/to/file.csv')
-
-# Source and Sink
-source = CSVSource(path=csv_path)
-sink = SQLSink(connection_string=conn_string)
+from tiny_blocks.extract import ExtractCSV
+from tiny_blocks.transform import DropDuplicates
+from tiny_blocks.transform import Fillna
+from tiny_blocks.load import LoadSQL
 
 # ETL Blocks
-extract_from_csv = ExtractCSV(source=source)
+extract_from_csv = ExtractCSV(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+load_to_sql = LoadSQL(path='/path/to/file.csv')
 drop_duplicates = DropDuplicates()
 fill_na = Fillna()
-load_to_sql = LoadSQL(sink=sink)
 
 # Pipeline
 extract_from_csv >> drop_duplicates >> fill_na >> load_to_sql
