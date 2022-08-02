@@ -8,10 +8,10 @@ from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["ExtractCSV", "KwargsExtractCSV"]
+__all__ = ["ExtractStorage", "KwargsExtractStorage"]
 
 
-class KwargsExtractCSV(KwargsExtractBase):
+class KwargsExtractStorage(KwargsExtractBase):
     """
     Kwargs for ReadCSV
     """
@@ -22,14 +22,14 @@ class KwargsExtractCSV(KwargsExtractBase):
     storage_options: Dict[str, Any] = None
 
 
-class ExtractCSV(ExtractBase):
+class ExtractStorage(ExtractBase):
     """
     ReadCSV Block
     """
 
     name: Literal["read_csv"] = "read_csv"
     path: AnyUrl = Field(..., description="Destination path")
-    kwargs: KwargsExtractCSV = KwargsExtractCSV()
+    kwargs: KwargsExtractStorage = KwargsExtractStorage()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
