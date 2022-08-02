@@ -1,11 +1,9 @@
 import logging
+from typing import Iterator, List, Literal, Union
+
 import pandas as pd
-from typing import List, Literal, Union, Iterator
 from pydantic import Field, FilePath
-from tiny_blocks.extract.base import (
-    KwargsExtractBase,
-    ExtractBase,
-)
+from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
 logger = logging.getLogger(__name__)
 

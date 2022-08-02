@@ -1,9 +1,10 @@
 import logging
-import pandas as pd
-from typing import Literal, Iterator
-from pydantic import Field
 from pathlib import Path
-from tiny_blocks.load.base import LoadBase, KwargsLoadBase
+from typing import Iterator, Literal
+
+import pandas as pd
+from pydantic import Field
+from tiny_blocks.load.base import KwargsLoadBase, LoadBase
 
 __all__ = ["LoadCSV", "KwargsLoadCSV"]
 

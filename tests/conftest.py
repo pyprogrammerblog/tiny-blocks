@@ -1,11 +1,10 @@
-import pytest
-import pandas as pd
 import sqlite3
 import tempfile
+
+import pandas as pd
+import pytest
 from sqlalchemy import create_engine
-from sqlalchemy_utils import create_database
-from sqlalchemy_utils import database_exists
-from sqlalchemy_utils import drop_database
+from sqlalchemy_utils import create_database, database_exists, drop_database
 
 
 @pytest.fixture(scope="function")

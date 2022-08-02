@@ -1,10 +1,9 @@
 import pandas as pd
-
 from tiny_blocks.etl.extract.from_csv import ExtractCSV
 from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
-from tiny_blocks.etl.transform.merge import MergeBlock
-from tiny_blocks.etl.transform.fillna import Fillna
 from tiny_blocks.etl.load.to_csv import LoadCSV
+from tiny_blocks.etl.transform.fillna import Fillna
+from tiny_blocks.etl.transform.merge import MergeBlock
 
 
 def test_basic_flow(sqlite_source, csv_source):

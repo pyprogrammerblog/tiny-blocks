@@ -1,5 +1,5 @@
 import pandas as pd
-from tiny_blocks.etl.extract.from_sql_query import ExtractSQLQuery
+from tiny_blocks.extract.from_sql_query import ExtractSQLQuery
 
 
 def test_extract_from_sqlite(sqlite_source):

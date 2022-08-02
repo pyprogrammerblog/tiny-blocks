@@ -1,7 +1,6 @@
 import pandas as pd
-
-from tiny_blocks.etl.transform.rename import Rename
-from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.transform.rename import Rename
 
 
 def test_rename(sqlite_source, sqlite_sink):

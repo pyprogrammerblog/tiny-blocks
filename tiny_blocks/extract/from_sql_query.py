@@ -1,14 +1,12 @@
 import logging
-from typing import List, Literal, Iterator
-from pydantic import Field
-from sqlalchemy.engine import Connection
 from contextlib import contextmanager
-from sqlalchemy import create_engine
+from typing import Iterator, List, Literal
+
 import pandas as pd
-from tiny_blocks.extract.base import (
-    KwargsExtractBase,
-    ExtractBase,
-)
+from pydantic import Field
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Connection
+from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
 __all__ = ["ExtractSQLQuery", "KwargsExtractSQLQuery"]
 

@@ -2,10 +2,7 @@ import logging
 from typing import Literal
 
 import pandas as pd
-from tiny_blocks.transform.base import (
-    KwargsTransformBase,
-    TransformBase,
-)
+from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
 __all__ = ["ApplyBlock"]
 

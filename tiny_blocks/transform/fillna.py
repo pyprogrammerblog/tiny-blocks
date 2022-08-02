@@ -1,12 +1,8 @@
 import logging
+from typing import Iterator, Literal, Union
+
 import pandas as pd
-
-from typing import Literal, Union, Iterator
-from tiny_blocks.transform.base import (
-    KwargsTransformBase,
-    TransformBase,
-)
-
+from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
 __all__ = ["Fillna", "KwargsFillNa"]
 

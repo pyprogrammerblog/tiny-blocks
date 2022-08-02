@@ -1,11 +1,12 @@
 import logging
+from contextlib import contextmanager
+from typing import Iterator, Literal
+
 import pandas as pd
 from pydantic import Field
-from typing import Literal, Iterator
-from sqlalchemy.engine import Connection
-from contextlib import contextmanager
 from sqlalchemy import create_engine
-from tiny_blocks.load.base import LoadBase, KwargsLoadBase
+from sqlalchemy.engine import Connection
+from tiny_blocks.load.base import KwargsLoadBase, LoadBase
 
 __all__ = ["LoadSQL", "KwargsLoadSQL"]
 

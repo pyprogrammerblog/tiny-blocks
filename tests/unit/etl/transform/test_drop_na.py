@@ -1,7 +1,6 @@
 import pandas as pd
-
-from tiny_blocks.etl.transform.dropna import DropNa
-from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.transform.dropna import DropNa
 
 
 def test_drop_na(sqlite_source, sqlite_sink):

@@ -1,7 +1,6 @@
 import pandas as pd
-
-from tiny_blocks.etl.transform.astype import Astype
-from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.transform.astype import Astype
 
 
 def test_astype(sqlite_source, sqlite_sink):

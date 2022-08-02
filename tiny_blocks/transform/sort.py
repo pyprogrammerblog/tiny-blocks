@@ -1,12 +1,10 @@
 import logging
-import pandas as pd
 from sqlite3 import connect
 from tempfile import TemporaryFile
-from typing import Literal, Iterator, Set
-from tiny_blocks.transform.base import (
-    KwargsTransformBase,
-    TransformBase,
-)
+from typing import Iterator, Literal, Set
+
+import pandas as pd
+from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
 __all__ = ["KwargsSort", "Sort"]
 

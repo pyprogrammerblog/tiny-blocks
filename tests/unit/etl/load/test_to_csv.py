@@ -1,7 +1,6 @@
 import pandas as pd
-
-from tiny_blocks.etl.load.to_csv import LoadCSV
-from tiny_blocks.etl.extract.from_csv import ExtractCSV
+from tiny_blocks.extract.from_csv import ExtractCSV
+from tiny_blocks.load.to_csv import LoadCSV
 
 
 def test_csv_load_into_sink(csv_source, csv_sink):

@@ -1,7 +1,7 @@
 import logging
-from uuid import UUID
-from uuid import uuid4
 from typing import Literal
+from uuid import UUID, uuid4
+
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)

@@ -1,11 +1,8 @@
 import logging
-import pandas as pd
-from typing import Literal, Iterator, Dict
-from tiny_blocks.transform.base import (
-    KwargsTransformBase,
-    TransformBase,
-)
+from typing import Dict, Iterator, Literal
 
+import pandas as pd
+from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
 __all__ = ["Rename", "KwargsRename"]
 

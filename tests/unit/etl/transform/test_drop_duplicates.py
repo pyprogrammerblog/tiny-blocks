@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
-from tiny_blocks.etl.transform.drop_duplicates import (
+from tiny_blocks.extract.from_csv import ExtractCSV
+from tiny_blocks.transform.drop_duplicates import (
     DropDuplicates,
     KwargsDropDuplicates,
 )
-from tiny_blocks.etl.extract.from_csv import ExtractCSV
 
 
 @pytest.mark.parametrize(

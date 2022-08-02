@@ -1,7 +1,6 @@
 import pandas as pd
-
-from tiny_blocks.etl.load.to_sql import LoadSQL
-from tiny_blocks.etl.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.load.to_sql import LoadSQL
 
 
 def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):

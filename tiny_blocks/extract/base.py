@@ -1,9 +1,9 @@
 import abc
 import logging
 from typing import Iterator
-from tiny_blocks.base import BaseBlock, KwargsBase
 
 import pandas as pd
+from tiny_blocks.base import BaseBlock, KwargsBase
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
 
