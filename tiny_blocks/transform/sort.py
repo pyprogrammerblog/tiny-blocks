@@ -1,12 +1,12 @@
 import logging
-from sqlite3 import connect
-from tempfile import TemporaryFile
-from typing import Iterator, Literal, Set
+import sqlite3
+import tempfile
+from typing import Iterator, Literal, List
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["KwargsSort", "Sort"]
+__all__ = ["Sort", "KwargsSort"]
 
 
 logger = logging.getLogger(__name__)
@@ -14,41 +14,42 @@ logger = logging.getLogger(__name__)
 
 class KwargsSort(KwargsTransformBase):
     """
-    Kwargs for DropDuplicatesBlock
+    Kwargs for DropDuplicates
     """
 
     chunksize: int = 1000
-    subset: Set[str] = {}
 
 
 class Sort(TransformBase):
     """
-    Operator DropDuplicatesBlock
+    DropDuplicates
     """
 
-    name: Literal["drop_duplicates"] = "drop_duplicates"
+    name: Literal["sort"] = "sort"
+    by: str | List[str]
+    ascending: bool = True
     kwargs: KwargsSort = KwargsSort()
 
-    def process(
+    def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Drop Duplicates
         """
-        with TemporaryFile(suffix=".sqlite") as file, connect(file) as con:
+        with tempfile.NamedTemporaryFile(
+            suffix=".sqlite"
+        ) as file, sqlite3.connect(file.name) as con:
 
             # send records to a temp database (exhaust the generator)
             for chunk in generator:
-                chunk.to_sql(name="TEMP_TABLE", con=con)
+                chunk.to_sql(name="temp", con=con, index=False)
 
-            # select non-duplicated rows.
-            # It is possible select a non-duplicated subset of rows.
-            sql = (
-                f"SELECT * FROM temp "
-                f"WHERE rowid not in "
-                f"(SELECT MIN(rowid) from TEMP_TABLE "
-                f"GROUP BY {'*' or self.kwargs.subset})"
-            )
+            # order by column(s) ascending/descending.
+            sql = f"""
+            SELECT * FROM temp
+            ORDER BY {", ".join(self.by) or "'*'"}
+            {'ASC' if self.ascending else 'DESC'}
+            """
 
             # yield records now without duplicates
             chunk = self.kwargs.chunksize

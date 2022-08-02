@@ -38,7 +38,7 @@ class EnricherAPI(TransformBase):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        enrich from API
+        Enrich from API
         """
         for chunk in generator:
             chunk[self.to_column] = chunk[self.from_column].apply(
@@ -48,7 +48,9 @@ class EnricherAPI(TransformBase):
 
     @lru_cache
     def request_api_data(self, value: str) -> str:
-
+        """
+        Request Data from an API
+        """
         retry_strategy = Retry(
             total=self.kwargs.total_retries,
             backoff_factor=self.kwargs.backoff_factor,

@@ -994,6 +994,21 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "responses"
+version = "0.21.0"
+description = "A utility library for mocking out the `requests` Python library."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+requests = ">=2.0,<3.0"
+urllib3 = ">=1.25.10"
+
+[package.extras]
+tests = ["pytest (>=7.0.0)", "coverage (>=6.0.0)", "pytest-cov", "pytest-asyncio", "pytest-localserver", "flake8", "types-mock", "types-requests", "mypy"]
+
+[[package]]
 name = "s3transfer"
 version = "0.6.0"
 description = "An Amazon S3 Transfer Manager"
@@ -1207,7 +1222,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9c347d64c20134785e412b344159d09b6a04b6978d1f6da240f5def60f93d709"
+content-hash = "a4eb6d31462964f20a7113f5120b7d90b071e61894f5569812c4e3f4118e1a5f"
 
 [metadata.files]
 appnope = []
@@ -1291,6 +1306,7 @@ pywin32 = []
 pywinpty = []
 pyzmq = []
 requests = []
+responses = []
 s3transfer = []
 send2trash = []
 six = []

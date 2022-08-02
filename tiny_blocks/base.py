@@ -40,7 +40,13 @@ class FanIn:
     def __init__(self, *generators: Iterator[pd.DataFrame]):
         self.generators = generators
 
+    def __rshift__(self, *other):
+        return other
+
 
 class FanOut:
     def __init__(self, generators: Iterator[pd.DataFrame]):
         self.generators = generators
+
+    def __rshift__(self, *other):
+        return other
