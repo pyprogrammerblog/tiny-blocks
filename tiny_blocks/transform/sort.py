@@ -26,7 +26,7 @@ class Sort(TransformBase):
     """
 
     name: Literal["sort"] = "sort"
-    by: str | List[str]
+    by: List[str]
     ascending: bool = True
     kwargs: KwargsSort = KwargsSort()
 
@@ -47,7 +47,7 @@ class Sort(TransformBase):
             # order by column(s) ascending/descending.
             sql = f"""
             SELECT * FROM temp
-            ORDER BY {", ".join(self.by) or "'*'"}
+            ORDER BY {", ".join(self.by)}
             {'ASC' if self.ascending else 'DESC'}
             """
 

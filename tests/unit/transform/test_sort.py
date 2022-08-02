@@ -1,35 +1,46 @@
-import pytest
+import tempfile
 import pandas as pd
 from tiny_blocks.extract.from_csv import ExtractCSV
-from tiny_blocks.transform.sort import Sort, KwargsSort
+from tiny_blocks.transform.sort import Sort
 
 
-@pytest.mark.parametrize(
-    "subset,expected",
-    [({"a"}, (2, 3)), ({"a", "b"}, (1, 3)), ({"a", "b", "c"}, (1, 3))],
-)
-def test_drop_duplicates(csv_source, subset, expected):
+def test_sort_by_ascending():
 
-    extract_csv = ExtractCSV(path=csv_source)
-    kwargs = KwargsSort(subset=subset)
-    drop_duplicates = Sort(kwargs=kwargs)
+    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
 
-    generator = extract_csv.get_iter()
-    generator = drop_duplicates.get_iter(generator=generator)
+        data = {"a": [6, 4, 1], "b": [1, 3, 4], "c": [2, 3, 1]}
+        pd.DataFrame(data=data).to_csv(file.name, sep="|", index=False)
 
-    # exhaust the generator and assert data
-    df = pd.concat(generator)
-    assert df.shape == expected
+        extract_csv = ExtractCSV(path=file.name)
 
+        # by a, ascending
+        sort = Sort(by=["a"])
+        generator = extract_csv.get_iter()
+        generator = sort.get_iter(generator=generator)
+        df = pd.concat(generator)
+        assert df.shape == (3, 3)
+        assert df.a.to_list() == [1, 4, 6]
 
-def test_drop_duplicates_no_subset(csv_source):
+        # by b, ascending
+        sort = Sort(by=["b"], ascending=False)
+        generator = extract_csv.get_iter()
+        generator = sort.get_iter(generator=generator)
+        df = pd.concat(generator)
+        assert df.shape == (3, 3)
+        assert df.a.to_list() == [1, 4, 6]
 
-    extract_csv = ExtractCSV(path=csv_source)
-    drop_duplicates = Sort()
+        # by c, descending
+        sort = Sort(by=["c"], ascending=False)
+        generator = extract_csv.get_iter()
+        generator = sort.get_iter(generator=generator)
+        df = pd.concat(generator)
+        assert df.shape == (3, 3)
+        assert df.c.to_list() == [3, 2, 1]
 
-    generator = extract_csv.get_iter()
-    generator = drop_duplicates.get_iter(generator=generator)
-
-    # exhaust the generator and assert data
-    df = pd.concat(generator)
-    assert df.shape == (3, 3)
+        # by c, descending
+        sort = Sort(by=["c"], ascending=True)
+        generator = extract_csv.get_iter()
+        generator = sort.get_iter(generator=generator)
+        df = pd.concat(generator)
+        assert df.shape == (3, 3)
+        assert df.c.to_list() == [1, 2, 3]
