@@ -1,9 +1,9 @@
 import logging
 from functools import lru_cache
-from typing import Literal, Iterator
+from typing import Literal, Iterator, List
 import requests
 import pandas as pd
-from pydantic import AnyUrl
+from pydantic import AnyUrl, Field
 from requests.adapters import HTTPAdapter, Retry
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
@@ -31,8 +31,8 @@ class EnricherAPI(TransformBase):
     name: Literal["enrich_from_api"] = "enrich_from_api"
     kwargs: KwargsEnricherAPI = KwargsEnricherAPI()
     url: AnyUrl
-    source_column: str
-    new_column: str
+    from_column: str | List[str] = Field(description="Source column")
+    to_column: str | List[str] = Field(description="Destination column")
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
@@ -41,7 +41,7 @@ class EnricherAPI(TransformBase):
         enrich from API
         """
         for chunk in generator:
-            chunk[self.new_column] = chunk[self.source_column].apply(
+            chunk[self.to_column] = chunk[self.from_column].apply(
                 self.request_api_data
             )
             yield chunk
