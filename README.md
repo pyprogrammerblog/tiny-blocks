@@ -16,15 +16,14 @@ Basic usage example
 --------------------
 
 ```python
-from pathlib import Path
-from tiny_blocks.extract.from_csv import ExtractCSV
-from tiny_blocks.load.to_sql import LoadSQL
-from tiny_blocks.transform.drop_duplicates import DropDuplicates
-from tiny_blocks.transform.fillna import Fillna
+from tiny_blocks.extract import ExtractCSV
+from tiny_blocks.transform import DropDuplicates
+from tiny_blocks.transform import Fillna
+from tiny_blocks.load import LoadSQL
 
 # ETL Blocks
 extract_from_csv = ExtractCSV(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
-load_to_sql = LoadSQL(path=Path('/path/to/file.csv'))
+load_to_sql = LoadSQL(path='/path/to/file.csv')
 drop_duplicates = DropDuplicates()
 fill_na = Fillna()
 
