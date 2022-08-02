@@ -1,9 +1,8 @@
 import logging
 import pandas as pd
 from typing import List, Literal, Union, Iterator
-from pydantic import Field
-from tiny_blocks.sources.csv import CSVSource
-from tiny_blocks.etl.extract.base import (
+from pydantic import Field, FilePath
+from tiny_blocks.extract.base import (
     KwargsExtractBase,
     ExtractBase,
 )
@@ -32,9 +31,9 @@ class ExtractCSV(ExtractBase):
     """
 
     name: Literal["read_csv"] = "read_csv"
-    source: CSVSource = Field(..., description="Source Data")
+    path: FilePath = Field(..., description="Destination path")
     kwargs: KwargsExtractCSV = KwargsExtractCSV()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        for chunk in pd.read_csv(self.source.path, **self.kwargs.to_dict()):
+        for chunk in pd.read_csv(self.path, **self.kwargs.to_dict()):
             yield chunk

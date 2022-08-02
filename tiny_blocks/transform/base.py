@@ -1,8 +1,8 @@
 import logging
-from typing import Iterator
-from tiny_blocks.etl.base import BaseBlock, KwargsBase
 import pandas as pd
 import abc
+from typing import Iterator
+from tiny_blocks.base import BaseBlock, KwargsBase
 
 
 __all__ = ["TransformBase", "KwargsTransformBase"]

@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 from typing import Literal, Iterator, Dict
-from tiny_blocks.etl.transform.base import (
+from tiny_blocks.transform.base import (
     KwargsTransformBase,
     TransformBase,
 )

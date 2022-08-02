@@ -3,7 +3,7 @@ import pandas as pd
 from sqlite3 import connect
 from tempfile import TemporaryFile
 from typing import Literal, Iterator
-from tiny_blocks.etl.transform.base import (
+from tiny_blocks.transform.base import (
     KwargsTransformBase,
     TransformBase,
 )

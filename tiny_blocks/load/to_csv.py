@@ -2,8 +2,8 @@ import logging
 import pandas as pd
 from typing import Literal, Iterator
 from pydantic import Field
-from tiny_blocks.sinks.csv import CSVSink
-from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBase
+from pathlib import Path
+from tiny_blocks.load.base import LoadBase, KwargsLoadBase
 
 __all__ = ["LoadCSV", "KwargsLoadCSV"]
 
@@ -26,7 +26,7 @@ class LoadCSV(LoadBase):
 
     name: Literal["to_csv"] = "to_csv"
     kwargs: KwargsLoadCSV = KwargsLoadCSV()
-    sink: CSVSink = Field(..., description="Destination Sink")
+    path: Path = Field(..., description="Destination path")
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
@@ -35,4 +35,4 @@ class LoadCSV(LoadBase):
         Exhaust the generator writing chucks to the CSV
         """
         for chunk in generator:
-            chunk.to_csv(path_or_buf=self.sink.path, **self.kwargs.to_dict())
+            chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

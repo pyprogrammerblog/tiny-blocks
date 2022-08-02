@@ -2,8 +2,10 @@ import logging
 import pandas as pd
 from pydantic import Field
 from typing import Literal, Iterator
-from tiny_blocks.sinks import SQLSink
-from tiny_blocks.etl.load.base import LoadBase, KwargsLoadBase
+from sqlalchemy.engine import Connection
+from contextlib import contextmanager
+from sqlalchemy import create_engine
+from tiny_blocks.load.base import LoadBase, KwargsLoadBase
 
 __all__ = ["LoadSQL", "KwargsLoadSQL"]
 
@@ -27,9 +29,20 @@ class LoadSQL(LoadBase):
     """
 
     name: Literal["to_sql"] = "to_sql"
-    sink: SQLSink = Field(..., description="Destination sink")
+    dsn_conn: str = Field(..., description="Connection string")
     table_name: str = Field(..., description="Destination Table")
     kwargs: KwargsLoadSQL = KwargsLoadSQL()
+
+    @contextmanager
+    def connect_db(self) -> Connection:
+        engine = create_engine(self.dsn_conn)
+        conn = engine.connect()
+        conn.execution_options(stream_results=True, autocommit=True)
+        try:
+            yield conn
+        finally:
+            conn.close()
+            engine.dispose()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
@@ -37,7 +50,7 @@ class LoadSQL(LoadBase):
 
         Exhaust the generator writing chucks to the Database
         """
-        with self.sink.connect() as conn:
+        with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()
             for chunk in generator:
                 chunk.to_sql(name=self.table_name, con=conn, **kwargs)

@@ -1,10 +1,11 @@
 import logging
 from typing import List, Literal, Iterator
-from tiny_blocks.sources import SQLSource
 from pydantic import Field
-from tiny_blocks.etl.extract.base import check_types
+from sqlalchemy.engine import Connection
+from contextlib import contextmanager
+from sqlalchemy import create_engine
 import pandas as pd
-from tiny_blocks.etl.extract.base import (
+from tiny_blocks.extract.base import (
     KwargsExtractBase,
     ExtractBase,
 )
@@ -32,16 +33,26 @@ class ExtractSQLQuery(ExtractBase):
     """
 
     name: Literal["read_sql"] = "read_sql"
-    source: SQLSource = Field(..., description="Source Data")
+    dsn_conn: str = Field(..., description="Connection string")
     sql: str = Field(..., description="SQL Query")
     kwargs: KwargsExtractSQLQuery = KwargsExtractSQLQuery()
 
-    @check_types
+    @contextmanager
+    def connect_db(self) -> Connection:
+        engine = create_engine(self.dsn_conn)
+        conn = engine.connect()
+        conn.execution_options(stream_results=True, autocommit=True)
+        try:
+            yield conn
+        finally:
+            conn.close()
+            engine.dispose()
+
     def get_iter(self) -> Iterator[pd.DataFrame]:
         """
         Read SQL
         """
-        with self.source.connect() as conn:
+        with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()
             for chunk in pd.read_sql_query(sql=self.sql, con=conn, **kwargs):
                 yield chunk
