@@ -29,10 +29,10 @@ class EnricherAPI(TransformBase):
     """
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
-    kwargs: KwargsEnricherAPI = KwargsEnricherAPI()
     url: AnyUrl
     from_column: str = Field(description="Source column")
     to_column: str = Field(description="Destination column")
+    kwargs: KwargsEnricherAPI = KwargsEnricherAPI()
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
@@ -43,7 +43,7 @@ class EnricherAPI(TransformBase):
         func = lru_cache(lambda x: self.request_api_data(x))
 
         for chunk in generator:
-            chunk[self.to_column] = chunk[self.from_column].apply(func=func)
+            chunk[self.to_column] = chunk[self.from_column].apply(func)
             yield chunk
 
     def request_api_data(self, value):
@@ -53,8 +53,6 @@ class EnricherAPI(TransformBase):
         :param value: Any value from a specific column
         :return: A value from a API
         """
-        if not value:
-            return self.kwargs.default_value
 
         retry_strategy = Retry(
             total=self.kwargs.total_retries,

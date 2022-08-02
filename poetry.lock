@@ -537,6 +537,19 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "mock"
+version = "4.0.3"
+description = "Rolling backport of unittest.mock for all Pythons"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+build = ["twine", "wheel", "blurb"]
+docs = ["sphinx"]
+test = ["pytest (<5.4)", "pytest-cov"]
+
+[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -1222,7 +1235,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a4eb6d31462964f20a7113f5120b7d90b071e61894f5569812c4e3f4118e1a5f"
+content-hash = "234eb459118be930747ef2c17717f45076983d1e9c6e51092645cbd8ccbf8b56"
 
 [metadata.files]
 appnope = []
@@ -1268,6 +1281,7 @@ matplotlib-inline = []
 mccabe = []
 minio = []
 mistune = []
+mock = []
 mypy-extensions = []
 nbclient = []
 nbconvert = []

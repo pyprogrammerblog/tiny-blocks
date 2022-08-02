@@ -27,7 +27,7 @@ black = "^22.6.0"
 ipython = "^8.4.0"
 notebook = "^6.4.12"
 SQLAlchemy-Utils = "^0.38.3"
-responses = "^0.21.0"
+mock = "^4.0.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
