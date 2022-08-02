@@ -27,8 +27,6 @@ pip install tiny-blocks
 Basic usage example
 --------------------
 
-
-
 ```python
 from tiny_blocks.extract import ExtractCSV
 from tiny_blocks.transform import DropDuplicates
