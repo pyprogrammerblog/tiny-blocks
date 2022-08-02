@@ -34,25 +34,24 @@ class EnricherAPI(TransformBase):
     from_column: str = Field(description="Source column")
     to_column: str = Field(description="Destination column")
 
-    class Config:
-        keep_untouched = (lru_cache,)
-
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Enrich from API
         """
+        func = lru_cache(lambda x: self.request_api_data(x))
+
         for chunk in generator:
-            chunk[self.to_column] = chunk[self.from_column].apply(
-                self.request_api_data
-            )
+            chunk[self.to_column] = chunk[self.from_column].apply(func=func)
             yield chunk
 
-    @lru_cache
-    def request_api_data(self, value: str | None) -> str:
+    def request_api_data(self, value):
         """
         Request Data from an API
+
+        :param value: Any value from a specific column
+        :return: A value from a API
         """
         if not value:
             return self.kwargs.default_value

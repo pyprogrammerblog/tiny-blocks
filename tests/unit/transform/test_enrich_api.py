@@ -7,14 +7,14 @@ from tiny_blocks.transform.enrich_api import EnricherAPI, KwargsEnricherAPI
 @responses.activate
 def test_enrich_from_api(sqlite_source):
 
-    responses.add(url="https://hola-mundo.com", json={"result": "Hola"})
+    responses.get(url="https://hola-mundo.com", json={"result": "Hola"})
 
     extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
     kwargs = KwargsEnricherAPI(default_value="default")
     enrich = EnricherAPI(
         url="https://hola-mundo.com",
-        from_column="c",
-        to_column="d",
+        from_column="e",
+        to_column="f",
         kwargs=kwargs,
     )
 
@@ -24,5 +24,5 @@ def test_enrich_from_api(sqlite_source):
     # assert
     df = pd.concat(generator)
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["a", "b", "c", "d"]
-    assert df.d.to_list() == ["Hola", "Hola", "default"]
+    assert df.columns.to_list() == ["c", "d", "e", "f"]
+    assert df.f.to_list() == ["Hola", "Hola", "default"]
