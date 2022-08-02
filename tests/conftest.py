@@ -51,7 +51,7 @@ def sqlite_sink():
 
 @pytest.fixture(scope="function")
 def postgres_uri():
-    yield "postgresql+psycopg2://user:pass@postgresdb:5432/db"
+    yield "postgresql+psycopg2://user:pass@postgres:5432/db"
 
 
 @pytest.fixture(scope="function")
@@ -95,7 +95,7 @@ def postgres_sink(postgres_db, postgres_uri):
 
 @pytest.fixture(scope="function")
 def mysql_uri():
-    yield "mysql+pymysql://user:pass@mysqldb:3306/db?charset=utf8mb4"
+    yield "mysql+pymysql://user:pass@mysql:3306/db?charset=utf8mb4"
 
 
 @pytest.fixture(scope="function")

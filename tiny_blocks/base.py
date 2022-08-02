@@ -1,7 +1,8 @@
 import logging
-from typing import Literal
+from typing import Literal, Iterator
 from uuid import UUID, uuid4
 
+import pandas as pd
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -33,3 +34,13 @@ class BaseBlock(BaseModel):
 
     def __str__(self):
         return f"Block-{self.name.capitalize()}-{self.uuid}"
+
+
+class FanIn:
+    def __init__(self, *generators: Iterator[pd.DataFrame]):
+        self.generators = generators
+
+
+class FanOut:
+    def __init__(self, generators: Iterator[pd.DataFrame]):
+        self.generators = generators
