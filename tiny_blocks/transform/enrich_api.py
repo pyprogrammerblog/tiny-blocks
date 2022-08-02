@@ -1,6 +1,6 @@
 import logging
 from functools import lru_cache
-from typing import Literal, Iterator, List
+from typing import Literal, Iterator
 import requests
 import pandas as pd
 from pydantic import AnyUrl, Field
@@ -31,8 +31,11 @@ class EnricherAPI(TransformBase):
     name: Literal["enrich_from_api"] = "enrich_from_api"
     kwargs: KwargsEnricherAPI = KwargsEnricherAPI()
     url: AnyUrl
-    from_column: str | List[str] = Field(description="Source column")
-    to_column: str | List[str] = Field(description="Destination column")
+    from_column: str = Field(description="Source column")
+    to_column: str = Field(description="Destination column")
+
+    class Config:
+        keep_untouched = (lru_cache,)
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
@@ -47,10 +50,13 @@ class EnricherAPI(TransformBase):
             yield chunk
 
     @lru_cache
-    def request_api_data(self, value: str) -> str:
+    def request_api_data(self, value: str | None) -> str:
         """
         Request Data from an API
         """
+        if not value:
+            return self.kwargs.default_value
+
         retry_strategy = Retry(
             total=self.kwargs.total_retries,
             backoff_factor=self.kwargs.backoff_factor,
@@ -60,14 +66,13 @@ class EnricherAPI(TransformBase):
         with requests.Session() as session:
             session.mount("https://", retry_adapter)
             session.mount("http://", retry_adapter)
-
             response = session.get(
                 url=self.url,
                 json={"value", value},  # TODO to think about
                 timeout=self.kwargs.timeout,
             )
 
-        if response.ok:
-            return response.json()["result"]  # TODO to think about
-        else:
+        if not response.ok:
             return self.kwargs.default_value
+
+        return response.json()["result"]  # TODO to think about

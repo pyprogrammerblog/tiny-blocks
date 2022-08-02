@@ -1,9 +1,8 @@
 import logging
-from typing import Iterator, List, Literal, Union
+from typing import Iterator, List, Literal, Union, Dict, Any
 
 import pandas as pd
 from pydantic import Field, AnyUrl
-from pandas.core.generic import StorageOptions
 from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,7 @@ class KwargsExtractCSV(KwargsExtractBase):
     usecols: List[str] = None
     engine: Literal["c", "python"] = None
     chunksize: int = 1000
-    storage_options: StorageOptions = None
+    storage_options: Dict[str, Any] = None
 
 
 class ExtractCSV(ExtractBase):
