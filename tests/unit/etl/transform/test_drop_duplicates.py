@@ -1,5 +1,5 @@
-import pandas as pd
 import pytest
+import pandas as pd
 from tiny_blocks.extract.from_csv import ExtractCSV
 from tiny_blocks.transform.drop_duplicates import (
     DropDuplicates,
