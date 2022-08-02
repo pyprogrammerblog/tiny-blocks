@@ -124,7 +124,7 @@ def mysql_source(mysql_db, mysql_conn, mysql_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
-    data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, None]}
+    data = {"c": [1, 2, 3], "d": [4, 5, 5], "e": [7, 8, None]}
     pd.DataFrame(data=data).to_sql(name="test", con=mysql_conn, index=False)
     yield mysql_uri
 

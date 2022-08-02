@@ -1,59 +1,61 @@
 import logging
 from sqlite3 import connect
-from tempfile import TemporaryFile
+import tempfile
 from typing import Iterator, Literal
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["KwargsMerge", "MergeBlock"]
+__all__ = ["KwargsMerge", "Merge"]
 
 logger = logging.getLogger(__name__)
 
 
 class KwargsMerge(KwargsTransformBase):
     """
-    Kwargs for block merge
+    Kwargs for merge
     """
 
-    how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
-    left_on: str
-    right_on: str
     chunksize: int = 1000
 
 
-class MergeBlock(TransformBase):
+class Merge(TransformBase):
     """
-    Merge Block
+    Merge
     """
 
     name: Literal["merge"] = "merge"
-    kwargs: KwargsMerge
+    how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
+    left_on: str
+    right_on: str
+    kwargs: KwargsMerge = KwargsMerge()
 
-    def process(
+    def get_iter(
         self,
-        left_generator: Iterator[pd.DataFrame],
-        right_generator: Iterator[pd.DataFrame],
+        left: Iterator[pd.DataFrame],
+        right: Iterator[pd.DataFrame],
     ) -> Iterator[pd.DataFrame]:
         """
         Drop Duplicates
         """
-        with TemporaryFile(suffix=".sqlite") as file, connect(file) as con:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
+            file.name
+        ) as con:
 
             # send records to a temp database (exhaust the generators)
-            for chunk in left_generator:
-                chunk.to_sql(name="TEMP_TABLE_LEFT", con=con)
+            for chunk in left:
+                chunk.to_sql(name="table_left", con=con, index=False)
 
-            for chunk in right_generator:
-                chunk.to_sql(name="TEMP_TABLE_RIGHT", con=con)
+            for chunk in right:
+                chunk.to_sql(name="table_right", con=con, index=False)
 
             # select non-duplicated rows.
             # It is possible select a non-duplicated subset of rows.
             sql = (
-                f"SELECT * FROM TEMP_TABLE_LEFT "
-                f"{self.kwargs.how} JOIN TEMP_TABLE_RIGHT "
-                f"ON TEMP_TABLE_LEFT.{self.kwargs.left_on}"
-                f" = TEMP_TABLE_RIGHT.{self.kwargs.right_on}"
+                f"SELECT * FROM table_left "
+                f"{self.how} JOIN table_right "
+                f"ON table_left.{self.left_on}"
+                f" = table_right.{self.right_on}"
             )
 
             # yield joined records
