@@ -5,6 +5,7 @@ from typing import Iterator
 import pandas as pd
 from tiny_blocks.base import BaseBlock, KwargsBase
 
+
 __all__ = ["TransformBase", "KwargsTransformBase"]
 
 

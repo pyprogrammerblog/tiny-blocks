@@ -15,7 +15,6 @@ by zero or more pipes, followed by a sink. Visually, this looks like:
     source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
 ```
 
-
 Installation
 -------------
 
@@ -37,6 +36,7 @@ from tiny_blocks.load import LoadSQL
 # ETL Blocks
 extract_from_csv = ExtractCSV(path='/path/to/file.csv')
 load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+
 drop_duplicates = DropDuplicates()
 fill_na = Fillna()
 
