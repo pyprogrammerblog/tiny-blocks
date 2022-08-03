@@ -1,5 +1,4 @@
 import pandas as pd
-from tiny_blocks.extract.from_csv import ExtractCSV
 from tiny_blocks.extract.from_sql_table import ExtractSQLTable
 from tiny_blocks.load.to_csv import LoadCSV
 from tiny_blocks.transform.fillna import Fillna
@@ -8,31 +7,29 @@ from tiny_blocks.pipeline import FanIn
 import tempfile
 
 
-def test_basic_flow(sqlite_source, csv_source, sqlite_sink):
+def test_basic_flow(postgres_source, mysql_source, sqlite_sink):
     """
     Test a basic ETL pipeline
     """
 
     with tempfile.NamedTemporaryFile(suffix=".csv") as file:
         # 1. Extract from two sources
-        read_from_csv = ExtractCSV(path=csv_source)
-        read_from_sql = ExtractSQLTable(
-            dsn_conn=sqlite_source, table_name="TEST"
-        )
+        postgres = ExtractSQLTable(dsn_conn=postgres_source, table_name="test")
+        mysql = ExtractSQLTable(dsn_conn=mysql_source, table_name="test")
 
         # 2. Transform
-        merge = Merge(left_on="c", right_on="c", how="left")
+        merge = Merge(how="left", left_on="c", right_on="c")
         fill_na = Fillna(value="Hola Mundo")
 
         # 3. Load
-        write_to_csv = LoadCSV(path=file.name)
+        to_csv = LoadCSV(path=file.name)
 
         ###########
         # Pipeline
-        FanIn(read_from_csv, read_from_sql) >> merge >> fill_na >> write_to_csv
+        FanIn(postgres, mysql) >> merge >> fill_na >> to_csv
 
         # testing
-        assert write_to_csv.path.exists()
-        df = pd.read_csv(write_to_csv.path, index=False)
-        assert df.columns.to_list == []
-        assert df.shape == (1, 0)
+        assert to_csv.path.exists()
+        df = pd.read_csv(to_csv.path, sep="|")
+        assert df.shape == (3, 6)
+        assert not df.isnull().values.any()
