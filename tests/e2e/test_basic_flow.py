@@ -1,3 +1,4 @@
+import pandas as pd
 from tiny_blocks.extract.from_sql_table import ExtractSQLTable
 from tiny_blocks.load.to_csv import LoadCSV
 from tiny_blocks.transform.fillna import Fillna
