@@ -1,8 +1,7 @@
 import logging
-from typing import Literal, Iterator
+from typing import Literal
 from uuid import UUID, uuid4
 
-import pandas as pd
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -29,24 +28,5 @@ class BaseBlock(BaseModel):
     name: Literal["base"] = Field("base", description="Block name")
     description: str = Field(default=None, description="Description")
 
-    def __rshift__(self, *other):
-        return other
-
     def __str__(self):
         return f"Block-{self.name.capitalize()}-{self.uuid}"
-
-
-class FanIn:
-    def __init__(self, *generators: Iterator[pd.DataFrame]):
-        self.generators = generators
-
-    def __rshift__(self, *other):
-        return other
-
-
-class FanOut:
-    def __init__(self, generators: Iterator[pd.DataFrame]):
-        self.generators = generators
-
-    def __rshift__(self, *other):
-        return other

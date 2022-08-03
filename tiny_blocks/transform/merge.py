@@ -53,12 +53,12 @@ class Merge(TransformBase):
             # It is possible select a non-duplicated subset of rows.
             sql = (
                 f"SELECT * FROM table_left "
-                f"{self.how} JOIN table_right "
+                f"{self.how.capitalize()} JOIN table_right "
                 f"ON table_left.{self.left_on}"
                 f" = table_right.{self.right_on}"
             )
 
             # yield joined records
-            chunk = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
+            kwargs = self.kwargs.dict()
+            for chunk in pd.read_sql_query(con=con, sql=sql, **kwargs):
                 yield chunk

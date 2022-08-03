@@ -17,6 +17,8 @@ class KwargsLoadCSV(KwargsLoadBase):
     Kwargs for WriteCSV Block
     """
 
+    sep: str = "|"
+    index: bool = False
     chunksize: int = 1000
 
 

@@ -30,20 +30,16 @@ class ExtractBase(BaseBlock):
     def get_iter(self) -> Iterator[pd.DataFrame]:
         raise NotImplementedError
 
-    def __rshift__(self, next: TransformBase | LoadBase) -> "ExtractBase":
+    def __rshift__(self, next: TransformBase | LoadBase):
         """
-        The `>>` operator for the pipes library.
-        Usually this is not used, and instead the implementation on `Source`
-        is used. This will only be used if you do not start a pipe chain with a
-        `Source`, but rather with a `Pipe`.
-        A `Pipe` may be combined with another `Pipe` to form a `Pipe`.
-        A `Pipe` may be combined with a `Sink` to form a `Sink`.
-        (Strings are treated as file sinks!)
+        The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            next.get_iter(self.get_iter())
-            return next
+            from tiny_blocks.pipeline import Pipe
+
+            generator = next.get_iter(self.get_iter())
+            return Pipe(generator)
         elif isinstance(next, LoadBase):
-            next.exhaust(generator=self.get_iter())
+            next.exhaust(self.get_iter())
         else:
-            raise TypeError(f"Unexpected Block type {type(next)}")
+            raise ValueError("Wrong block type")
