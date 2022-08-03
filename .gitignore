@@ -92,3 +92,4 @@ config/db_config.yml
 design/.DS_Store
 .DS_Store
 flake8.txt
+.dockerignore

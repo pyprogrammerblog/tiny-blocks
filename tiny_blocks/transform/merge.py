@@ -4,6 +4,7 @@ import tempfile
 from typing import Iterator, Literal
 
 import pandas as pd
+from pydantic import Field
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
 __all__ = ["KwargsMerge", "Merge"]
@@ -26,8 +27,8 @@ class Merge(TransformBase):
 
     name: Literal["merge"] = "merge"
     how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
-    left_on: str
-    right_on: str
+    left_on: str = Field(..., description="Column on the left table")
+    right_on: str = Field(..., description="Column on the right table")
     kwargs: KwargsMerge = KwargsMerge()
 
     def get_iter(
