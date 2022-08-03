@@ -35,7 +35,7 @@ def sqlite_source():
     with tempfile.NamedTemporaryFile(suffix=".db") as file, sqlite3.connect(
         file.name
     ) as con:
-        data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, None]}
+        data = {"d": [1, 2, 3], "e": [4, 5, 6], "f": [7, 8, None]}
         pd.DataFrame(data=data).to_sql(name="TEST", con=con, index=False)
         yield f"sqlite:///{file.name}"
 
@@ -80,7 +80,7 @@ def postgres_source(postgres_db, postgres_conn, postgres_uri):
     """
     Yield a SQL Source with a connection string to an existing Table DB
     """
-    data = {"c": [1, 2, 3], "d": [4, 5, 6], "e": [7, 8, None]}
+    data = {"d": [1, 2, 3], "e": [4, 5, 6], "f": [7, 8, None]}
     pd.DataFrame(data=data).to_sql(name="test", con=postgres_conn, index=False)
     yield postgres_uri
 

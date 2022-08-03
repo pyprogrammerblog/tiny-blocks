@@ -14,7 +14,7 @@ def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
     # assert
     df = pd.read_sql_table(table_name="destination", con=sqlite_sink)
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["c", "d", "e"]
+    assert df.columns.to_list() == ["d", "e", "f"]
 
 
 def test_sql_load_into_postgres(postgres_source, postgres_sink):
@@ -28,7 +28,7 @@ def test_sql_load_into_postgres(postgres_source, postgres_sink):
     # assert
     df = pd.read_sql_table(table_name="destination", con=postgres_sink)
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["c", "d", "e"]
+    assert df.columns.to_list() == ["d", "e", "f"]
 
 
 def test_sql_load_into_mysql(mysql_source, mysql_sink):

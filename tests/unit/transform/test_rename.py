@@ -6,7 +6,7 @@ from tiny_blocks.transform.rename import Rename
 def test_rename(sqlite_source, sqlite_sink):
 
     extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
-    as_type = Rename(columns={"c": "Hola", "d": "a", "e": "todos"})
+    as_type = Rename(columns={"d": "Hola", "e": "a", "f": "todos"})
 
     generator = extract_sql.get_iter()
     generator = as_type.get_iter(generator=generator)
