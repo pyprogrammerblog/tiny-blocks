@@ -2,6 +2,7 @@ import pandas as pd
 from tiny_blocks.extract.from_sql_table import ExtractSQLTable
 from tiny_blocks.load.to_csv import LoadCSV
 from tiny_blocks.transform.fillna import Fillna
+from tiny_blocks.transform.drop_duplicates import DropDuplicates
 from tiny_blocks.transform.merge import Merge
 from tiny_blocks.pipeline import FanIn
 import tempfile
@@ -20,13 +21,14 @@ def test_basic_flow(postgres_source, mysql_source, sqlite_sink):
         # 2. Transform
         merge = Merge(how="left", left_on="c", right_on="c")
         fill_na = Fillna(value="Hola Mundo")
+        drop_duplicates = DropDuplicates()
 
         # 3. Load
         to_csv = LoadCSV(path=file.name)
 
         ###########
         # Pipeline
-        FanIn(postgres, mysql) >> merge >> fill_na >> to_csv
+        FanIn(postgres, mysql) >> merge >> fill_na >> drop_duplicates >> to_csv
 
         # testing
         assert to_csv.path.exists()
