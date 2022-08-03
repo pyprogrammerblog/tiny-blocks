@@ -3,7 +3,7 @@ import logging
 from typing import Iterator
 
 import pandas as pd
-from tiny_blocks.base import BaseBlock, KwargsBase, Pipe
+from tiny_blocks.base import BaseBlock, KwargsBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -30,16 +30,15 @@ class ExtractBase(BaseBlock):
     def get_iter(self) -> Iterator[pd.DataFrame]:
         raise NotImplementedError
 
-    def __rshift__(self: Pipe, next: TransformBase | LoadBase):
+    def __rshift__(self, next: TransformBase | LoadBase):
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            generator = next.get_iter(*self.generator)
-            return Pipe(generator)
+            from tiny_blocks.pipeline import Pipe
+
+            return Pipe(next.get_iter(self.get_iter()))
         elif isinstance(next, LoadBase):
-            next.exhaust(*self.generator)
-        elif isinstance(next, ExtractBase):
-            raise ValueError("Something")
+            next.exhaust(self.get_iter())
         else:
-            raise ValueError("Something")
+            raise ValueError("Wrong block type")
