@@ -16,6 +16,7 @@ class KwargsMerge(KwargsTransformBase):
     Kwargs for merge
     """
 
+    index_col: bool = False
     chunksize: int = 1000
 
 
@@ -60,5 +61,6 @@ class Merge(TransformBase):
 
             # yield joined records
             chunk = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
+            kwargs = self.kwargs.dict()
+            for chunk in pd.read_sql_query(con=con, sql=sql, **kwargs):
                 yield chunk

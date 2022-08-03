@@ -46,8 +46,8 @@ class FanIn:
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            next.gen = next.get_iter(*self.generators)
-            return next
+            generator = next.get_iter(*self.generators)
+            return Pipe(generator)
         elif isinstance(next, LoadBase):
             next.exhaust(*self.generators)
         else:
