@@ -15,6 +15,7 @@ by zero or more pipes, followed by a sink. Visually, this looks like:
     source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
 ```
 
+
 Installation
 -------------
 

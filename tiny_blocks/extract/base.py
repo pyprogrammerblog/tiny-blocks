@@ -37,7 +37,8 @@ class ExtractBase(BaseBlock):
         if isinstance(next, TransformBase):
             from tiny_blocks.pipeline import Pipe
 
-            return Pipe(next.get_iter(self.get_iter()))
+            generator = next.get_iter(self.get_iter())
+            return Pipe(generator)
         elif isinstance(next, LoadBase):
             next.exhaust(self.get_iter())
         else:
