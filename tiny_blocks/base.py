@@ -29,9 +29,6 @@ class BaseBlock(BaseModel):
     name: Literal["base"] = Field("base", description="Block name")
     description: str = Field(default=None, description="Description")
 
-    def __rshift__(self, *other):
-        return other
-
     def __str__(self):
         return f"Block-{self.name.capitalize()}-{self.uuid}"
 
@@ -40,13 +37,11 @@ class FanIn:
     def __init__(self, *generators: Iterator[pd.DataFrame]):
         self.generators = generators
 
-    def __rshift__(self, *other):
-        return other
 
+class Pipe:
+    """
+    Represent the glue between all operations in an ETL Operation
+    """
 
-class FanOut:
-    def __init__(self, generators: Iterator[pd.DataFrame]):
-        self.generators = generators
-
-    def __rshift__(self, *other):
-        return other
+    def __init__(self, *generator: Iterator[pd.DataFrame]):
+        self.generator = generator

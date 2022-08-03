@@ -3,7 +3,7 @@ import logging
 from typing import Iterator
 
 import pandas as pd
-from tiny_blocks.base import BaseBlock, KwargsBase
+from tiny_blocks.base import BaseBlock, KwargsBase, Pipe
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -30,20 +30,16 @@ class ExtractBase(BaseBlock):
     def get_iter(self) -> Iterator[pd.DataFrame]:
         raise NotImplementedError
 
-    def __rshift__(self, next: TransformBase | LoadBase) -> "ExtractBase":
+    def __rshift__(self: Pipe, next: TransformBase | LoadBase):
         """
-        The `>>` operator for the pipes library.
-        Usually this is not used, and instead the implementation on `Source`
-        is used. This will only be used if you do not start a pipe chain with a
-        `Source`, but rather with a `Pipe`.
-        A `Pipe` may be combined with another `Pipe` to form a `Pipe`.
-        A `Pipe` may be combined with a `Sink` to form a `Sink`.
-        (Strings are treated as file sinks!)
+        The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            next.get_iter(self.get_iter())
-            return next
+            generator = next.get_iter(*self.generator)
+            return Pipe(generator)
         elif isinstance(next, LoadBase):
-            next.exhaust(generator=self.get_iter())
+            next.exhaust(*self.generator)
+        elif isinstance(next, ExtractBase):
+            raise ValueError("Something")
         else:
-            raise TypeError(f"Unexpected Block type {type(next)}")
+            raise ValueError("Something")
