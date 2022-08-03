@@ -14,5 +14,5 @@ def test_fillna(sqlite_source, sqlite_sink):
     # assert
     df = pd.concat(generator)
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["c", "d", "e"]
+    assert df.columns.to_list() == ["d", "e", "f"]
     assert df.iloc[2, 2] == "Hola Mundo"

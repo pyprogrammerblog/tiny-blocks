@@ -11,7 +11,7 @@ def test_extract_from_sqlite(sqlite_source):
 
     # exhaust the generator and validate
     df = pd.concat(generator)
-    assert df.columns.to_list() == ["c", "d", "e"]
+    assert df.columns.to_list() == ["d", "e", "f"]
     assert df.shape == (3, 3)
 
 
@@ -24,7 +24,7 @@ def test_extract_from_sql_postgres(postgres_source):
 
     # exhaust the generator and validate
     df = pd.concat(generator)
-    assert df.columns.to_list() == ["c", "d", "e"]
+    assert df.columns.to_list() == ["d", "e", "f"]
     assert df.shape == (3, 3)
 
 

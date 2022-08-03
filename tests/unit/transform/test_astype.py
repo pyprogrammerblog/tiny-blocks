@@ -14,6 +14,6 @@ def test_astype(sqlite_source, sqlite_sink):
     # exhaust and assert
     df = pd.concat(generator)
     assert df.shape == (3, 3)
-    assert str(df.dtypes.c) == "int64"
     assert str(df.dtypes.d) == "int64"
     assert str(df.dtypes.e) == "float32"
+    assert str(df.dtypes.f) == "float64"

@@ -40,6 +40,6 @@ def test_enrich_from_api(sqlite_source):
 
         # assert
         df = pd.concat(generator)
-        assert df.shape == (3, 4)
-        assert df.columns.to_list() == ["c", "d", "e", "f"]
+        assert df.shape == (3, 3)
+        assert df.columns.to_list() == ["d", "e", "f"]
         assert df.f.to_list() == ["Hola", "Hola", "default"]
