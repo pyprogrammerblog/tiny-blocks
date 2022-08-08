@@ -1,45 +1,104 @@
 import logging
+import traceback
 from datetime import datetime
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.extract.base import ExtractBase
 
-__all__ = ["FanIn", "Pipeline"]
+__all__ = ["FanIn", "FanOut", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
 
 
+class Status:
+    PENDING: str = "PENDING"
+    STARTED: str = "STARTED"
+    RETRY: str = "RETRY"
+    SUCCESS: str = "SUCCESS"
+    FAIL: str = "FAIL"
+
+
 class Pipeline:
     """
-    Represent the glue between all operations in an ETL Operation
+    Defines the Pipeline that glues all Pipeline Blocks
+
+    Params:
+        name: (str). Name of the Pipeline
+        description: (str). Description of the Pipeline
+        max_retries: (str). Number of retries in case of Exception
+        supress_info: (bool). Supress info about the pipeline result
+        supress_exception: (bool). Supress Pipeline exception if it happens
+
+    Usage:
+        >>> from tiny_blocks.extract import ExtractCSV
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.load import LoadSQL
+        >>> from tiny_blocks import Pipeline
+
+        # ETL Blocks
+        >>> extract_from_csv = ExtractCSV(path='/path/to/file.csv')
+        >>> load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://...')
+        >>> fill_na = Fillna()
+
+        # Pipeline
+        >>> with Pipeline(name="My Pipeline") as pipe:
+        >>>     pipe >> extract_from_csv >> fill_na >> load_to_sql
+        - Pipeline: My Pipeline
+            Started: 2022-08-08T16:11:30.134018
+            Finished: 2022-08-08T16:11:35.134018
+            Status: SUCCESS
+            Number of retries: 0
     """
 
-    def __init__(self, name: str, supress_exception: bool = False):
-        self.name: str
-        self.description: str | None = None
-
-    def __str__(self):
-        return f"Task-{self.uuid}"
+    def __init__(
+        self,
+        name: str,
+        description: str = None,
+        max_retries: int = 3,
+        supress_output_message: bool = False,
+        supress_exception: bool = True,
+    ):
+        self.name: str = name
+        self.description: str | None = description
+        self.max_retries: int = max_retries
+        self.supress_exception: bool = supress_exception
+        self.supress_output_message: bool = supress_output_message
+        self._status: str = Status.PENDING
+        self._count_retries: int = 0
+        self._output_message: str = ""
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
-        self.status = Status.STARTED
-        # self.save()
+        self._status = Status.STARTED
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
+        if not exc_type:
+            self._status = Status.SUCCESS
+            self.end_time = datetime.utcnow()
+        else:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
-            if self.count_retries < self.max_retries or settings.max_retries:
-                self.count_retries += 1
-                self.status = Status.RETRY
+            if self._count_retries < self.max_retries:
+                self._count_retries += 1
+                self._status = Status.RETRY
             else:
                 self.end_time = datetime.utcnow()
-                self.status = Status.FAIL
-            self.save()
-            return True
+                self._status = Status.FAIL
+                return self.supress_exception
+
+    def info(self) -> str:
+        """
+        Current output
+        """
+        msg = f"- Pipeline: {self.name}"
+        msg += f"\n\t Started: {self.start_time}"
+        msg += f"\n\t Finished: {self.end_time}"
+        msg += f"\n\t Status: {self._status}"
+        msg += f"\n\t Number of retries: {self._count_retries}"
+        return msg
 
     def __rshift__(
         self, next: ExtractBase | TransformBase | LoadBase | "FanIn"
@@ -65,7 +124,7 @@ class FanIn:
         for arg in args:
             if isinstance(arg, ExtractBase):
                 self.generators.append(arg.get_iter())
-            elif isinstance(arg, Stream):
+            elif isinstance(arg, Pipeline):
                 self.generators.append(*arg.generator)
             else:
                 raise ValueError("Thinks about this")
@@ -76,7 +135,7 @@ class FanIn:
         """
         if isinstance(next, TransformBase):
             generator = next.get_iter(*self.generators)
-            return Stream(generator)
+            return Pipeline(generator)
         elif isinstance(next, LoadBase):
             next.exhaust(*self.generators)
         else:

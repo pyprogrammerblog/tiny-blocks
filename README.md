@@ -42,10 +42,8 @@ from tiny_blocks import Pipeline
 
 # ETL Blocks
 extract_from_csv = ExtractCSV(path='/path/to/file.csv')
-
 drop_duplicates = DropDuplicates()
 fill_na = Fillna()
-
 load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
 
 # Pipeline
@@ -56,4 +54,4 @@ with Pipeline(name="My Pipeline") as pipe:
 Documentation
 --------------
 
-Please visit ... :TODO
+Please visit this [link](https://tiny-blocks.readthedocs.io/en/latest/)

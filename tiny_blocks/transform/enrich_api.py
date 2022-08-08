@@ -27,6 +27,8 @@ class EnricherAPI(TransformBase):
     """
     Enrich from API source
 
+    This block has been inherited from the Apply Block
+
     Params:
         url: (str). API URL
         from_column: (str). Source column to apply function.
@@ -71,11 +73,11 @@ class EnricherAPI(TransformBase):
             session.mount("http://", retry_adapter)
             response = session.get(
                 url=self.url,
-                json={"value", value},  # TODO to think about
+                json={"value", value},
                 timeout=self.kwargs.timeout,
             )
 
         if not response.ok:
             return self.kwargs.default_value
 
-        return response.json()["result"]  # TODO to think about
+        return response.json()["result"]
