@@ -22,4 +22,10 @@ class LoadBase(BaseBlock):
 
     @abc.abstractmethod
     def exhaust(self, generator: Iterator[pd.DataFrame]):
+        """
+        Implement the exhaustion the iterator
+
+        The `chunksize` is defined as kwargs in each
+        loading block
+        """
         raise NotImplementedError

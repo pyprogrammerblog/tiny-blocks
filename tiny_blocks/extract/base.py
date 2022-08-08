@@ -23,23 +23,18 @@ class KwargsExtractBase(KwargsBase):
 
 class ExtractBase(BaseBlock):
     """
-    Extract Base Block
+    Extract Base Block.
+
+    Each extraction Block implement the `get_iter` method.
+    This method return an Iterator of chunked DataFrames
     """
 
     @abc.abstractmethod
     def get_iter(self) -> Iterator[pd.DataFrame]:
+        """
+        Return an iterator of chunked dataframes
+
+        The `chunksize` is defined as kwargs in each
+        extraction block
+        """
         raise NotImplementedError
-
-    def __rshift__(self, next: TransformBase | LoadBase):
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            from tiny_blocks.pipeline import Pipe
-
-            generator = next.get_iter(self.get_iter())
-            return Pipe(generator)
-        elif isinstance(next, LoadBase):
-            next.exhaust(self.get_iter())
-        else:
-            raise ValueError("Wrong block type")

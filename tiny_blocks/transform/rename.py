@@ -21,6 +21,13 @@ class KwargsRename(KwargsTransformBase):
 class Rename(TransformBase):
     """
     Rename Block
+
+    Defines Rename columns functionality.
+
+    Params:
+        columns: (dict). Renamed columns.
+            Key defines old column name and value new column name.
+        kwargs: (dict). Kwargs defined at ``KwargsRename``.
     """
 
     name: Literal["rename"] = "rename"
@@ -31,7 +38,7 @@ class Rename(TransformBase):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        Rename
+        Rename columns
         """
         for chunk in generator:
             chunk = chunk.rename(columns=self.columns, **self.kwargs.to_dict())

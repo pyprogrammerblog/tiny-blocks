@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, List, Literal
+from typing import Iterator, List, Literal, Tuple, Dict
 
 import pandas as pd
 from pydantic import Field
@@ -16,18 +16,36 @@ logger = logging.getLogger(__name__)
 
 class KwargsExtractSQLTable(KwargsExtractBase):
     """
-    Kwargs for ReadSQL
+    Kwargs for Read SQL Table
     """
-
     index_col: str | List[str] = None
     coerce_float: bool = True
+    parse_dates: List | Tuple | Dict = None
     columns: List[str] = None
     chunksize: int = 1000
 
 
 class ExtractSQLTable(ExtractBase):
     """
-    ReadSQL Block
+    Read SQL Table Block
+
+    Defines the read SQL Table Operation.
+
+    Params:
+        dsn_conn: (str). Source path file.
+        table: (str). Table name.
+        kwargs: (dict). Defined in `KwargsExtractSQLTable` class.
+            For more info: https://pandas.pydata.org/docs/reference/api/pandas.read_sql_table.html
+
+
+    Example:
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> from tiny_blocks.extract import ExtractSQLQuery
+    >>> extract_sql = ExtractSQLTable(dsn_conn="psycopg2+postgres://user:***@localhost:5432/foobar")
+    >>> generator = extract_sql.get_iter()
+    >>> pd.concat(generator)  # exhaust the generator
+    'name,mask,weapon\nRaphael,red,sai\nDonatello,purple,bo staff\n'
     """
 
     name: Literal["read_sql_table"] = "read_sql_table"
@@ -48,7 +66,7 @@ class ExtractSQLTable(ExtractBase):
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
         """
-        Read SQL
+        Get Iterator
         """
         with self.connect_db() as conn:
             for chunk in pd.read_sql_table(

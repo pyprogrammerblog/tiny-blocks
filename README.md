@@ -8,11 +8,17 @@ operator. This allows for easy extract, transform and load operations.
 
 ### Pipeline Components: Sources, Pipes, and Sinks
 This library relies on a fundamental streaming abstraction consisting of three
-parts: sources, pipes, and sinks. You can view a pipeline as a source, followed
-by zero or more pipes, followed by a sink. Visually, this looks like:
+parts: extract, transform, and load. You can view a pipeline as a extraction, followed
+by zero or more transformations, followed by a sink. Visually, this looks like:
 
+```python
+with Pipeline(name="My Pipeline") as pipe:
+    pipe >> source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
 ```
-    source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
+or more complex situations like:
+```python
+with Pipeline(name="My Pipeline") as pipe:
+    pipe >> FanIn(source1, source2) >> pipe1 >> pipe2 >> ... >> pipeN >> FanOut(sink1, sink2)
 ```
 
 Installation
@@ -32,16 +38,19 @@ from tiny_blocks.extract import ExtractCSV
 from tiny_blocks.transform import DropDuplicates
 from tiny_blocks.transform import Fillna
 from tiny_blocks.load import LoadSQL
+from tiny_blocks import Pipeline
 
 # ETL Blocks
 extract_from_csv = ExtractCSV(path='/path/to/file.csv')
-load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
 
 drop_duplicates = DropDuplicates()
 fill_na = Fillna()
 
+load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+
 # Pipeline
-extract_from_csv >> drop_duplicates >> fill_na >> load_to_sql
+with Pipeline(name="My Pipeline") as pipe:
+    pipe >> extract_from_csv >> drop_duplicates >> fill_na >> load_to_sql
 ```
 
 Documentation

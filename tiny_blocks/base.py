@@ -21,7 +21,12 @@ class KwargsBase(BaseModel):
 
 class BaseBlock(BaseModel):
     """
-    Base DelayedTask class
+    Base Block class
+
+    Params:
+        uuid: (UUID) UUID of the Block.
+        name: (str) Defines the unique block name.
+        description: (str) Description.
     """
 
     uuid: UUID = Field(default_factory=uuid4, description="UUID")

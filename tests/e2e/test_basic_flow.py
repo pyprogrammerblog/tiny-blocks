@@ -5,34 +5,32 @@ from tiny_blocks.load.to_csv import LoadCSV
 from tiny_blocks.transform.fillna import Fillna
 from tiny_blocks.transform.drop_duplicates import DropDuplicates
 from tiny_blocks.transform.merge import Merge
-from tiny_blocks.pipeline import FanIn
-import tempfile
+from tiny_blocks.pipeline import FanIn, Pipeline
 
 
-def test_basic_flow(csv_source, postgres_source):
+def test_basic_flow(csv_source, postgres_source, csv_sink):
     """
     Test a basic ETL pipeline
     """
+    # 1. Extract from two sources
+    csv = ExtractCSV(path=csv_source)
+    postgres = ExtractSQLTable(dsn_conn=postgres_source, table_name="test")
 
-    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
-        # 1. Extract from two sources
-        csv = ExtractCSV(path=csv_source)
-        postgres = ExtractSQLTable(dsn_conn=postgres_source, table_name="test")
+    # 2. Transform
+    merge = Merge(how="left", left_on="c", right_on="d")
+    fill_na = Fillna(value="Hola Mundo")
+    drop_dupl = DropDuplicates()
 
-        # 2. Transform
-        merge = Merge(how="left", left_on="c", right_on="d")
-        fill_na = Fillna(value="Hola Mundo")
-        drop_duplicates = DropDuplicates()
+    # 3. Load
+    to_csv = LoadCSV(path=csv_sink)
 
-        # 3. Load
-        to_csv = LoadCSV(path=file.name)
+    ###########
+    # Pipeline
+    with Pipeline(name="Pipeline 1") as pipe:
+        pipe >> FanIn(csv, postgres) >> merge >> fill_na >> drop_dupl >> to_csv
 
-        ###########
-        # Pipeline
-        FanIn(csv, postgres) >> merge >> fill_na >> drop_duplicates >> to_csv
-
-        # testing
-        assert to_csv.path.exists()
-        df = pd.read_csv(to_csv.path, sep="|")
-        assert df.shape == (3, 6)
-        assert not df.isnull().values.any()
+    # testing
+    assert to_csv.path.exists()
+    df = pd.read_csv(to_csv.path, sep="|")
+    assert df.shape == (3, 6)
+    assert not df.isnull().values.any()

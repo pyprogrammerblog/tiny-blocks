@@ -22,7 +22,14 @@ class KwargsSort(KwargsTransformBase):
 
 class Sort(TransformBase):
     """
-    DropDuplicates
+    Sort Block
+
+    Defines the Sorting operation
+
+    Params:
+        by: (str). Sort by list of columns
+        ascending: (bool). If ``True`` then the sort is done ascending.
+        kwargs: (dict). Defined at ``KwargsSort``.
     """
 
     name: Literal["sort"] = "sort"

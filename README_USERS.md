@@ -17,9 +17,14 @@ Check your installed dependencies for security vulnerabilities
 docker-compose run --rm app poetry check
 ```
 
-Finally, run the tests:
+Run the tests:
 ```shell
 docker-compose run --rm app poetry run pytest
+```
+
+Shut down all services
+```shell
+docker-compose down
 ```
 
 

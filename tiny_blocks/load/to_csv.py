@@ -24,7 +24,14 @@ class KwargsLoadCSV(KwargsLoadBase):
 
 class LoadCSV(LoadBase):
     """
-    WriteCSV Block
+    Write CSV Block
+
+    Defines the load to CSV Operation.
+
+    Params:
+        path (Path). Destination Path.
+        kwargs (dict). For more info:
+            https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html
     """
 
     name: Literal["to_csv"] = "to_csv"
@@ -33,9 +40,7 @@ class LoadCSV(LoadBase):
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
-        Write CSV Operation.
-
-        Exhaust the generator writing chucks to the CSV
+        Exhaust Iterator
         """
         for chunk in generator:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

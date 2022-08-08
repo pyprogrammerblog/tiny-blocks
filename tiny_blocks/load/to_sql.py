@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, Literal
+from typing import Iterator, Literal, Dict
 
 import pandas as pd
 from pydantic import Field
@@ -22,11 +22,20 @@ class KwargsLoadSQL(KwargsLoadBase):
     chunksize: int = 1000
     index: bool = False
     if_exists: Literal["fail", "replace", "append"] = "append"
+    dtype: Dict = None
 
 
 class LoadSQL(LoadBase):
     """
     Load SQL Block
+
+    Defines the Loading operation to a SQL Database
+
+    Params:
+        dsn_conn: (str). Source path file.
+        table: (str). Table name.
+        kwargs: (dict). Defined in `KwargsLoadSQL` class.
+            For more info: https://pandas.pydata.org/docs/reference/api/pandas.to_sql.html
     """
 
     name: Literal["to_sql"] = "to_sql"
@@ -47,9 +56,7 @@ class LoadSQL(LoadBase):
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
-        Write SQL Operation.
-
-        Exhaust the generator writing chucks to the Database
+        Exhaust Iterator
         """
         with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()

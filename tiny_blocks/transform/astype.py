@@ -21,6 +21,8 @@ class KwargsAstype(KwargsTransformBase):
 class Astype(TransformBase):
     """
     Astype Block
+
+    Defines the casting of types for dataframes or columns
     """
 
     name: Literal["astype"] = "astype"
@@ -31,7 +33,7 @@ class Astype(TransformBase):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        Drop NaN
+        Cast types
         """
         for chunk in generator:
             chunk = chunk.astype(dtype=self.dtype, **self.kwargs.to_dict())

@@ -24,7 +24,14 @@ class KwargsLoadStorage(KwargsExtractBase):
 
 class LoadStorage(ExtractBase):
     """
-    ReadCSV Block
+    Write CSV to Storage Block
+
+    Defines the load to Storage Block Operation.
+
+    Params:
+        path (Path). Destination Path.
+        kwargs (dict). For more info:
+            https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html
     """
 
     name: Literal["read_csv"] = "read_csv"
@@ -33,9 +40,7 @@ class LoadStorage(ExtractBase):
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
         """
-        Write CSV Operation.
-
-        Exhaust the generator writing chucks to the Object Storage
+        Exhaust Iterator
         """
         for chunk in generator:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())
