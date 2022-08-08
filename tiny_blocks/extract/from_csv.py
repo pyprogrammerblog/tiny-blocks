@@ -24,7 +24,6 @@ class KwargsExtractCSV(KwargsExtractBase):
     names: List[str] = None
     index_col: int | str | Sequence[str] | Sequence[int] = None
     usecols: List[str] = None
-    squeze: bool = False
     prefix: str = None
     mangle_dupe_cols: bool = True
     dtype: Dict = None
