@@ -73,7 +73,7 @@ class Pipeline:
         self._status: str = Status.PENDING
         self._count_retries: int = 0
         self._output_message: str = ""
-        self._tasks: List[Callable] = []
+        self._block_callables: List[Callable] = []
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
@@ -117,10 +117,10 @@ class Pipeline:
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, ExtractBase | TransformBase | FanIn):
-            self._tasks.append(next.get_iter)  # append signatures
+            self._block_callables.append(next.get_iter)  # append signatures
             return self
         elif isinstance(next, LoadBase):
-            generator = reduce(lambda f, g: g(*f), list(self._tasks))
+            generator = reduce(lambda f, g: g(*f), list(self._block_callables))
             next.exhaust(generator=generator)
         else:
             raise ValueError("Unsupported Block Type")
