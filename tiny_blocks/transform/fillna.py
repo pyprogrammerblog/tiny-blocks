@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 class KwargsFillNa(KwargsTransformBase):
     """
     Kwargs for FillNa Block
+
+    For more info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
     """
 
     method: Literal["backfill", "bfill", "pad", "ffill"] = None
@@ -23,6 +26,13 @@ class KwargsFillNa(KwargsTransformBase):
 class Fillna(TransformBase):
     """
     Fillna Block
+
+    Defines the fill Nan values functionality
+
+    Params:
+        value: (int, str, dict). Renamed columns.
+            Key defines old column name and value new column name.
+        kwargs: (dict). Defined in `KwargsFillNa` class.
     """
 
     name: Literal["fillna"] = "fillna"

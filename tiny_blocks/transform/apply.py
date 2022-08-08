@@ -14,7 +14,9 @@ class KwargsApply(KwargsTransformBase):
     """
     Kwargs Apply
     """
+
     pass
+
 
 class Apply(TransformBase):
     """
@@ -27,8 +29,8 @@ class Apply(TransformBase):
     """
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
-    apply_to: str = Field(description="Source column")
-    return_to: str = Field(description="Destination column")
+    apply_to: str = Field(description="Apply to column")
+    return_to: str = Field(description="Return to column")
     kwargs: KwargsApply = KwargsApply()
 
     def get_iter(

@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 class KwargsRename(KwargsTransformBase):
     """
     Kwargs for Rename Block
+
+    For more info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     """
 
     pass
@@ -27,7 +30,7 @@ class Rename(TransformBase):
     Params:
         columns: (dict). Renamed columns.
             Key defines old column name and value new column name.
-        kwargs: (dict). Kwargs defined at ``KwargsRename``.
+        kwargs: (dict). Defined in `KwargsRename` class.
     """
 
     name: Literal["rename"] = "rename"

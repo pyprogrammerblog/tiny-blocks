@@ -23,6 +23,15 @@ class KwargsMerge(KwargsTransformBase):
 class Merge(TransformBase):
     """
     Merge
+
+    Defines merge functionality between two blocks.
+
+    Params:
+        how: (str). Options are "left", "right", "outer",
+            "inner", "cross".
+        left_on: (str). Column on the left.
+        right_on: (str). Column on the right.
+        kwargs: (dict). Defined in `KwargsMerge` class.
     """
 
     name: Literal["merge"] = "merge"

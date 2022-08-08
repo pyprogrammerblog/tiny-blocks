@@ -26,6 +26,12 @@ class KwargsEnricherAPI(KwargsTransformBase):
 class EnricherAPI(TransformBase):
     """
     Enrich from API source
+
+    Params:
+        url: (str). API URL
+        from_column: (str). Source column to apply function.
+        to_column: (str). Return column to return values.
+        kwargs: (dict). Defined in `KwargsEnricherAPI` class.
     """
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
