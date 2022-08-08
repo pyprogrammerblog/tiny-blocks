@@ -20,7 +20,12 @@ class KwargsDropNa(KwargsTransformBase):
 
 class DropNa(TransformBase):
     """
-    Operator DropNa
+    Drop Nan Block
+
+    Defines the drop None values functionality
+
+    Params:
+        kwargs: (dict). Defined in `KwargsDropNa` class.
     """
 
     name: Literal["drop_na"] = "drop_na"

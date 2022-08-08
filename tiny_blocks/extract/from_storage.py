@@ -44,17 +44,6 @@ class ExtractStorage(ExtractBase):
     Params:
         path: (str). Source URL file.
         kwargs: (dict). Defined in `KwargsExtractStorage` class.
-            For more info: https://pandas.pydata.org/docs/reference
-            /api/pandas.read_csv.html
-
-    Example:
-        >>> import pandas as pd
-        >>> from pathlib import Path
-        >>> from tiny_blocks.extract import ExtractCSV
-        >>> extract_csv = ExtractCSV(path="")
-        >>> generator = extract_csv.get_iter()
-        >>> pd.concat(generator)  # exhaust the generator
-        'name,mask,weapon\nRaphael,red,sai\nDonatello,purple,bo staff\n'
     """
 
     name: Literal["read_csv"] = "read_csv"

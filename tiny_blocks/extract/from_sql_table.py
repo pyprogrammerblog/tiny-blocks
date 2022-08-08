@@ -17,6 +17,9 @@ logger = logging.getLogger(__name__)
 class KwargsExtractSQLTable(KwargsExtractBase):
     """
     Kwargs for Read SQL Table
+
+    For more info: https://pandas.pydata.org/docs/
+    reference/api/pandas.read_sql_table.html
     """
 
     index_col: str | List[str] = None
@@ -36,18 +39,6 @@ class ExtractSQLTable(ExtractBase):
         dsn_conn: (str). Source path file.
         table: (str). Table name.
         kwargs: (dict). Defined in `KwargsExtractSQLTable` class.
-            For more info: https://pandas.pydata.org/docs/
-            reference/api/pandas.read_sql_table.html
-
-
-    Example:
-    >>> import pandas as pd
-    >>> from pathlib import Path
-    >>> from tiny_blocks.extract import ExtractSQLQuery
-    >>> extract_sql = ExtractSQLTable(dsn_conn="psycopg2+postgres...")
-    >>> generator = extract_sql.get_iter()
-    >>> pd.concat(generator)  # exhaust the generator
-    'name,mask,weapon\nRaphael,red,sai\nDonatello,purple,bo staff\n'
     """
 
     name: Literal["read_sql_table"] = "read_sql_table"

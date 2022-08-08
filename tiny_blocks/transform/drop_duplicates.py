@@ -23,7 +23,12 @@ class KwargsDropDuplicates(KwargsTransformBase):
 
 class DropDuplicates(TransformBase):
     """
-    DropDuplicates
+    Drop Duplicates Block
+
+    Defines the drop duplicates functionality
+
+    Params:
+        kwargs: (dict). Defined in `KwargsDropDuplicates` class.
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"

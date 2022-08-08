@@ -30,8 +30,7 @@ class LoadStorage(ExtractBase):
 
     Params:
         path (Path). Destination Path.
-        kwargs (dict). For more info:
-            https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html
+        kwargs: (dict). Defined in `KwargsLoadStorage` class.
     """
 
     name: Literal["read_csv"] = "read_csv"

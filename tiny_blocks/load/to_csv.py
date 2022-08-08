@@ -29,9 +29,8 @@ class LoadCSV(LoadBase):
     Defines the load to CSV Operation.
 
     Params:
-        path (Path). Destination Path.
-        kwargs (dict). For more info:
-            https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html
+        path: (Path). Destination Path.
+        kwargs: (dict). Defined in `KwargsLoadCSV` class.
     """
 
     name: Literal["to_csv"] = "to_csv"

@@ -40,17 +40,6 @@ class ExtractSQLQuery(ExtractBase):
         dsn_conn: (str). Source path file.
         sql: (str). SQL Query String.
         kwargs: (dict). Defined in `KwargsExtractSQLQuery` class.
-            For more info: https://pandas.pydata.org/docs
-            /reference/api/pandas.read_sql_query.html
-
-    Example:
-        >>> import pandas as pd
-        >>> from pathlib import Path
-        >>> from tiny_blocks.extract import ExtractSQLQuery
-        >>> extract_csv = ExtractSQLQuery(dsn_conn="psycopg2+postgres...")
-        >>> generator = extract_csv.get_iter()
-        >>> pd.concat(generator)  # exhaust the generator
-        'name,mask,weapon\nRaphael,red,sai\nDonatello,purple,bo staff\n'
     """
 
     name: Literal["read_sql"] = "read_sql"
