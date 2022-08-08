@@ -34,4 +34,4 @@ class BaseBlock(BaseModel):
     description: str = Field(default=None, description="Description")
 
     def __str__(self):
-        return f"Block-{self.name.capitalize()}-{self.uuid}"
+        return f"Block-{self.name}-{self.uuid}"
