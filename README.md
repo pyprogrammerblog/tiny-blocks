@@ -35,14 +35,14 @@ from tiny_blocks.load import LoadSQL
 from tiny_blocks import Pipeline
 
 # ETL Blocks
-extract_from_csv = ExtractCSV(path='/path/to/file.csv')
+from_csv = ExtractCSV(path='/path/to/file.csv')
 drop_duplicates = DropDuplicates()
-fill_na = Fillna()
-load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+fill_na = Fillna(value="Hola Mundo")
+to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
 
 # Pipeline
 with Pipeline(name="My Pipeline") as pipe:
-    pipe >> extract_from_csv >> drop_duplicates >> fill_na >> load_to_sql
+    pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
 
 Documentation
