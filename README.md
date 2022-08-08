@@ -11,14 +11,8 @@ This library relies on a fundamental streaming abstraction consisting of three
 parts: extract, transform, and load. You can view a pipeline as a extraction, followed
 by zero or more transformations, followed by a sink. Visually, this looks like:
 
-```python
-with Pipeline(name="My Pipeline") as pipe:
-    pipe >> source >> pipe1 >> pipe2 >> ... >> pipeN >> sink
 ```
-or more complex situations like:
-```python
-with Pipeline(name="My Pipeline") as pipe:
-    pipe >> FanIn(source1, source2) >> pipe1 >> pipe2 >> ... >> pipeN >> FanOut(sink1, sink2)
+source >> pipe1 >> pipe2 >> pipe3 >> ... >> pipeN >> sink
 ```
 
 Installation
@@ -54,4 +48,4 @@ with Pipeline(name="My Pipeline") as pipe:
 Documentation
 --------------
 
-Please visit this [link](https://tiny-blocks.readthedocs.io/en/latest/)
+Please visit this [link](https://tiny-blocks.readthedocs.io/en/latest/) for documentation.
