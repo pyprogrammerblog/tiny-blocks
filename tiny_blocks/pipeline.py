@@ -1,4 +1,5 @@
 import logging
+import sys
 import traceback
 from datetime import datetime
 from tiny_blocks.load.base import LoadBase
@@ -38,13 +39,13 @@ class Pipeline:
         >>> from tiny_blocks import Pipeline
 
         # ETL Blocks
-        >>> extract_from_csv = ExtractCSV(path='/path/to/file.csv')
-        >>> load_to_sql = LoadSQL(dsn_conn='psycopg2+postgres://...')
+        >>> from_csv = ExtractCSV(path='/path/to/file.csv')
+        >>> to_sql = LoadSQL(dsn_conn='psycopg2+postgres://...')
         >>> fill_na = Fillna()
 
         # Pipeline
         >>> with Pipeline(name="My Pipeline") as pipe:
-        >>>     pipe >> extract_from_csv >> fill_na >> load_to_sql
+        >>>     pipe >> from_csv >> fill_na >> to_sql
 
         - Pipeline: My Pipeline
             Started: 2022-08-08T16:11:30.134018
@@ -79,6 +80,8 @@ class Pipeline:
         if not exc_type:
             self._status = Status.SUCCESS
             self.end_time = datetime.utcnow()
+            if not self.supress_output_message:
+                sys.stdout.write(self.stdout_info())
         else:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
@@ -88,15 +91,17 @@ class Pipeline:
             else:
                 self.end_time = datetime.utcnow()
                 self._status = Status.FAIL
+                if not self.supress_output_message:
+                    sys.stdout.write(self.stdout_info())
                 return self.supress_exception
 
-    def info(self) -> str:
+    def stdout_info(self) -> str:
         """
         Current output
         """
-        msg = f"\n- Pipeline: {self.name}"
-        msg += f"\n\t Started: {self.start_time}"
-        msg += f"\n\t Finished: {self.end_time}"
+        msg = f"- Pipeline: {self.name}"
+        msg += f"\n\t Started: {self.start_time.isoformat()}"
+        msg += f"\n\t Finished: {self.end_time.isoformat()}"
         msg += f"\n\t Status: {self._status}"
         msg += f"\n\t Number of retries: {self._count_retries}"
         return msg
