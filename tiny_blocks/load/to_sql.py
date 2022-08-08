@@ -35,7 +35,8 @@ class LoadSQL(LoadBase):
         dsn_conn: (str). Source path file.
         table: (str). Table name.
         kwargs: (dict). Defined in `KwargsLoadSQL` class.
-            For more info: https://pandas.pydata.org/docs/reference/api/pandas.to_sql.html
+            For more info: https://pandas.pydata.org/docs/
+            reference/api/pandas.to_sql.html
     """
 
     name: Literal["to_sql"] = "to_sql"

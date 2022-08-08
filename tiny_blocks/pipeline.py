@@ -1,7 +1,5 @@
 import logging
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Iterator, Tuple
+from datetime import datetime
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.extract.base import ExtractBase
@@ -19,8 +17,7 @@ class Pipeline:
 
     def __init__(self, name: str, supress_exception: bool = False):
         self.name: str
-        self.description: str|None = None
-        
+        self.description: str | None = None
 
     def __str__(self):
         return f"Task-{self.uuid}"
@@ -43,7 +40,10 @@ class Pipeline:
                 self.status = Status.FAIL
             self.save()
             return True
-    def __rshift__(self, next: ExtractBase | TransformBase | LoadBase | 'FanIn') -> "Pipeline":
+
+    def __rshift__(
+        self, next: ExtractBase | TransformBase | LoadBase | "FanIn"
+    ) -> "Pipeline":
         """
         The `>>` operator for the tiny-blocks library.
         """

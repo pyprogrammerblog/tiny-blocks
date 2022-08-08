@@ -44,7 +44,8 @@ class ExtractStorage(ExtractBase):
     Params:
         path: (str). Source URL file.
         kwargs: (dict). Defined in `KwargsExtractStorage` class.
-            For more info: https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+            For more info: https://pandas.pydata.org/docs/reference
+            /api/pandas.read_csv.html
 
     Example:
         >>> import pandas as pd

@@ -43,7 +43,8 @@ class ExtractCSV(ExtractBase):
     Params:
         path: (FilePath). Source path file.
         kwargs: (dict). Defined in `KwargsExtractCSV` class.
-            For more info: https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+            For more info: https://pandas.pydata.org/docs
+            /reference/api/pandas.read_csv.html
 
     Example:
         >>> import pandas as pd
