@@ -45,6 +45,7 @@ class Pipeline:
         # Pipeline
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> extract_from_csv >> fill_na >> load_to_sql
+
         - Pipeline: My Pipeline
             Started: 2022-08-08T16:11:30.134018
             Finished: 2022-08-08T16:11:35.134018
@@ -93,7 +94,7 @@ class Pipeline:
         """
         Current output
         """
-        msg = f"- Pipeline: {self.name}"
+        msg = f"\n- Pipeline: {self.name}"
         msg += f"\n\t Started: {self.start_time}"
         msg += f"\n\t Finished: {self.end_time}"
         msg += f"\n\t Status: {self._status}"
