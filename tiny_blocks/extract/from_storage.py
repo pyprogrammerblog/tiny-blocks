@@ -22,7 +22,7 @@ class KwargsExtractStorage(KwargsExtractBase):
     sep: str = "|"
     header: str | int | List[int] | None = "infer"
     names: List[str] = None
-    index_col: int | str | Sequence[str] | Sequence[int] | False = None
+    index_col: int | str | Sequence[str] | Sequence[int] = None
     usecols: List[str] = None
     squeze: bool = False
     prefix: str = None

@@ -25,13 +25,12 @@ class KwargsFillNa(KwargsTransformBase):
 
 class Fillna(TransformBase):
     """
-    Fillna Block
+    Fill Nan Block
 
     Defines the fill Nan values functionality
 
     Params:
-        value: (int, str, dict). Renamed columns.
-            Key defines old column name and value new column name.
+        value: (int, str, dict). Value to be filled.
         kwargs: (dict). Defined in `KwargsFillNa` class.
     """
 
@@ -43,7 +42,7 @@ class Fillna(TransformBase):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        Drop NaN
+        Fill NaN values
         """
         for chunk in generator:
             chunk = chunk.fillna(value=self.value, **self.kwargs.to_dict())

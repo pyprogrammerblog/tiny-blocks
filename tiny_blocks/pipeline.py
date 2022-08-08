@@ -1,12 +1,15 @@
 import logging
 import sys
 import traceback
+from functools import reduce
+from typing import List, Callable, Union
 from datetime import datetime
+
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.extract.base import ExtractBase
 
-__all__ = ["FanIn", "FanOut", "Pipeline"]
+__all__ = ["FanIn", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +44,7 @@ class Pipeline:
         # ETL Blocks
         >>> from_csv = ExtractCSV(path='/path/to/file.csv')
         >>> to_sql = LoadSQL(dsn_conn='psycopg2+postgres://...')
-        >>> fill_na = Fillna()
+        >>> fill_na = Fillna()  # fill None values
 
         # Pipeline
         >>> with Pipeline(name="My Pipeline") as pipe:
@@ -70,6 +73,7 @@ class Pipeline:
         self._status: str = Status.PENDING
         self._count_retries: int = 0
         self._output_message: str = ""
+        self._tasks: List[Callable] = []
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
@@ -81,7 +85,7 @@ class Pipeline:
             self._status = Status.SUCCESS
             self.end_time = datetime.utcnow()
             if not self.supress_output_message:
-                sys.stdout.write(self.stdout_info())
+                sys.stdout.write(self.current_status())
         else:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
@@ -92,10 +96,10 @@ class Pipeline:
                 self.end_time = datetime.utcnow()
                 self._status = Status.FAIL
                 if not self.supress_output_message:
-                    sys.stdout.write(self.stdout_info())
+                    sys.stdout.write(self.current_status())
                 return self.supress_exception
 
-    def stdout_info(self) -> str:
+    def current_status(self) -> str:
         """
         Current output
         """
@@ -107,46 +111,24 @@ class Pipeline:
         return msg
 
     def __rshift__(
-        self, next: ExtractBase | TransformBase | LoadBase | "FanIn"
+        self, next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"]
     ) -> "Pipeline":
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, ExtractBase):
-            self._prev_gen = [next.get_iter()]
+        if isinstance(next, ExtractBase | TransformBase | FanIn):
+            self._tasks.append(next.get_iter)  # append signatures
             return self
-        elif isinstance(next, TransformBase):
-            generator = next.get_iter(*self._generator)
-            return Pipeline(generator)
         elif isinstance(next, LoadBase):
-            next.exhaust(*self.generator)
+            generator = reduce(lambda f, g: g(*f), list(self._tasks))
+            next.exhaust(generator=generator)
         else:
-            raise ValueError("Think about this")
+            raise ValueError("Unsupported Block Type")
 
 
 class FanIn:
-    def __init__(self, *args: ExtractBase | Pipeline):
-        self.generators = []
-        for arg in args:
-            if isinstance(arg, ExtractBase):
-                self.generators.append(arg.get_iter())
-            elif isinstance(arg, Pipeline):
-                self.generators.append(*arg.generator)
-            else:
-                raise ValueError("Thinks about this")
+    def __init__(self, *blocks: ExtractBase | TransformBase):
+        self.blocks = blocks
 
-    def __rshift__(self, next: TransformBase | LoadBase):
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            generator = next.get_iter(*self.generators)
-            return Pipeline(generator)
-        elif isinstance(next, LoadBase):
-            next.exhaust(*self.generators)
-        else:
-            raise ValueError("Wrong block type")
-
-
-class FanOut:
-    pass
+    def get_iter(self) -> List[Callable]:
+        return [block.get_iter for block in self.blocks]
