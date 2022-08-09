@@ -55,9 +55,6 @@ class FromSQLQuery(ExtractBase):
             engine.dispose()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        """
-        Get Iterator
-        """
         with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()
             for chunk in pd.read_sql_query(sql=self.sql, con=conn, **kwargs):
