@@ -120,9 +120,9 @@ class Pipeline:
 
 class FanIn:
     """
-    Fan In
-
-    Gather generators and send them to the next block
+    Gather multiple operations and send them to the next block.
+    The next block must accept multiple arguments, like for example:
+    ``tiny_blocks.tranform.Merge``
 
     Usage:
         >>> from tiny_blocks.extract import FromCSV
@@ -132,8 +132,8 @@ class FanIn:
         >>>
         >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
         >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>> merge = Merge(left_on="A", right_on="B")
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> FanIn(from_csv_1, from_csv_2)  >> merge >> to_sql

@@ -46,6 +46,9 @@ Make sure you had install the package by doing ``pip install tiny-blocks`` and t
 
    installation
    tiny-blocks
+   extract
+   transform
+   load
    license
    help
 
