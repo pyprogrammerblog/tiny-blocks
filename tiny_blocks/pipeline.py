@@ -132,7 +132,7 @@ class FanIn:
         >>>
         >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
         >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
-        >>> merge = Merge(left_on="A", right_on="B")
+        >>> merge = Merge(left_on="A", right_on="B", how="inner")
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:

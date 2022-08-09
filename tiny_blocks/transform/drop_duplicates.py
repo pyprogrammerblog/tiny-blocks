@@ -23,12 +23,7 @@ class KwargsDropDuplicates(KwargsTransformBase):
 
 class DropDuplicates(TransformBase):
     """
-    Drop Duplicates Block
-
-    Defines the drop duplicates functionality
-
-    Params:
-        kwargs: (dict). Defined in `KwargsDropDuplicates` class.
+    Drop Duplicates Block. Defines the drop duplicates functionality
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
@@ -37,9 +32,7 @@ class DropDuplicates(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Drop Duplicates
-        """
+
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:

@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 class KwargsAstype(KwargsTransformBase):
     """
-    Kwargs Astype
-
     For more info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.astype.html
     """
@@ -23,15 +21,7 @@ class KwargsAstype(KwargsTransformBase):
 
 class Astype(TransformBase):
     """
-    Astype Block
-
-    Defines the casting of types for dataframes or columns
-
-    Params:
-        dtype: (dict). Key defines the column name and
-            the value defines the new casting data type
-        kwargs: (dict). Defined in `KwargsAstype` class.
-    """
+    Astype Block. Defines the casting of types for dataframes or columns"""
 
     name: Literal["astype"] = "astype"
     dtype: Dict[str, str]

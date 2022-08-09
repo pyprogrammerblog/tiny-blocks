@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 class KwargsFromSQLTable(KwargsExtractBase):
     """
-    Kwargs for Read SQL Table
-
     For more info: https://pandas.pydata.org/docs/
     reference/api/pandas.read_sql_table.html
     """
@@ -30,16 +28,7 @@ class KwargsFromSQLTable(KwargsExtractBase):
 
 
 class FromSQLTable(ExtractBase):
-    """
-    Read SQL Table Block
-
-    Defines the read SQL Table Operation.
-
-    Params:
-        dsn_conn: (str). Source path file.
-        table: (str). Table name.
-        kwargs: (dict). Defined in `KwargsExtractSQLTable` class.
-    """
+    """Read SQL Table Block. Defines the read SQL Table Operation."""
 
     name: Literal["read_sql_table"] = "read_sql_table"
     dsn_conn: str = Field(..., description="Connection string")
@@ -58,9 +47,6 @@ class FromSQLTable(ExtractBase):
             engine.dispose()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        """
-        Get Iterator
-        """
         with self.connect_db() as conn:
             for chunk in pd.read_sql_table(
                 table_name=self.table_name, con=conn, **self.kwargs.to_dict()

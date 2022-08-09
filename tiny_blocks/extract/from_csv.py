@@ -13,8 +13,6 @@ __all__ = ["FromCSV", "KwargsFromCSV"]
 
 class KwargsFromCSV(KwargsExtractBase):
     """
-    Kwargs for ReadCSV
-
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
     """
@@ -35,22 +33,12 @@ class KwargsFromCSV(KwargsExtractBase):
 
 
 class FromCSV(ExtractBase):
-    """ReadCSV Block
-
-    Defines the read CSV Operation.
-
-    Params:
-        path: (FilePath). Source path file.
-        kwargs: (dict). Defined in `KwargsExtractCSV` class.
-    """
+    """ReadCSV Block. Defines the read CSV Operation"""
 
     name: Literal["read_csv"] = "read_csv"
     path: FilePath = Field(..., description="Destination path")
     kwargs: KwargsFromCSV = KwargsFromCSV()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        """
-        Get Iterator
-        """
         for chunk in pd.read_csv(self.path, **self.kwargs.to_dict()):
             yield chunk

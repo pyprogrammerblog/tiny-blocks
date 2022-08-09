@@ -20,12 +20,7 @@ class KwargsApply(KwargsTransformBase):
 
 class Apply(TransformBase):
     """
-    Apply function
-
-    Defines block to apply function
-
-    Params:
-        kwargs: (dict). Defined in `KwargsApply` class.
+    Apply function. Defines block to apply function
     """
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
@@ -36,9 +31,7 @@ class Apply(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Apply function
-        """
+
         func = lru_cache(lambda x: self.func(x))
 
         for chunk in generator:

@@ -13,7 +13,8 @@ __all__ = ["ToStorage", "KwargsToStorage"]
 
 class KwargsToStorage(KwargsExtractBase):
     """
-    Kwargs for ReadCSV
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
     sep: str = "|"
@@ -24,13 +25,8 @@ class KwargsToStorage(KwargsExtractBase):
 
 class ToStorage(ExtractBase):
     """
-    Write CSV to Storage Block
-
-    Defines the load to Storage Block Operation.
-
-    Params:
-        path (Path). Destination Path.
-        kwargs: (dict). Defined in `KwargsLoadStorage` class.
+    Write CSV to Storage Block.
+    Defines the load to Storage Block Operation
     """
 
     name: Literal["read_csv"] = "read_csv"
@@ -38,8 +34,5 @@ class ToStorage(ExtractBase):
     kwargs: KwargsToStorage = KwargsToStorage()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
-        """
-        Exhaust Iterator
-        """
         for chunk in generator:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

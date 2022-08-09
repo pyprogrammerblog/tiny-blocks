@@ -20,12 +20,7 @@ class KwargsDropNa(KwargsTransformBase):
 
 class DropNa(TransformBase):
     """
-    Drop Nan Block
-
-    Defines the drop None values functionality
-
-    Params:
-        kwargs: (dict). Defined in `KwargsDropNa` class.
+    Drop Nan Block. Defines the drop None values functionality
     """
 
     name: Literal["drop_na"] = "drop_na"
@@ -34,9 +29,7 @@ class DropNa(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Drop NaN
-        """
+
         for chunk in generator:
             chunk = chunk.dropna(**self.kwargs.to_dict())
             yield chunk

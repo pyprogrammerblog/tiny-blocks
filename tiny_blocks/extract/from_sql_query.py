@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 class KwargsFromSQLQuery(KwargsExtractBase):
     """
-    Kwargs for ReadSQL
-
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.read_sql_query.html
     """
@@ -31,16 +29,7 @@ class KwargsFromSQLQuery(KwargsExtractBase):
 
 
 class FromSQLQuery(ExtractBase):
-    """
-    Read SQL Query Block
-
-    Defines the read SQL Query Operation.
-
-    Params:
-        dsn_conn: (str). Source path file.
-        sql: (str). SQL Query String.
-        kwargs: (dict). Defined in `KwargsExtractSQLQuery` class.
-    """
+    """Read SQL Query Block. Defines the read SQL Query Operation"""
 
     name: Literal["read_sql"] = "read_sql"
     dsn_conn: str = Field(..., description="Connection string")

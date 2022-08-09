@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 class KwargsFillNa(KwargsTransformBase):
     """
-    Kwargs for FillNa Block
-
     For more info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
     """
@@ -25,13 +23,7 @@ class KwargsFillNa(KwargsTransformBase):
 
 class Fillna(TransformBase):
     """
-    Fill Nan Block
-
-    Defines the fill Nan values functionality
-
-    Params:
-        value: (int, str, dict). Value to be filled.
-        kwargs: (dict). Defined in `KwargsFillNa` class.
+    Fill Nan Block. Defines the fill Nan values functionality
     """
 
     name: Literal["fillna"] = "fillna"
@@ -41,9 +33,6 @@ class Fillna(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Fill NaN values
-        """
         for chunk in generator:
             chunk = chunk.fillna(value=self.value, **self.kwargs.to_dict())
             yield chunk
