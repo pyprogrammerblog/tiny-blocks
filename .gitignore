@@ -93,3 +93,4 @@ design/.DS_Store
 .DS_Store
 flake8.txt
 .dockerignore
+/source/

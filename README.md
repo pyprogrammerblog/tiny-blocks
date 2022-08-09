@@ -40,15 +40,8 @@ drop_duplicates = DropDuplicates()
 fill_na = Fillna(value="Hola Mundo")
 to_sql = ToSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
 
-# you can chaine your generators passing them to the 'get_iter' method
-with Pipeline(name="My Pipeline"):
-    generator = from_csv.get_iter()
-    generator = drop_duplicates.get_iter(generator)
-    generator = fill_na.get_iter(generator)            # no processing till this point
-    to_sql.exhaust(generator)                          # exhaust the generators
-
-# Or you can also run it as a Pipeline
-with Pipeline(name="My Pipeline") as pipe:
+# Run the Pipeline
+with Pipeline(name="The cool pipeline") as pipe:
     pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
 
