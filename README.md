@@ -38,10 +38,10 @@ from tiny_blocks import Pipeline
 from_csv = FromCSV(path='/path/to/file.csv')
 drop_duplicates = DropDuplicates()
 fill_na = Fillna(value="Hola Mundo")
-to_sql = ToSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
 
 # Run the Pipeline
-with Pipeline(name="The cool pipeline") as pipe:
+with Pipeline(name="Pipeline") as pipe:
     pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
 
