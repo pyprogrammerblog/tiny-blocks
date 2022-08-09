@@ -1,27 +1,27 @@
 from tiny_blocks.extract.from_csv import (
-    ExtractCSV,
-    KwargsExtractCSV,
+    FromCSV,
+    KwargsFromCSV,
 )
 from tiny_blocks.extract.from_sql_table import (
-    ExtractSQLTable,
-    KwargsExtractSQLTable,
+    FromSQLTable,
+    KwargsFromSQLTable,
 )
 from tiny_blocks.extract.from_sql_query import (
-    KwargsExtractSQLQuery,
-    ExtractSQLQuery,
+    KwargsFromSQLQuery,
+    FromSQLQuery,
 )
 from tiny_blocks.extract.from_storage import (
-    KwargsExtractStorage,
-    ExtractStorage,
+    KwargsFromStorage,
+    FromStorage,
 )
 
 __all__ = [
-    "ExtractCSV",
-    "KwargsExtractCSV",
-    "ExtractSQLTable",
-    "KwargsExtractSQLTable",
-    "ExtractSQLQuery",
-    "KwargsExtractSQLQuery",
-    "ExtractStorage",
-    "KwargsExtractStorage",
+    "FromCSV",
+    "KwargsFromCSV",
+    "FromSQLTable",
+    "KwargsFromSQLTable",
+    "FromSQLQuery",
+    "KwargsFromSQLQuery",
+    "FromStorage",
+    "KwargsFromStorage",
 ]

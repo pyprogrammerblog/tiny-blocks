@@ -8,13 +8,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 from tiny_blocks.load.base import KwargsLoadBase, LoadBase
 
-__all__ = ["LoadSQL", "KwargsLoadSQL"]
+__all__ = ["ToSQL", "KwargsToSQL"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadSQL(KwargsLoadBase):
+class KwargsToSQL(KwargsLoadBase):
     """
     Kwargs for Load SQL Block
     """
@@ -25,7 +25,7 @@ class KwargsLoadSQL(KwargsLoadBase):
     dtype: Dict = None
 
 
-class LoadSQL(LoadBase):
+class ToSQL(LoadBase):
     """
     Load SQL Block
 
@@ -40,7 +40,7 @@ class LoadSQL(LoadBase):
     name: Literal["to_sql"] = "to_sql"
     dsn_conn: str = Field(..., description="Connection string")
     table_name: str = Field(..., description="Destination Table")
-    kwargs: KwargsLoadSQL = KwargsLoadSQL()
+    kwargs: KwargsToSQL = KwargsToSQL()
 
     @contextmanager
     def connect_db(self) -> Connection:

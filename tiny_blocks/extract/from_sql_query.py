@@ -8,13 +8,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
-__all__ = ["ExtractSQLQuery", "KwargsExtractSQLQuery"]
+__all__ = ["FromSQLQuery", "KwargsFromSQLQuery"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsExtractSQLQuery(KwargsExtractBase):
+class KwargsFromSQLQuery(KwargsExtractBase):
     """
     Kwargs for ReadSQL
 
@@ -30,7 +30,7 @@ class KwargsExtractSQLQuery(KwargsExtractBase):
     chunksize: int = 1000
 
 
-class ExtractSQLQuery(ExtractBase):
+class FromSQLQuery(ExtractBase):
     """
     Read SQL Query Block
 
@@ -45,7 +45,7 @@ class ExtractSQLQuery(ExtractBase):
     name: Literal["read_sql"] = "read_sql"
     dsn_conn: str = Field(..., description="Connection string")
     sql: str = Field(..., description="SQL Query")
-    kwargs: KwargsExtractSQLQuery = KwargsExtractSQLQuery()
+    kwargs: KwargsFromSQLQuery = KwargsFromSQLQuery()
 
     @contextmanager
     def connect_db(self) -> Connection:

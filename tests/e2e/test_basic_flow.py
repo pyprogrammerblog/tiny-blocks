@@ -1,7 +1,7 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import ExtractSQLTable
-from tiny_blocks.extract.from_csv import ExtractCSV
-from tiny_blocks.load.to_csv import LoadCSV
+from tiny_blocks.extract.from_sql_table import FromSQLTable
+from tiny_blocks.extract.from_csv import FromCSV
+from tiny_blocks.load.to_csv import ToCSV
 from tiny_blocks.transform.fillna import Fillna
 from tiny_blocks.transform.drop_duplicates import DropDuplicates
 from tiny_blocks.transform.merge import Merge
@@ -13,8 +13,8 @@ def test_basic_flow(csv_source, postgres_source, csv_sink):
     Test a basic ETL pipeline
     """
     # 1. Extract from two sources
-    csv = ExtractCSV(path=csv_source)
-    postgres = ExtractSQLTable(dsn_conn=postgres_source, table_name="test")
+    csv = FromCSV(path=csv_source)
+    postgres = FromSQLTable(dsn_conn=postgres_source, table_name="test")
 
     # 2. Transform
     merge = Merge(how="left", left_on="c", right_on="d")
@@ -22,7 +22,7 @@ def test_basic_flow(csv_source, postgres_source, csv_sink):
     drop_dupl = DropDuplicates()
 
     # 3. Load
-    to_csv = LoadCSV(path=csv_sink)
+    to_csv = ToCSV(path=csv_sink)
 
     ###########
     # Pipeline

@@ -8,10 +8,10 @@ from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["ExtractCSV", "KwargsExtractCSV"]
+__all__ = ["FromCSV", "KwargsFromCSV"]
 
 
-class KwargsExtractCSV(KwargsExtractBase):
+class KwargsFromCSV(KwargsExtractBase):
     """
     Kwargs for ReadCSV
 
@@ -34,7 +34,7 @@ class KwargsExtractCSV(KwargsExtractBase):
     chunksize: int = 1000
 
 
-class ExtractCSV(ExtractBase):
+class FromCSV(ExtractBase):
     """ReadCSV Block
 
     Defines the read CSV Operation.
@@ -46,7 +46,7 @@ class ExtractCSV(ExtractBase):
 
     name: Literal["read_csv"] = "read_csv"
     path: FilePath = Field(..., description="Destination path")
-    kwargs: KwargsExtractCSV = KwargsExtractCSV()
+    kwargs: KwargsFromCSV = KwargsFromCSV()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
         """

@@ -6,13 +6,13 @@ import pandas as pd
 from pydantic import Field
 from tiny_blocks.load.base import KwargsLoadBase, LoadBase
 
-__all__ = ["LoadCSV", "KwargsLoadCSV"]
+__all__ = ["ToCSV", "KwargsToCSV"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadCSV(KwargsLoadBase):
+class KwargsToCSV(KwargsLoadBase):
     """
     Kwargs for WriteCSV Block
     """
@@ -22,7 +22,7 @@ class KwargsLoadCSV(KwargsLoadBase):
     chunksize: int = 1000
 
 
-class LoadCSV(LoadBase):
+class ToCSV(LoadBase):
     """
     Write CSV Block
 
@@ -34,7 +34,7 @@ class LoadCSV(LoadBase):
     """
 
     name: Literal["to_csv"] = "to_csv"
-    kwargs: KwargsLoadCSV = KwargsLoadCSV()
+    kwargs: KwargsToCSV = KwargsToCSV()
     path: Path = Field(..., description="Destination path")
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):

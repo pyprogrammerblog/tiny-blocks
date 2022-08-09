@@ -1,11 +1,11 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.transform.dropna import DropNa
 
 
 def test_drop_na(sqlite_source, sqlite_sink):
 
-    extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
+    extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
     drop_na = DropNa()
 
     generator = extract_sql.get_iter()

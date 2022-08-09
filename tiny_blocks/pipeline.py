@@ -35,15 +35,15 @@ class Pipeline:
         supress_exception: (bool). Supress Pipeline exception if it happens
 
     Usage:
-        >>> from tiny_blocks.extract import ExtractCSV
+        >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.transform import DropDuplicates
         >>> from tiny_blocks.transform import Fillna
-        >>> from tiny_blocks.load import LoadSQL
+        >>> from tiny_blocks.load import ToSQL
         >>> from tiny_blocks import Pipeline
 
         # ETL Blocks
-        >>> from_csv = ExtractCSV(path='/path/to/file.csv')
-        >>> to_sql = LoadSQL(dsn_conn='psycopg2+postgres://...')
+        >>> from_csv = FromCSV(path='/path/to/file.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>> fill_na = Fillna()  # fill None values
 
         # Pipeline

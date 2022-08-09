@@ -1,16 +1,16 @@
-from tiny_blocks.load.to_csv import LoadCSV, KwargsLoadCSV
-from tiny_blocks.load.to_sql import LoadSQL, KwargsLoadSQL
+from tiny_blocks.load.to_csv import ToCSV, KwargsToCSV
+from tiny_blocks.load.to_sql import ToSQL, KwargsToSQL
 from tiny_blocks.load.to_storage import (
-    LoadStorage,
-    KwargsLoadStorage,
+    ToStorage,
+    KwargsToStorage,
 )
 
 
 __all__ = [
-    "LoadCSV",
-    "KwargsLoadCSV",
-    "LoadSQL",
-    "KwargsLoadSQL",
-    "LoadStorage",
-    "KwargsLoadStorage",
+    "ToCSV",
+    "KwargsToCSV",
+    "ToSQL",
+    "KwargsToSQL",
+    "ToStorage",
+    "KwargsToStorage",
 ]

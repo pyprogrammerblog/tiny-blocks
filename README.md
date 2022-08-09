@@ -28,19 +28,25 @@ Basic usage example
 --------------------
 
 ```python
-from tiny_blocks.extract import ExtractCSV
+from tiny_blocks.extract import FromCSV
 from tiny_blocks.transform import DropDuplicates
 from tiny_blocks.transform import Fillna
-from tiny_blocks.load import LoadSQL
+from tiny_blocks.load import ToSQL
 from tiny_blocks import Pipeline
 
 # ETL Blocks
-from_csv = ExtractCSV(path='/path/to/file.csv')
+from_csv = FromCSV(path='/path/to/file.csv')
 drop_duplicates = DropDuplicates()
 fill_na = Fillna(value="Hola Mundo")
-to_sql = LoadSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+to_sql = ToSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
 
-# Pipeline
+with Pipeline(name="My Pipeline"):
+    generator = from_csv.get_iter()
+    generator = drop_duplicates.get_iter(generator)
+    generator = fill_na.get_iter(generator)            # no processing till this point
+    to_sql.exhaust(generator)                          # exhaust the generator
+
+# You can run it also as a Pipeline
 with Pipeline(name="My Pipeline") as pipe:
     pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
