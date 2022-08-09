@@ -71,19 +71,18 @@ class Pipeline:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if not exc_type:
-            self._status = Status.SUCCESS
-            self.end_time = datetime.utcnow()
-            if not self.supress_output_message:
-                sys.stdout.write(self.current_status())
-        else:
+        if exc_type:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
             self.end_time = datetime.utcnow()
             self._status = Status.FAIL
-            if not self.supress_output_message:
-                sys.stdout.write(self.current_status())
-            return self.supress_exception
+        else:
+            self._status = Status.SUCCESS
+            self.end_time = datetime.utcnow()
+
+        if not self.supress_output_message:
+            sys.stdout.write(self.current_status())
+        return self.supress_exception
 
     def current_status(self) -> str:
         """
@@ -123,13 +122,13 @@ class FanIn:
         >>> from tiny_blocks import FanIn, Pipeline
         >>> from tiny_blocks.transform import Merge
         >>>
-        >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
-        >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
-        >>> merge = Merge(left_on="A", right_on="B", how="inner")
+        >>> csv_1 = FromCSV(path='/path/to/file1.csv')
+        >>> csv_2 = FromCSV(path='/path/to/file2.csv')
+        >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
-        >>>     pipe >> FanIn(from_csv_1, from_csv_2)  >> merge >> to_sql
+        >>>     pipe >> FanIn(csv_1, csv_2)  >> merge >> to_sql
     """
 
     def __init__(self, *blocks: ExtractBase | TransformBase):
