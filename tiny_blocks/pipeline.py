@@ -2,8 +2,10 @@ import logging
 import sys
 import traceback
 from functools import reduce
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Iterator
 from datetime import datetime
+
+import pandas as pd
 
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
@@ -35,7 +37,6 @@ class Pipeline:
 
     Usage:
         >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.transform import DropDuplicates
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.load import ToSQL
         >>> from tiny_blocks import Pipeline
@@ -104,8 +105,8 @@ class Pipeline:
             self._callables.append(next.get_iter)  # append signatures
             return self
         elif isinstance(next, LoadBase):
-            generator = reduce(lambda f, g: g(*f), list(self._callables))
-            next.exhaust(generator=generator)
+            generator = reduce(lambda f, g: g(*f()), list(self._callables))
+            next.exhaust(generator)
         else:
             raise ValueError("Unsupported Block Type")
 
@@ -115,6 +116,8 @@ class FanIn:
     Gather multiple operations and send them to the next block.
     The next block must accept multiple arguments, like for example:
     ``tiny_blocks.tranform.Merge``
+
+    For now, FanIn can just gather Extraction Blocks.
 
     Usage:
         >>> from tiny_blocks.extract import FromCSV
@@ -131,8 +134,8 @@ class FanIn:
         >>>     pipe >> FanIn(csv_1, csv_2)  >> merge >> to_sql
     """
 
-    def __init__(self, *blocks: ExtractBase | TransformBase):
+    def __init__(self, *blocks: ExtractBase):
         self.blocks = blocks
 
-    def get_iter(self) -> List[Callable]:
-        return [block.get_iter for block in self.blocks]
+    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+        return [block.get_iter() for block in self.blocks]
