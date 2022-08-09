@@ -32,5 +32,6 @@ def test_basic_flow(csv_source, postgres_source, csv_sink):
     # testing
     assert to_csv.path.exists()
     df = pd.read_csv(to_csv.path, sep="|")
+    assert not df.empty
     assert df.shape == (3, 6)
     assert not df.isnull().values.any()
