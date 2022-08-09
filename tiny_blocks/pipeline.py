@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 class Status:
     PENDING: str = "PENDING"
     STARTED: str = "STARTED"
-    RETRY: str = "RETRY"
     SUCCESS: str = "SUCCESS"
     FAIL: str = "FAIL"
 
@@ -63,7 +62,6 @@ class Pipeline:
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
         self._status: str = Status.PENDING
-        self._count_retries: int = 0
         self._output_message: str = ""
         self._callables: List[Callable] = []
 
@@ -81,25 +79,20 @@ class Pipeline:
         else:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
-            if self._count_retries < self.max_retries:
-                self._count_retries += 1
-                self._status = Status.RETRY
-            else:
-                self.end_time = datetime.utcnow()
-                self._status = Status.FAIL
-                if not self.supress_output_message:
-                    sys.stdout.write(self.current_status())
-                return self.supress_exception
+            self.end_time = datetime.utcnow()
+            self._status = Status.FAIL
+            if not self.supress_output_message:
+                sys.stdout.write(self.current_status())
+            return self.supress_exception
 
     def current_status(self) -> str:
         """
         Return a string message with current pipeline information.
         """
         msg = f"- Pipeline: {self.name}"
-        msg += f"\n\t Started: {self.start_time.isoformat()}"
-        msg += f"\n\t Finished: {self.end_time.isoformat()}"
+        msg += f"\n\t Started at: {self.start_time.isoformat()}"
+        msg += f"\n\t Finished at: {self.end_time.isoformat()}"
         msg += f"\n\t Status: {self._status}"
-        msg += f"\n\t Number of retries: {self._count_retries}"
         return msg
 
     def __rshift__(
