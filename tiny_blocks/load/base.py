@@ -22,4 +22,7 @@ class LoadBase(BaseBlock):
 
     @abc.abstractmethod
     def exhaust(self, generator: Iterator[pd.DataFrame]):
+        """
+        Implement the iterator exhaustion
+        """
         raise NotImplementedError

@@ -1,11 +1,11 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.transform.rename import Rename
 
 
 def test_rename(sqlite_source, sqlite_sink):
 
-    extract_sql = ExtractSQLTable(dsn_conn=sqlite_source, table_name="test")
+    extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
     as_type = Rename(columns={"d": "Hola", "e": "a", "f": "todos"})
 
     generator = extract_sql.get_iter()

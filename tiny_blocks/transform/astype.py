@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 class KwargsAstype(KwargsTransformBase):
     """
-    Kwargs Astype
+    For more info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.astype.html
     """
 
     errors: Literal["raise", "ignore"] = "ignore"
@@ -20,8 +21,7 @@ class KwargsAstype(KwargsTransformBase):
 
 class Astype(TransformBase):
     """
-    Astype Block
-    """
+    Astype Block. Defines the casting of types for dataframes or columns"""
 
     name: Literal["astype"] = "astype"
     dtype: Dict[str, str]
@@ -31,7 +31,7 @@ class Astype(TransformBase):
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
-        Drop NaN
+        Cast types
         """
         for chunk in generator:
             chunk = chunk.astype(dtype=self.dtype, **self.kwargs.to_dict())

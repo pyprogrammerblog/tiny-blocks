@@ -22,7 +22,7 @@ class KwargsMerge(KwargsTransformBase):
 
 class Merge(TransformBase):
     """
-    Merge
+    Merge. Defines merge functionality between two blocks.
     """
 
     name: Literal["merge"] = "merge"
@@ -36,9 +36,7 @@ class Merge(TransformBase):
         left: Iterator[pd.DataFrame],
         right: Iterator[pd.DataFrame],
     ) -> Iterator[pd.DataFrame]:
-        """
-        Drop Duplicates
-        """
+
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name
         ) as con:

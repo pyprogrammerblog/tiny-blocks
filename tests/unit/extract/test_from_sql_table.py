@@ -1,10 +1,10 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import FromSQLTable
 
 
 def test_extract_from_sqlite(sqlite_source):
 
-    read_sql_table = ExtractSQLTable(dsn_conn=sqlite_source, table_name="TEST")
+    read_sql_table = FromSQLTable(dsn_conn=sqlite_source, table_name="TEST")
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate
@@ -15,9 +15,7 @@ def test_extract_from_sqlite(sqlite_source):
 
 def test_extract_from_postgres(postgres_source):
 
-    read_sql_table = ExtractSQLTable(
-        dsn_conn=postgres_source, table_name="test"
-    )
+    read_sql_table = FromSQLTable(dsn_conn=postgres_source, table_name="test")
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate
@@ -28,7 +26,7 @@ def test_extract_from_postgres(postgres_source):
 
 def test_extract_from_mysql(mysql_source):
 
-    read_sql_table = ExtractSQLTable(dsn_conn=mysql_source, table_name="test")
+    read_sql_table = FromSQLTable(dsn_conn=mysql_source, table_name="test")
     generator = read_sql_table.get_iter()
 
     # exhaust the generator and validate

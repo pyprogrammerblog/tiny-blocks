@@ -21,9 +21,7 @@ class KwargsSort(KwargsTransformBase):
 
 
 class Sort(TransformBase):
-    """
-    DropDuplicates
-    """
+    """Sort Block. Defines the Sorting operation"""
 
     name: Literal["sort"] = "sort"
     by: List[str]
@@ -33,9 +31,6 @@ class Sort(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Drop Duplicates
-        """
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:

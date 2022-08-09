@@ -17,20 +17,20 @@ Check your installed dependencies for security vulnerabilities
 docker-compose run --rm app poetry check
 ```
 
-Finally, run the tests:
+Run the tests:
 ```shell
 docker-compose run --rm app poetry run pytest
 ```
 
+Shut down all services
+```shell
+docker-compose down
+```
 
 ### Local development
 
 These instructions assume that ``git``, ``docker``, and ``docker-compose`` are
 installed on your host machine.
-
-This project makes use of Pipenv. If you are new to pipenv, install it and
-study the output of ``pipenv --help``, especially the commands ``pipenv lock``
-and ``pipenv sync``. Or read the [docs](https://docs.pipenv.org/).
 
 First, clone this repo and make some required directories.
 
@@ -39,49 +39,27 @@ git clone https://github.com/pyprogrammerblog/tiny-blocks.git
 cd tiny-blocks
 ```
 
-Then build the docker image, providing your user and group ids for correct file
-permissions.
+Then build the docker image
 
 ```shell
-docker-compose build
+docker-compose build app
 ```
 
-Then run the app and access inside the docker.
+Install packages
 
 ```shell
-docker-compose run --rm app bash
-(docker)
+docker-compose run --rm app poetry install
 ```
 
-We create a Pipenv virtual environment, adding the `--site-packages` switch
-to be able to import python packages that you installed with apt inside the
-docker.
+Run test suite
 
 ```shell
-pipenv --site-packages
+docker-compose run --rm app poetry run pytest
 ```
 
-If you want to bump package versions, regenerate the `Pipfile.lock`.
-
+You can access to the shell
 ```shell
-pipenv lock
-```
-
-Then install the packages (including dev packages) listed in `Pipfile.lock`.
-
-```shell
-pipenv sync --dev
-```
-Then exit the docker shell (Ctrl + D)
-At this point, you may want to test your installation.
-
-```shell
-docker-compose run --rm app pipenv run pytest --cov=smart_stream
-```
-Or start working with the tiny-blocks right away.
-
-```shell
-docker-compose up
+docker-compose run --rm app poetry shell
 ```
 
 To stop all running containers without removing them, do this.
@@ -95,7 +73,7 @@ docker-compose stop
 Hit the command
 
 ```shell
-docker-compose run --rm -p 8888:8888 app pipenv shell
+docker-compose run --rm -p 8888:8888 app poetry shell
 ```
 
 Then inside the docker:

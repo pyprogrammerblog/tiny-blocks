@@ -8,12 +8,13 @@ from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["LoadStorage", "KwargsLoadStorage"]
+__all__ = ["ToStorage", "KwargsToStorage"]
 
 
-class KwargsLoadStorage(KwargsExtractBase):
+class KwargsToStorage(KwargsExtractBase):
     """
-    Kwargs for ReadCSV
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
     sep: str = "|"
@@ -22,20 +23,16 @@ class KwargsLoadStorage(KwargsExtractBase):
     storage_options: Dict[str, Any] = None
 
 
-class LoadStorage(ExtractBase):
+class ToStorage(ExtractBase):
     """
-    ReadCSV Block
+    Write CSV to Storage Block.
+    Defines the load to Storage Block Operation
     """
 
     name: Literal["read_csv"] = "read_csv"
     path: AnyUrl = Field(..., description="Destination path")
-    kwargs: KwargsLoadStorage = KwargsLoadStorage()
+    kwargs: KwargsToStorage = KwargsToStorage()
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
-        """
-        Write CSV Operation.
-
-        Exhaust the generator writing chucks to the Object Storage
-        """
         for chunk in generator:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

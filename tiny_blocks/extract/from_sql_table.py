@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, List, Literal
+from typing import Iterator, List, Literal, Tuple, Dict
 
 import pandas as pd
 from pydantic import Field
@@ -8,32 +8,32 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
-__all__ = ["ExtractSQLTable", "KwargsExtractSQLTable"]
+__all__ = ["FromSQLTable", "KwargsFromSQLTable"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsExtractSQLTable(KwargsExtractBase):
+class KwargsFromSQLTable(KwargsExtractBase):
     """
-    Kwargs for ReadSQL
+    For more info: https://pandas.pydata.org/docs/
+    reference/api/pandas.read_sql_table.html
     """
 
     index_col: str | List[str] = None
     coerce_float: bool = True
+    parse_dates: List | Tuple | Dict = None
     columns: List[str] = None
     chunksize: int = 1000
 
 
-class ExtractSQLTable(ExtractBase):
-    """
-    ReadSQL Block
-    """
+class FromSQLTable(ExtractBase):
+    """Read SQL Table Block. Defines the read SQL Table Operation."""
 
     name: Literal["read_sql_table"] = "read_sql_table"
     dsn_conn: str = Field(..., description="Connection string")
     table_name: str = Field(..., description="Table name")
-    kwargs: KwargsExtractSQLTable = KwargsExtractSQLTable()
+    kwargs: KwargsFromSQLTable = KwargsFromSQLTable()
 
     @contextmanager
     def connect_db(self) -> Connection:
@@ -47,9 +47,6 @@ class ExtractSQLTable(ExtractBase):
             engine.dispose()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        """
-        Read SQL
-        """
         with self.connect_db() as conn:
             for chunk in pd.read_sql_table(
                 table_name=self.table_name, con=conn, **self.kwargs.to_dict()

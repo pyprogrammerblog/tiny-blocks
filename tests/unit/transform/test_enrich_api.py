@@ -1,6 +1,6 @@
 import mock
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import ExtractSQLTable
+from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.transform.enrich_api import EnricherAPI, KwargsEnricherAPI
 
 
@@ -24,9 +24,7 @@ def test_enrich_from_api(sqlite_source):
     with mock.patch("requests.sessions.Session.get") as req:
         req.side_effect = [ResponseOk(), ResponseOk(), ResponseNotOk()]
 
-        extract_sql = ExtractSQLTable(
-            dsn_conn=sqlite_source, table_name="test"
-        )
+        extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
         kwargs = KwargsEnricherAPI(default_value="default")
         enrich = EnricherAPI(
             url="https://hola-mundo.com",

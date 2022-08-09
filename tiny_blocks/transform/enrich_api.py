@@ -25,7 +25,8 @@ class KwargsEnricherAPI(KwargsTransformBase):
 
 class EnricherAPI(TransformBase):
     """
-    Enrich from API source
+    Enrich from API source. This block has been inherited
+    from ``Apply`` Block
     """
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
@@ -37,9 +38,7 @@ class EnricherAPI(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Enrich from API
-        """
+
         func = lru_cache(lambda x: self.request_api_data(x))
 
         for chunk in generator:
@@ -47,12 +46,7 @@ class EnricherAPI(TransformBase):
             yield chunk
 
     def request_api_data(self, value):
-        """
-        Request Data from an API
-
-        :param value: Any value from a specific column
-        :return: A value from a API
-        """
+        """Request Data from an API"""
 
         retry_strategy = Retry(
             total=self.kwargs.total_retries,
@@ -65,11 +59,11 @@ class EnricherAPI(TransformBase):
             session.mount("http://", retry_adapter)
             response = session.get(
                 url=self.url,
-                json={"value", value},  # TODO to think about
+                json={"value", value},
                 timeout=self.kwargs.timeout,
             )
 
         if not response.ok:
             return self.kwargs.default_value
 
-        return response.json()["result"]  # TODO to think about
+        return response.json()["result"]

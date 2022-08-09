@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 class KwargsRename(KwargsTransformBase):
     """
-    Kwargs for Rename Block
+    For more info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     """
 
     pass
@@ -20,7 +21,7 @@ class KwargsRename(KwargsTransformBase):
 
 class Rename(TransformBase):
     """
-    Rename Block
+    Rename Block. Defines Rename columns functionality
     """
 
     name: Literal["rename"] = "rename"
@@ -30,9 +31,6 @@ class Rename(TransformBase):
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        """
-        Rename
-        """
         for chunk in generator:
             chunk = chunk.rename(columns=self.columns, **self.kwargs.to_dict())
             yield chunk

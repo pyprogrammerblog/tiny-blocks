@@ -21,7 +21,7 @@ class KwargsBase(BaseModel):
 
 class BaseBlock(BaseModel):
     """
-    Base DelayedTask class
+    Base Block class
     """
 
     uuid: UUID = Field(default_factory=uuid4, description="UUID")
@@ -29,4 +29,4 @@ class BaseBlock(BaseModel):
     description: str = Field(default=None, description="Description")
 
     def __str__(self):
-        return f"Block-{self.name.capitalize()}-{self.uuid}"
+        return f"Block-{self.name}-{self.uuid}"

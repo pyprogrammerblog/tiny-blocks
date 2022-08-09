@@ -6,15 +6,16 @@ import pandas as pd
 from pydantic import Field
 from tiny_blocks.load.base import KwargsLoadBase, LoadBase
 
-__all__ = ["LoadCSV", "KwargsLoadCSV"]
+__all__ = ["ToCSV", "KwargsToCSV"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsLoadCSV(KwargsLoadBase):
+class KwargsToCSV(KwargsLoadBase):
     """
-    Kwargs for WriteCSV Block
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
     sep: str = "|"
@@ -22,20 +23,13 @@ class KwargsLoadCSV(KwargsLoadBase):
     chunksize: int = 1000
 
 
-class LoadCSV(LoadBase):
-    """
-    WriteCSV Block
-    """
+class ToCSV(LoadBase):
+    """Write CSV Block. Defines the load to CSV Operation"""
 
     name: Literal["to_csv"] = "to_csv"
-    kwargs: KwargsLoadCSV = KwargsLoadCSV()
+    kwargs: KwargsToCSV = KwargsToCSV()
     path: Path = Field(..., description="Destination path")
 
     def exhaust(self, generator: Iterator[pd.DataFrame]):
-        """
-        Write CSV Operation.
-
-        Exhaust the generator writing chucks to the CSV
-        """
         for chunk in generator:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

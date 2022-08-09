@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from tiny_blocks.extract.from_csv import ExtractCSV
+from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.transform.drop_duplicates import (
     DropDuplicates,
     KwargsDropDuplicates,
@@ -13,7 +13,7 @@ from tiny_blocks.transform.drop_duplicates import (
 )
 def test_drop_duplicates(csv_source, subset, expected):
 
-    extract_csv = ExtractCSV(path=csv_source)
+    extract_csv = FromCSV(path=csv_source)
     kwargs = KwargsDropDuplicates(subset=subset)
     drop_duplicates = DropDuplicates(kwargs=kwargs)
 
@@ -27,7 +27,7 @@ def test_drop_duplicates(csv_source, subset, expected):
 
 def test_drop_duplicates_no_subset(csv_source):
 
-    extract_csv = ExtractCSV(path=csv_source)
+    extract_csv = FromCSV(path=csv_source)
     drop_duplicates = DropDuplicates()
 
     generator = extract_csv.get_iter()
