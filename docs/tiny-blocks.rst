@@ -1,7 +1,7 @@
 .. _tiny_blocks:
 
-Pipeline, FanIn and FanOut
-=============================
+Tiny-Blocks
+============
 
 
 .. automodule:: tiny_blocks

@@ -93,7 +93,7 @@ class Pipeline:
 
     def current_status(self) -> str:
         """
-        Return a sstring message with current pipeline information.
+        Return a string message with current pipeline information.
         """
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started: {self.start_time.isoformat()}"
