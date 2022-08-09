@@ -9,7 +9,7 @@ from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.extract.base import ExtractBase
 
-__all__ = ["FanIn", "Pipeline"]
+__all__ = ["Pipeline", "FanIn"]
 
 
 logger = logging.getLogger(__name__)
@@ -25,14 +25,14 @@ class Status:
 
 class Pipeline:
     """
-    Defines the Pipeline that glues all Pipeline Blocks
+    Defines the class gluing all Pipeline Blocks
 
     Params:
-        name: (str). Name of the Pipeline
-        description: (str). Description of the Pipeline
-        max_retries: (str). Number of retries in case of Exception
-        supress_info: (bool). Supress info about the pipeline result
-        supress_exception: (bool). Supress Pipeline exception if it happens
+        - name: (str). Name of the Pipeline
+        - description: (str). Description of the Pipeline
+        - max_retries: (str). Number of retries in case of Exception
+        - supress_info: (bool). Supress info about the pipeline result
+        - supress_exception: (bool). Supress Pipeline exception if it happens
 
     Usage:
         >>> from tiny_blocks.extract import FromCSV
@@ -40,21 +40,13 @@ class Pipeline:
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.load import ToSQL
         >>> from tiny_blocks import Pipeline
-
-        # ETL Blocks
+        >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>> fill_na = Fillna()  # fill None values
-
-        # Pipeline
+        >>> fill_na = Fillna()
+        >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> from_csv >> fill_na >> to_sql
-
-        - Pipeline: My Pipeline
-            Started: 2022-08-08T16:11:30.134018
-            Finished: 2022-08-08T16:11:35.134018
-            Status: SUCCESS
-            Number of retries: 0
     """
 
     def __init__(
@@ -101,7 +93,7 @@ class Pipeline:
 
     def current_status(self) -> str:
         """
-        Current output
+        Return a sstring message with current pipeline information.
         """
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started: {self.start_time.isoformat()}"
@@ -127,6 +119,26 @@ class Pipeline:
 
 
 class FanIn:
+    """
+    Fan In
+
+    Gather generators and send them to the next block
+
+    Usage:
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL
+        >>> from tiny_blocks import FanIn, Pipeline
+        >>> from tiny_blocks.transform import Merge
+        >>>
+        >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
+        >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>> merge = Merge(left_on="A", right_on="B")
+        >>>
+        >>> with Pipeline(name="My Pipeline") as pipe:
+        >>>     pipe >> FanIn(from_csv_1, from_csv_2)  >> merge >> to_sql
+    """
+
     def __init__(self, *blocks: ExtractBase | TransformBase):
         self.blocks = blocks
 

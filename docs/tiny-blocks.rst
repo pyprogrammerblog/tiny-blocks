@@ -1,8 +1,9 @@
 .. _tiny_blocks:
 
-Python Retry Decorator
-========================
+Tiny-Blocks
+============
 
 
 .. automodule:: tiny_blocks
-   :members: tiny_blocks
+   :members:
+   :undoc-members:
