@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Build docker
@@ -27,7 +26,7 @@ jobs:
         run: docker-compose run --rm app poetry run pytest
 
       - name: Flake8
-        run: if docker-compose run --rm app poetry run flake8 tiny_blocks > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi
+        run: docker-compose run --rm app poetry run flake8 tiny_blocks
 
       - name: Remove Services
         run: docker-compose down
