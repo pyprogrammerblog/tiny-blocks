@@ -30,7 +30,6 @@ class Pipeline:
     Params:
         - name: (str). Name of the Pipeline
         - description: (str). Description of the Pipeline
-        - max_retries: (str). Number of retries in case of Exception
         - supress_info: (bool). Supress info about the pipeline result
         - supress_exception: (bool). Supress Pipeline exception if it happens
 
