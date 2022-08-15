@@ -34,7 +34,7 @@ Make sure you had install the package by doing ``pip install tiny-blocks`` and t
    from_csv = FromCSV(path='/path/to/file.csv')
    drop_duplicates = DropDuplicates()
    fill_na = Fillna(value="Hola Mundo")
-   to_sql = ToSQL(dsn_conn='psycopg2+postgres://user:***@localhost:5432/foobar')
+   to_sql = ToSQL(dsn_conn='psycopg2+postgres:...')
 
    # Run it as a Pipeline
    with Pipeline(name="My Pipeline") as pipe:
