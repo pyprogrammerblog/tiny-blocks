@@ -549,6 +549,17 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "kafka-python"
+version = "2.0.2"
+description = "Pure Python client for Apache Kafka"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+crc32c = ["crc32c"]
+
+[[package]]
 name = "lxml"
 version = "4.9.1"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -1435,7 +1446,7 @@ docs = ["jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "jaraco.packaging (>=9)
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d332d586f8b4f27c367cd588ad6583a5d81d41547ac2861a91f465b47680fbe6"
+content-hash = "85803d9b920e74aafcddc63708ddb9e80728d785ddbf20672fa5e4cc2bfe47a6"
 
 [metadata.files]
 alabaster = []
@@ -1482,6 +1493,7 @@ jsonschema = []
 jupyter-client = []
 jupyter-core = []
 jupyterlab-pygments = []
+kafka-python = []
 lxml = []
 markupsafe = []
 matplotlib-inline = []

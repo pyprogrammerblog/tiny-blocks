@@ -1,7 +1,9 @@
+import contextlib
 import logging
-from typing import Iterator, Literal
+from typing import Iterator, Literal, List
 
 import pandas as pd
+from kafka import KafkaConsumer
 from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
 logger = logging.getLogger(__name__)
@@ -13,7 +15,7 @@ __all__ = ["FromKafka", "KwargsFromKafka"]
 class KwargsFromKafka(KwargsExtractBase):
     """"""
 
-    pass
+    consumer_timeout: int = 1000
 
 
 class FromKafka(ExtractBase):
@@ -21,6 +23,28 @@ class FromKafka(ExtractBase):
 
     name: Literal["read_csv"] = "from_kafka"
     kwargs: KwargsFromKafka = KwargsFromKafka()
+    topic: str
+    group_id: str
+    bootstrap_servers: List[str]
+
+    @contextlib.contextmanager
+    def kafka_consumer(self) -> KafkaConsumer:
+        consumer = KafkaConsumer(
+            self.topic,
+            group_id=self.group_id,
+            bootstrap_servers=self.bootstrap_servers,
+            auto_offset_reset="earliest",
+            enable_auto_commit=True,
+            consumer_timeout_ms=self.kwargs.consumer_timeout,
+        )
+        try:
+            yield consumer
+        finally:
+            consumer.close()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
-        pass
+
+        with self.kafka_consumer() as consumer:
+            for msg_str in consumer:
+                chunk = pd.json_normalize(msg_str)
+                yield chunk
