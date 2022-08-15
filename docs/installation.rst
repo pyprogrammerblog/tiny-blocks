@@ -1,3 +1,6 @@
+.. _installation:
+
+
 Installation
 =============
 
@@ -7,7 +10,7 @@ Install tiny-blocks::
 
 
 Advanced: local setup for development (Ubuntu)
-----------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These instructions assume that ``git``, ``docker``, and ``docker-compose`` are
 installed on your host machine.
@@ -38,7 +41,7 @@ Finally you can down the services::
     docker-compose down
 
 Advanced: Jupyter Notebook
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Hit the command::
 

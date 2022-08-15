@@ -2,8 +2,8 @@
 name = "tiny_blocks"
 version = "0.1.1"
 description = "Tiny Block Operations for Data Pipelines"
-readme = { file="README.md" }
-license = { file="LICENSE" }
+readme = "README.md"
+license = "LICENSE"
 include = ["CHANGELOG.md"]
 authors = ["Jose Vazquez <josevazjim88@gmail.com>"]
 classifiers = [

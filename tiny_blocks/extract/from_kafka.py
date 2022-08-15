@@ -29,6 +29,17 @@ class FromKafka(ExtractBase):
 
     @contextlib.contextmanager
     def kafka_consumer(self) -> KafkaConsumer:
+        """
+        Yields a consumer to a Kafka topic.
+
+        Parameters set on the connection are:
+            - `topic`.
+            - `group_id`.
+            - `bootstrap_servers`. List of server strings.
+            - `auto_offset_reset` is set to `True`.
+            - `enable_auto_commit` is set to `True`.
+            - `consumer_timeout_ms` by default to 1 second.
+        """
         consumer = KafkaConsumer(
             self.topic,
             group_id=self.group_id,

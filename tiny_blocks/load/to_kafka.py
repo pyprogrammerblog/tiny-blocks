@@ -29,6 +29,16 @@ class ToKafka(LoadBase):
 
     @contextlib.contextmanager
     def kafka_producer(self) -> KafkaProducer:
+        """
+        Yields a Producer.
+
+        Parameters set on the connection are:
+            - `group_id`.
+            - `bootstrap_servers`. List of server strings.
+            - `auto_offset_reset` is set to `True`.
+            - `enable_auto_commit` is set to `True`.
+            - `consumer_timeout_ms` by default to 1 second.
+        """
         producer = KafkaProducer(
             group_id=self.group_id,
             bootstrap_servers=self.bootstrap_servers,

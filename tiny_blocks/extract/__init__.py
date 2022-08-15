@@ -10,6 +10,10 @@ from tiny_blocks.extract.from_sql_query import (
     KwargsFromSQLQuery,
     FromSQLQuery,
 )
+from tiny_blocks.extract.from_kafka import (
+    KwargsFromKafka,
+    FromKafka,
+)
 
 
 __all__ = [
@@ -19,4 +23,6 @@ __all__ = [
     "KwargsFromSQLTable",
     "FromSQLQuery",
     "KwargsFromSQLQuery",
+    "FromKafka",
+    "KwargsFromKafka",
 ]

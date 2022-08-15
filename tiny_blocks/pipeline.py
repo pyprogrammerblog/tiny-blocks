@@ -52,13 +52,11 @@ class Pipeline:
         self,
         name: str,
         description: str = None,
-        max_retries: int = 3,
         supress_output_message: bool = False,
         supress_exception: bool = True,
     ):
         self.name: str = name
         self.description: str | None = description
-        self.max_retries: int = max_retries
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
         self._status: str = Status.PENDING
@@ -87,6 +85,12 @@ class Pipeline:
     def current_status(self) -> str:
         """
         Return a string message with current pipeline information.
+
+        Message:
+            - Name (str)
+            - Started (datetime)
+            - Finished (datetime)
+            - Status (str). Options: PENDING, STARTED, SUCCESS, FAIL
         """
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started at: {self.start_time.isoformat()}"

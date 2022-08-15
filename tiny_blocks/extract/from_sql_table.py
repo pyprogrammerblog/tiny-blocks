@@ -37,6 +37,13 @@ class FromSQLTable(ExtractBase):
 
     @contextmanager
     def connect_db(self) -> Connection:
+        """
+        Yields a connection to Database defined in `dsn_conn`.
+
+        Parameters set on the connection are:
+            - `autocommit` mode set to `True`.
+            - Connection mode `stream_results` set as `True`.
+        """
         engine = create_engine(self.dsn_conn)
         conn = engine.connect()
         conn.execution_options(stream_results=True, autocommit=True)
