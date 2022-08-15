@@ -9,7 +9,7 @@ Transform Operations
 
 .. automodule:: tiny_blocks.transform.base
     :members: TransformBase
-    :exclude-members: get_iter
+    :exclude-members:
 
 
 :mod:`Apply`
@@ -20,11 +20,11 @@ Transform Operations
     :exclude-members: get_iter
 
 
-:mod:`AsType`
+:mod:`Astype`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: tiny_blocks.transform
-    :members: AsType
+    :members: Astype
     :exclude-members: get_iter
 
 
