@@ -1,8 +1,8 @@
 import logging
-from typing import Iterator, List, Literal, Sequence, Dict
+from typing import Iterator, List, Literal, Sequence, Dict, Any
 
 import pandas as pd
-from pydantic import Field, FilePath
+from pydantic import Field, FilePath, AnyUrl
 from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
 
 logger = logging.getLogger(__name__)
@@ -30,13 +30,14 @@ class KwargsFromCSV(KwargsExtractBase):
     true_values: List = None
     false_values: List = None
     chunksize: int = 1000
+    storage_options: Dict[str, Any] = None
 
 
 class FromCSV(ExtractBase):
     """ReadCSV Block. Defines the read CSV Operation"""
 
     name: Literal["read_csv"] = "read_csv"
-    path: FilePath = Field(..., description="Destination path")
+    path: FilePath | AnyUrl = Field(..., description="Destination path")
     kwargs: KwargsFromCSV = KwargsFromCSV()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:

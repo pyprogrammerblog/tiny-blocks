@@ -22,9 +22,9 @@ tests_require = [
 ]
 
 setup(
-    name="python-retry",
+    name="tiny-blocks",
     version=version,
-    description="Retry package for Python",
+    description="Tiny Blocks to build large and complex pipelines!",
     long_description=long_description,
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -32,17 +32,17 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords=["python", "retry"],
+    keywords=["python", "tiny-blocks"],
     author="JM Vazquez",
     author_email="",
-    url="https://github.com/pyprogrammerblog/python-retry",
+    url="https://github.com/pyprogrammerblog/tiny-blocks",
     license="MIT License",
-    packages=["python_retry"],
+    packages=["tiny_blocks"],
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
     tests_require=tests_require,
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     extras_require={"test": tests_require},
     entry_points={"console_scripts": []},
 )

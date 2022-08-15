@@ -63,7 +63,7 @@ class Pipeline:
         self.supress_output_message: bool = supress_output_message
         self._status: str = Status.PENDING
         self._output_message: str = ""
-        self._generator: List[Iterator[pd.DataFrame]]
+        self._generators: List[Iterator[pd.DataFrame]]
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
@@ -101,16 +101,16 @@ class Pipeline:
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, FanIn):
-            self._generator = next.get_iter()
+            self._generators = next.get_iter()
             return self
         elif isinstance(next, ExtractBase):
-            self._generator = [next.get_iter()]
+            self._generators = [next.get_iter()]
             return self
         elif isinstance(next, TransformBase):
-            self._generator = [next.get_iter(*self._generator)]
+            self._generators = [next.get_iter(*self._generators)]
             return self
         elif isinstance(next, LoadBase):
-            next.exhaust(*self._generator)
+            next.exhaust(*self._generators)
         else:
             raise ValueError("Unsupported Block Type")
 

@@ -19,6 +19,7 @@ cryptography = "^37.0.4"
 requests = "^2.28.1"
 boto3 = "^1.24.43"
 minio = "^7.1.11"
+cx-Oracle = "^8.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
