@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class KwargsFillNa(KwargsTransformBase):
     """
-    For more info:
+    For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
     """
 
@@ -24,6 +24,13 @@ class KwargsFillNa(KwargsTransformBase):
 class Fillna(TransformBase):
     """
     Fill Nan Block. Defines the fill Nan values functionality
+
+    Basic Usage:
+        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.extract import FromCSV
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
     """
 
     name: Literal["fillna"] = "fillna"

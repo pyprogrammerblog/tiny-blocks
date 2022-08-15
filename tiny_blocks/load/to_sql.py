@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class KwargsToSQL(KwargsLoadBase):
     """
-    For more info:
+    For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
     """
 
@@ -27,7 +27,23 @@ class KwargsToSQL(KwargsLoadBase):
 
 
 class ToSQL(LoadBase):
-    """Load SQL Block. Defines the Loading operation to a SQL Database"""
+    """
+    Load SQL Block. Defines the Loading operation to a SQL Database
+
+    Basic Usage:
+        >>> from tiny_blocks.extract import FromSQLTable
+        >>> from tiny_blocks.load import ToSQL
+        >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+        >>> extract_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
+        >>> load_to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
+        >>> generator = extract_sql.get_iter()
+        >>> load_to_sql.exhaust(generator=generator)
+        >>> df = pd.read_sql_table(table_name="destination", con=str_conn)
+        >>> assert not df.empty
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
+    """
 
     name: Literal["to_sql"] = "to_sql"
     dsn_conn: str = Field(..., description="Connection string")

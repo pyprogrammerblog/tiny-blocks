@@ -24,6 +24,13 @@ class KwargsDropDuplicates(KwargsTransformBase):
 class DropDuplicates(TransformBase):
     """
     Drop Duplicates Block. Defines the drop duplicates functionality
+
+    Basic Usage:
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.extract import FromCSV
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"

@@ -34,7 +34,19 @@ class KwargsFromCSV(KwargsExtractBase):
 
 
 class FromCSV(ExtractBase):
-    """ReadCSV Block. Defines the read CSV Operation"""
+    """
+    ReadCSV Block. Defines the read CSV Operation
+
+    Basic Usage:
+        >>> from tiny_blocks.extract import FromCSV
+        >>> read_csv = FromCSV(path="/path/to/file.csv")
+        >>> generator = read_csv.get_iter()
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+    """
 
     name: Literal["read_csv"] = "read_csv"
     path: FilePath | AnyUrl = Field(..., description="Destination path")

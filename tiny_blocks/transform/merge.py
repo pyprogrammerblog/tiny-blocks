@@ -23,6 +23,10 @@ class KwargsMerge(KwargsTransformBase):
 class Merge(TransformBase):
     """
     Merge. Defines merge functionality between two blocks.
+
+    Basic Usage:
+        >>> from tiny_blocks.transform import Merge
+        >>> from tiny_blocks.extract import FromCSV
     """
 
     name: Literal["merge"] = "merge"

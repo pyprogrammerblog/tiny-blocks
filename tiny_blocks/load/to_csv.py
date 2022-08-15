@@ -25,7 +25,22 @@ class KwargsToCSV(KwargsLoadBase):
 
 
 class ToCSV(LoadBase):
-    """Write CSV Block. Defines the load to CSV Operation"""
+    """
+    Write CSV Block. Defines the load to CSV Operation
+
+    Basic Usage:
+        >>> from tiny_blocks.load import ToCSV
+        >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path="path/to/source.csv")
+        >>> load_into_csv = ToCSV(path="path/to/sink.csv")
+        >>> generator = extract_csv.get_iter()
+        >>> load_into_csv.exhaust(generator=generator)
+        >>> df = pd.read_csv("path/to/sink.csv", sep="|")
+        >>> assert not df.empty
+
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
+    """
 
     name: Literal["to_csv"] = "to_csv"
     kwargs: KwargsToCSV = KwargsToCSV()

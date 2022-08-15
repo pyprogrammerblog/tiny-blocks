@@ -21,6 +21,13 @@ class KwargsDropNa(KwargsTransformBase):
 class DropNa(TransformBase):
     """
     Drop Nan Block. Defines the drop None values functionality
+
+    Basic Usage:
+        >>> from tiny_blocks.transform import DropNa
+        >>> from tiny_blocks.extract import FromCSV
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.dropna.html
     """
 
     name: Literal["drop_na"] = "drop_na"

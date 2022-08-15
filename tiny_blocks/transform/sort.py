@@ -21,7 +21,13 @@ class KwargsSort(KwargsTransformBase):
 
 
 class Sort(TransformBase):
-    """Sort Block. Defines the Sorting operation"""
+    """
+    Sort Block. Defines the Sorting operation
+
+    Basic Usage:
+        >>> from tiny_blocks.transform import Sort
+        >>> from tiny_blocks.extract import FromCSV
+    """
 
     name: Literal["sort"] = "sort"
     by: List[str]

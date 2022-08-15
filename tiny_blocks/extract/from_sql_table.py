@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class KwargsFromSQLTable(KwargsExtractBase):
     """
-    For more info: https://pandas.pydata.org/docs/
-    reference/api/pandas.read_sql_table.html
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.read_sql_table.html
     """
 
     index_col: str | List[str] = None
@@ -28,7 +28,20 @@ class KwargsFromSQLTable(KwargsExtractBase):
 
 
 class FromSQLTable(ExtractBase):
-    """Read SQL Table Block. Defines the read SQL Table Operation."""
+    """
+    Read SQL Table Block. Defines the read SQL Table Operation.
+
+    Basic Usage:
+        >>> from tiny_blocks.extract import FromSQLTable
+        >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+        >>> read_sql = FromSQLTable(dsn_conn=str_conn, table_name="test")
+        >>> generator = read_sql.get_iter()
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.read_sql_table.html
+    """
 
     name: Literal["read_sql_table"] = "read_sql_table"
     dsn_conn: str = Field(..., description="Connection string")
