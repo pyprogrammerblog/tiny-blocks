@@ -20,7 +20,7 @@ class LoadBase(BaseBlock):
     Load Base Block
 
     All blocks inheriting the LoadBase class must implement
-    the exhaust method
+    the `exhaust` method.
     """
 
     @abc.abstractmethod
