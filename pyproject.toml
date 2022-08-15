@@ -1,8 +1,18 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tiny Block Operations for Data Pipelines"
+readme = { file="README.md" }
+license = { file="LICENSE" }
+include = ["CHANGELOG.md"]
 authors = ["Jose Vazquez <josevazjim88@gmail.com>"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+homepage = "https://github.com/pyprogrammerblog/tiny-blocks"
+documentation = "https://tiny-blocks.readthedocs.io/en/latest/"
 
 [virtualenvs]
 create = true  # this creates a .venv folder
