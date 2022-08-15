@@ -42,7 +42,7 @@ class Pipeline:
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>> fill_na = Fillna()
+        >>> fill_na = Fillna(value="Hola Mundo")
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> from_csv >> fill_na >> to_sql
