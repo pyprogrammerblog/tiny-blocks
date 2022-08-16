@@ -24,7 +24,6 @@ class TransformBase(BaseBlock):
     an Iterator of chunked DataFrames.
     """
 
-    @abc.abstractmethod
     def get_iter(
         self, *generators: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
