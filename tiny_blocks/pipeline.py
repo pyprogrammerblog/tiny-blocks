@@ -59,7 +59,6 @@ class Pipeline:
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
         self.status: str = Status.PENDING
-        self._output_message: str = ""
         self._generators: List[Iterator[pd.DataFrame]]
 
     def __enter__(self):
