@@ -103,7 +103,7 @@ class Pipeline:
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, FanIn):
-            self._generators = [next.get_iter()]
+            self._generators = next.get_iter()
             return self
         elif isinstance(next, ExtractBase):
             self._generators = [next.get_iter()]
