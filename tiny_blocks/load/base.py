@@ -1,5 +1,5 @@
-import abc
 import logging
+import abc
 from typing import Iterator
 
 import pandas as pd
@@ -15,7 +15,7 @@ class KwargsLoadBase(KwargsBase):
     pass
 
 
-class LoadBase(BaseBlock):
+class LoadBase(BaseBlock, abc.ABC):
     """
     Load Base Block
 
