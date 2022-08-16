@@ -21,7 +21,7 @@ class KwargsAstype(KwargsTransformBase):
 
 class Astype(TransformBase):
     """
-    Astype Block. Defines the casting of types for dataframes or columns
+    Astype Block. Defines the type casting for column dataframes.
 
     Basic Usage:
         >>> from tiny_blocks.transform import Astype

@@ -27,6 +27,14 @@ class Merge(TransformBase):
     Basic Usage:
         >>> from tiny_blocks.transform import Merge
         >>> from tiny_blocks.extract import FromCSV
+        >>> csv_1 = FromCSV(path="/path/to/file_1.csv")
+        >>> csv_2 = FromCSV(path="/path/to/file_2.csv")
+        >>> merge = Merge(how="left", left_on="col_A", right_on="col_B")
+        >>> left_gen = csv_1.get_iter()
+        >>> right_gen = csv_2.get_iter()
+        >>> generator = merge.get_iter(left=left_gen, right=right_gen)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
     """
 
     name: Literal["merge"] = "merge"

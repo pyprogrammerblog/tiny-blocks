@@ -28,6 +28,12 @@ class DropDuplicates(TransformBase):
     Basic Usage:
         >>> from tiny_blocks.transform import DropDuplicates
         >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> drop_duplicates = DropDuplicates()
+        >>> generator = extract_csv.get_iter()
+        >>> generator = drop_duplicates.get_iter(generator)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html

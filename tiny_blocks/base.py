@@ -25,7 +25,7 @@ class BaseBlock(BaseModel):
     """
 
     uuid: UUID = Field(default_factory=uuid4, description="UUID")
-    name: Literal["base"] = Field("base", description="Block name")
+    name: str = Field(..., description="Block name")
     description: str = Field(default=None, description="Description")
 
     def __str__(self):

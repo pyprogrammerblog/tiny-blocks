@@ -28,6 +28,12 @@ class Fillna(TransformBase):
     Basic Usage:
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> fill_na = Fillna(value="Hola Mundo")
+        >>> generator = extract_csv.get_iter()
+        >>> generator = fill_na.get_iter(generator)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html

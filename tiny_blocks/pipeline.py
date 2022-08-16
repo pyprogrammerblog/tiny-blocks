@@ -40,8 +40,8 @@ class Pipeline:
         >>> from tiny_blocks import Pipeline
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>> fill_na = Fillna(value="Hola Mundo")
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> from_csv >> fill_na >> to_sql
