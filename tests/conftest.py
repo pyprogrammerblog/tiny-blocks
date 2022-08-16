@@ -169,7 +169,7 @@ def oracle_source(oracle_db, oracle_conn, oracle_uri):
     Yield a SQL Source with a connection string to an existing Table DB
     """
     data = {"c": [1, 2, 3], "d": [4, 5, 5], "e": [7, 8, None]}
-    pd.DataFrame(data=data).to_sql(name="test", con=mysql_conn, index=False)
+    pd.DataFrame(data=data).to_sql(name="test", con=oracle_conn, index=False)
     yield oracle_uri
 
 
