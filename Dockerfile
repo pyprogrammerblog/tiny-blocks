@@ -12,8 +12,10 @@ RUN pip3 install --upgrade setuptools && pip3 install pip virtualenv
 # For Oracle Databases...
 RUN apt-get install unzip
 RUN mkdir -p /opt/oracle
-COPY oracle/instantclient-basic-linux.x64-21.7.0.0.0dbru.zip /opt/oracle/
-RUN unzip /opt/oracle/instantclient-basic-linux.x64-21.7.0.0.0dbru.zip
+ADD oracle/instantclient-basic-linux.x64-21.7.0.0.0dbru.zip /opt/oracle/
+RUN cd /opt/oracle/  \
+    && unzip instantclient-basic-linux.x64-21.7.0.0.0dbru.zip  \
+    && rm instantclient-basic-linux.x64-21.7.0.0.0dbru.zip
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_21_7
 
 # Let's go with poetry...
