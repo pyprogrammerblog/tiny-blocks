@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class KwargsRename(KwargsTransformBase):
     """
-    For more info:
+    For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     """
 
@@ -22,6 +22,20 @@ class KwargsRename(KwargsTransformBase):
 class Rename(TransformBase):
     """
     Rename Block. Defines Rename columns functionality
+
+    Basic Usage:
+        >>> import pandas as pd
+        >>> from tiny_blocks.transform import Rename
+        >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> sort = Rename(columns={"column_name": "new_column_name"})
+        >>> generator = extract_csv.get_iter()
+        >>> generator = sort.get_iter(generator)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     """
 
     name: Literal["rename"] = "rename"

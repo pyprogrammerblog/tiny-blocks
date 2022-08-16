@@ -11,7 +11,7 @@
 
 import os
 import sys
-
+from typing import List
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -50,7 +50,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path: List[str] = []
 
 # mock imports so that we don't need all the dependencies to build the docs
 autodoc_mock_imports = ["requests"]

@@ -21,7 +21,20 @@ class KwargsSort(KwargsTransformBase):
 
 
 class Sort(TransformBase):
-    """Sort Block. Defines the Sorting operation"""
+    """
+    Sort Block. Defines the Sorting operation
+
+    Basic Usage:
+        >>> import pandas as pd
+        >>> from tiny_blocks.transform import Sort
+        >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> sort = Sort(by=["column_A"], ascending=False)
+        >>> generator = extract_csv.get_iter()
+        >>> generator = sort.get_iter(generator)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+    """
 
     name: Literal["sort"] = "sort"
     by: List[str]

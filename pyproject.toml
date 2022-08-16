@@ -1,8 +1,18 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tiny Block Operations for Data Pipelines"
+readme = "README.md"
+license = "LICENSE"
+include = ["CHANGELOG.md"]
 authors = ["Jose Vazquez <josevazjim88@gmail.com>"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+homepage = "https://github.com/pyprogrammerblog/tiny-blocks"
+documentation = "https://tiny-blocks.readthedocs.io/en/latest/"
 
 [virtualenvs]
 create = true  # this creates a .venv folder
@@ -16,9 +26,10 @@ SQLAlchemy = "^1.4.39"
 PyMySQL = "^1.0.2"
 psycopg2 = "^2.9.3"
 cryptography = "^37.0.4"
-requests = "^2.28.1"
 boto3 = "^1.24.43"
 minio = "^7.1.11"
+cx-Oracle = "^8.3.0"
+kafka-python = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -29,6 +40,7 @@ notebook = "^6.4.12"
 SQLAlchemy-Utils = "^0.38.3"
 mock = "^4.0.3"
 mypy = "^0.971"
+Sphinx = "^5.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

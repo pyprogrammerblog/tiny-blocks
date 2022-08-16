@@ -1,6 +1,5 @@
 import logging
 import sys
-import traceback
 from typing import List, Union, Iterator
 from datetime import datetime
 
@@ -30,7 +29,6 @@ class Pipeline:
     Params:
         - name: (str). Name of the Pipeline
         - description: (str). Description of the Pipeline
-        - max_retries: (str). Number of retries in case of Exception
         - supress_info: (bool). Supress info about the pipeline result
         - supress_exception: (bool). Supress Pipeline exception if it happens
 
@@ -41,8 +39,8 @@ class Pipeline:
         >>> from tiny_blocks import Pipeline
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
+        >>> fill_na = Fillna(value="Hola Mundo")
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>> fill_na = Fillna()
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     pipe >> from_csv >> fill_na >> to_sql
@@ -52,33 +50,28 @@ class Pipeline:
         self,
         name: str,
         description: str = None,
-        max_retries: int = 3,
         supress_output_message: bool = False,
         supress_exception: bool = True,
     ):
         self.name: str = name
         self.description: str | None = description
-        self.max_retries: int = max_retries
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
-        self._status: str = Status.PENDING
-        self._output_message: str = ""
-        self._generator: List[Iterator[pd.DataFrame]]
+        self.status: str = Status.PENDING
+        self._generators: List[Iterator[pd.DataFrame]]
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
-        self._status = Status.STARTED
+        self.status = Status.STARTED
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end_time = datetime.utcnow()
         if exc_type:
-            last_trace = "".join(traceback.format_tb(exc_tb)).strip()
-            self.detail = f"Failure: {last_trace}\n"
-            self.end_time = datetime.utcnow()
-            self._status = Status.FAIL
+            self.detail = f"Failure: {exc_val}\n"
+            self.status = Status.FAIL
         else:
-            self._status = Status.SUCCESS
-            self.end_time = datetime.utcnow()
+            self.status = Status.SUCCESS
 
         if not self.supress_output_message:
             sys.stdout.write(self.current_status())
@@ -87,30 +80,40 @@ class Pipeline:
     def current_status(self) -> str:
         """
         Return a string message with current pipeline information.
+
+        Message:
+            - Name (str)
+            - Started (datetime)
+            - Finished (datetime)
+            - Status (str). Options: PENDING, STARTED, SUCCESS, FAIL
+            - Details (str)
         """
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started at: {self.start_time.isoformat()}"
         msg += f"\n\t Finished at: {self.end_time.isoformat()}"
-        msg += f"\n\t Status: {self._status}"
+        msg += f"\n\t Status: {self.status}"
+        msg += f"\n\t Details: {self.detail}"
         return msg
 
     def __rshift__(
-        self, next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"]
-    ) -> "Pipeline":
+        self,
+        next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"],
+    ) -> Union["Pipeline", str]:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, FanIn):
-            self._generator = next.get_iter()
+            self._generators = next.get_iter()
             return self
         elif isinstance(next, ExtractBase):
-            self._generator = [next.get_iter()]
+            self._generators = [next.get_iter()]
             return self
         elif isinstance(next, TransformBase):
-            self._generator = [next.get_iter(*self._generator)]
+            self._generators = [next.get_iter(*self._generators)]
             return self
         elif isinstance(next, LoadBase):
-            next.exhaust(*self._generator)
+            next.exhaust(*self._generators)
+            return self.current_status()
         else:
             raise ValueError("Unsupported Block Type")
 

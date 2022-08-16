@@ -1,5 +1,5 @@
-import abc
 import logging
+import abc
 from typing import Iterator
 
 import pandas as pd
@@ -19,7 +19,7 @@ class KwargsExtractBase(KwargsBase):
     pass
 
 
-class ExtractBase(BaseBlock):
+class ExtractBase(BaseBlock, abc.ABC):
     """
     Extract Base Block.
 

@@ -4,5 +4,17 @@ Tiny-Blocks
 ============
 
 
+:mod:`Pipeline`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. automodule:: tiny_blocks
-   :members:
+    :members: Pipeline
+    :exclude-members:
+
+
+:mod:`FanIn`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: tiny_blocks
+    :members: FanIn
+    :exclude-members:

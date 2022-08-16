@@ -18,16 +18,30 @@ class KwargsDropDuplicates(KwargsTransformBase):
     """
 
     chunksize: int = 1000
-    subset: Set[str] = {}
 
 
 class DropDuplicates(TransformBase):
     """
     Drop Duplicates Block. Defines the drop duplicates functionality
+
+    Basic Usage:
+        >>> import pandas as pd
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.extract import FromCSV
+        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> drop_duplicates = DropDuplicates()
+        >>> generator = extract_csv.get_iter()
+        >>> generator = drop_duplicates.get_iter(generator)
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+
+    For more Kwargs info:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
     kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
+    subset: Set[str] = None
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
@@ -47,7 +61,7 @@ class DropDuplicates(TransformBase):
             SELECT * FROM temp
             WHERE rowid not in
             (SELECT MIN(rowid) from temp
-            GROUP BY {", ".join(self.kwargs.subset) or "'*'"})
+            GROUP BY {", ".join(self.subset) if self.subset else "'*'"})
             """
 
             # yield records now without duplicates

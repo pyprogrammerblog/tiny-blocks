@@ -29,7 +29,22 @@ class KwargsFromSQLQuery(KwargsExtractBase):
 
 
 class FromSQLQuery(ExtractBase):
-    """Read SQL Query Block. Defines the read SQL Query Operation"""
+    """
+    Read SQL Query Block. Defines the read SQL Query Operation
+
+    Basic Usage:
+        >>> import pandas as pd
+        >>> from tiny_blocks.extract import FromSQLQuery
+        >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+        >>> sql = "select * from test"
+        >>> read_sql = FromSQLQuery(dsn_conn=str_conn, sql=sql)
+        >>> generator = read_sql.get_iter()
+        >>> df = pd.concat(generator)
+        >>> assert not df.empty
+
+    See info about Kwargs:
+    https://pandas.pydata.org/docs/reference/api/pandas.read_sql_query.html
+    """
 
     name: Literal["read_sql"] = "read_sql"
     dsn_conn: str = Field(..., description="Connection string")
