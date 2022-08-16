@@ -21,7 +21,7 @@ class KwargsToKafka(KwargsLoadBase):
 class ToKafka(LoadBase):
     """Write CSV Block. Defines the load to CSV Operation"""
 
-    name: Literal["to_csv"] = "to_kafka"
+    name: Literal["to_kafka"] = "to_kafka"
     kwargs: KwargsToKafka = KwargsToKafka()
     topic: str
     group_id: str

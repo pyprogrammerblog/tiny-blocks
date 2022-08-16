@@ -18,7 +18,6 @@ class KwargsDropDuplicates(KwargsTransformBase):
     """
 
     chunksize: int = 1000
-    subset: Set[str] = {}
 
 
 class DropDuplicates(TransformBase):
@@ -42,6 +41,7 @@ class DropDuplicates(TransformBase):
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
     kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
+    subset: Set[str] = None
 
     def get_iter(
         self, generator: Iterator[pd.DataFrame]
@@ -61,7 +61,7 @@ class DropDuplicates(TransformBase):
             SELECT * FROM temp
             WHERE rowid not in
             (SELECT MIN(rowid) from temp
-            GROUP BY {", ".join(self.kwargs.subset) or "'*'"})
+            GROUP BY {", ".join(self.subset) if self.subset else "'*'"})
             """
 
             # yield records now without duplicates

@@ -44,7 +44,7 @@ class Apply(TransformBase):
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     """
 
-    name: Literal["enrich_from_api"] = "apply"
+    name: Literal["apply"] = "apply"
     apply_to_column: str = Field(..., description="Apply to column")
     set_to_column: str = Field(..., description="Return to column")
     func: Callable = Field(..., description="Callable")

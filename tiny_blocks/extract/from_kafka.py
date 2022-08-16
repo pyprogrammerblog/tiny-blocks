@@ -21,7 +21,7 @@ class KwargsFromKafka(KwargsExtractBase):
 class FromKafka(ExtractBase):
     """FromKafka Block. Defines the read Kafka Operation"""
 
-    name: Literal["read_csv"] = "from_kafka"
+    name: Literal["from_kafka"] = "from_kafka"
     kwargs: KwargsFromKafka = KwargsFromKafka()
     topic: str
     group_id: str

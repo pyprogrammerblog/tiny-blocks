@@ -58,24 +58,23 @@ class Pipeline:
         self.description: str | None = description
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
-        self._status: str = Status.PENDING
+        self.status: str = Status.PENDING
         self._output_message: str = ""
         self._generators: List[Iterator[pd.DataFrame]]
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
-        self._status = Status.STARTED
+        self.status = Status.STARTED
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end_time = datetime.utcnow()
         if exc_type:
             last_trace = "".join(traceback.format_tb(exc_tb)).strip()
             self.detail = f"Failure: {last_trace}\n"
-            self.end_time = datetime.utcnow()
-            self._status = Status.FAIL
+            self.status = Status.FAIL
         else:
-            self._status = Status.SUCCESS
-            self.end_time = datetime.utcnow()
+            self.status = Status.SUCCESS
 
         if not self.supress_output_message:
             sys.stdout.write(self.current_status())
@@ -94,12 +93,12 @@ class Pipeline:
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started at: {self.start_time.isoformat()}"
         msg += f"\n\t Finished at: {self.end_time.isoformat()}"
-        msg += f"\n\t Status: {self._status}"
+        msg += f"\n\t Status: {self.status}"
         return msg
 
     def __rshift__(
         self, next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"]
-    ) -> "Pipeline":
+    ) -> Union["Pipeline", str]:
         """
         The `>>` operator for the tiny-blocks library.
         """
@@ -114,6 +113,7 @@ class Pipeline:
             return self
         elif isinstance(next, LoadBase):
             next.exhaust(*self._generators)
+            return self.current_status()
         else:
             raise ValueError("Unsupported Block Type")
 
