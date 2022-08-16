@@ -23,7 +23,7 @@ jobs:
         run: docker-compose run --rm app poetry check
 
       - name: Test
-        run: docker-compose run --rm app poetry run pytest --coverage
+        run: docker-compose run --rm app poetry run pytest
 
       - name: Flake8
         run: docker-compose run --rm app poetry run flake8 tiny_blocks

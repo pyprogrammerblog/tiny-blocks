@@ -1,13 +1,12 @@
 import logging
 import sys
-import traceback
 from typing import List, Union, Iterator
 from datetime import datetime
 
 import pandas as pd
 
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.transform.base import TransformBase, TransformTwoInputsBase
+from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.extract.base import ExtractBase
 
 __all__ = ["Pipeline", "FanIn"]
@@ -69,8 +68,7 @@ class Pipeline:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.end_time = datetime.utcnow()
         if exc_type:
-            last_trace = "".join(traceback.format_tb(exc_tb)).strip()
-            self.detail = f"Failure: {last_trace}\n"
+            self.detail = f"Failure: {exc_val}\n"
             self.status = Status.FAIL
         else:
             self.status = Status.SUCCESS
@@ -88,22 +86,18 @@ class Pipeline:
             - Started (datetime)
             - Finished (datetime)
             - Status (str). Options: PENDING, STARTED, SUCCESS, FAIL
+            - Details (str)
         """
         msg = f"- Pipeline: {self.name}"
         msg += f"\n\t Started at: {self.start_time.isoformat()}"
         msg += f"\n\t Finished at: {self.end_time.isoformat()}"
         msg += f"\n\t Status: {self.status}"
+        msg += f"\n\t Details: {self.detail}"
         return msg
 
     def __rshift__(
         self,
-        next: Union[
-            ExtractBase,
-            TransformBase,
-            TransformTwoInputsBase,
-            LoadBase,
-            "FanIn",
-        ],
+        next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"],
     ) -> Union["Pipeline", str]:
         """
         The `>>` operator for the tiny-blocks library.

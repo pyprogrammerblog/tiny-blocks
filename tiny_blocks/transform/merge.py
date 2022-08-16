@@ -7,7 +7,7 @@ import pandas as pd
 from pydantic import Field
 from tiny_blocks.transform.base import (
     KwargsTransformBase,
-    TransformTwoInputsBase,
+    TransformBase,
 )
 
 __all__ = ["KwargsMerge", "Merge"]
@@ -23,7 +23,7 @@ class KwargsMerge(KwargsTransformBase):
     chunksize: int = 1000
 
 
-class Merge(TransformTwoInputsBase):
+class Merge(TransformBase):
     """
     Merge. Defines merge functionality between two blocks.
 
