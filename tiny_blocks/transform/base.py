@@ -26,7 +26,31 @@ class TransformBase(BaseBlock, abc.ABC):
 
     @abc.abstractmethod
     def get_iter(
-        self, *generators: Iterator[pd.DataFrame]
+        self, generator: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
+        """
+        Return an iterator of chunked dataframes
+
+        The `chunksize` is defined as kwargs in each
+        transformation block
+        """
+        raise NotImplementedError
+
+
+class TransformTwoInputsBase(BaseBlock, abc.ABC):
+    """
+    Transform Two Input Base Block
+
+    Two sources are transform by the same block
+
+    Each transformation Block implements the `get_iter` method.
+    This method get one or multiple iterators and return
+    an Iterator of chunked DataFrames.
+    """
+
+    @abc.abstractmethod
+    def get_iter(
+        self, left: Iterator[pd.DataFrame], right: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Return an iterator of chunked dataframes

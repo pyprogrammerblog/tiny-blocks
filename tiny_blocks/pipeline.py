@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.transform.base import TransformBase
+from tiny_blocks.transform.base import TransformBase, TransformTwoInputsBase
 from tiny_blocks.extract.base import ExtractBase
 
 __all__ = ["Pipeline", "FanIn"]
@@ -96,7 +96,14 @@ class Pipeline:
         return msg
 
     def __rshift__(
-        self, next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"]
+        self,
+        next: Union[
+            ExtractBase,
+            TransformBase,
+            TransformTwoInputsBase,
+            LoadBase,
+            "FanIn",
+        ],
     ) -> Union["Pipeline", str]:
         """
         The `>>` operator for the tiny-blocks library.
