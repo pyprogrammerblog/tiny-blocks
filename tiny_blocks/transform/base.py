@@ -26,7 +26,7 @@ class TransformBase(BaseBlock):
 
     @abc.abstractmethod
     def get_iter(
-        self, *generator: Iterator[pd.DataFrame]
+        self, *generators: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Return an iterator of chunked dataframes
