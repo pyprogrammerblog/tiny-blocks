@@ -25,6 +25,7 @@ class Sort(TransformBase):
     Sort Block. Defines the Sorting operation
 
     Basic Usage:
+        >>> import pandas as pd
         >>> from tiny_blocks.transform import Sort
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')

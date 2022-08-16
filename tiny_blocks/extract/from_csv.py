@@ -38,6 +38,7 @@ class FromCSV(ExtractBase):
     ReadCSV Block. Defines the read CSV Operation
 
     Basic Usage:
+        >>> import pandas as pd
         >>> from tiny_blocks.extract import FromCSV
         >>> read_csv = FromCSV(path="/path/to/file.csv")
         >>> generator = read_csv.get_iter()

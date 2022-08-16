@@ -24,6 +24,7 @@ class Astype(TransformBase):
     Astype Block. Defines the type casting for column dataframes.
 
     Basic Usage:
+        >>> import pandas as pd
         >>> from tiny_blocks.transform import Astype
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_sql = FromCSV(path="/path/to/file.csv")

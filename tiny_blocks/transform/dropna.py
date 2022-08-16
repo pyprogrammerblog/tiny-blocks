@@ -23,6 +23,7 @@ class DropNa(TransformBase):
     Drop Nan Block. Defines the drop None values functionality
 
     Basic Usage:
+        >>> import pandas as pd
         >>> from tiny_blocks.transform import DropNa
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')

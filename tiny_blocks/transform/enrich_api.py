@@ -31,8 +31,8 @@ class EnricherAPI(TransformBase):
 
     name: Literal["enrich_from_api"] = "enrich_from_api"
     url: AnyUrl
-    from_column: str = Field(description="Source column")
-    to_column: str = Field(description="Destination column")
+    apply_to_column: str = Field(description="Source column")
+    set_to_column: str = Field(description="Destination column")
     kwargs: KwargsEnricherAPI = KwargsEnricherAPI()
 
     def get_iter(
@@ -42,7 +42,7 @@ class EnricherAPI(TransformBase):
         func = lru_cache(lambda x: self.request_api_data(x))
 
         for chunk in generator:
-            chunk[self.to_column] = chunk[self.from_column].apply(func)
+            chunk[self.set_to_column] = chunk[self.apply_to_column].apply(func)
             yield chunk
 
     def request_api_data(self, value):
