@@ -17,6 +17,6 @@ def test_apply(sqlite_source):
 
     # assert
     df = pd.concat(generator)
-    assert df.shape == (3, 3)
+    assert df.shape == (3, 4)
     assert df.columns.to_list() == ["d", "e", "f", "new"]
     assert df.new.to_list() == [2, 3, 4]

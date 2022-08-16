@@ -14,8 +14,7 @@ from tiny_blocks.transform.drop_duplicates import (
 def test_drop_duplicates(csv_source, subset, expected):
 
     extract_csv = FromCSV(path=csv_source)
-    kwargs = KwargsDropDuplicates(subset=subset)
-    drop_duplicates = DropDuplicates(kwargs=kwargs)
+    drop_duplicates = DropDuplicates(subset=subset)
 
     generator = extract_csv.get_iter()
     generator = drop_duplicates.get_iter(generator=generator)
