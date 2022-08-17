@@ -112,7 +112,7 @@ class Pipeline:
             return self
         elif isinstance(next, LoadBase):
             self._callables.append(next.exhaust)
-            return reduce(lambda x, y: y(x), self._callables)  # the magic happens!
+            return reduce(lambda x, y: y(x), self._callables)
         else:
             raise ValueError("Unsupported Block Type")
 
