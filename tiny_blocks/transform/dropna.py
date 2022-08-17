@@ -40,7 +40,7 @@ class DropNa(TransformBase):
     name: Literal["drop_na"] = "drop_na"
     kwargs: KwargsDropNa = KwargsDropNa()
 
-    def get_iter(
+    def get_iter(  # type: ignore
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 

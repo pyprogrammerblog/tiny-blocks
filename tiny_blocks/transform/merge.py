@@ -1,7 +1,7 @@
 import logging
 from sqlite3 import connect
 import tempfile
-from typing import Iterator, Literal, List
+from typing import Iterator, Literal
 
 import pandas as pd
 from pydantic import Field
@@ -47,20 +47,20 @@ class Merge(TransformBase):
     right_on: str = Field(..., description="Column on the right table")
     kwargs: KwargsMerge = KwargsMerge()
 
-    def get_iter(
+    def get_iter(  # type: ignore
         self,
-        source: List[Iterator[pd.DataFrame]],
+        left_source: Iterator[pd.DataFrame],
+        right_source: Iterator[pd.DataFrame],
     ) -> Iterator[pd.DataFrame]:
 
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name
         ) as con:
-            left, right = source
             # send records to a temp database (exhaust the generators)
-            for chunk in left:
+            for chunk in left_source:
                 chunk.to_sql(name="table_left", con=con, index=False)
 
-            for chunk in right:
+            for chunk in right_source:
                 chunk.to_sql(name="table_right", con=con, index=False)
 
             # select non-duplicated rows.

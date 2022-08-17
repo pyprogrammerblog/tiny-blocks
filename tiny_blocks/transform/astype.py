@@ -42,7 +42,7 @@ class Astype(TransformBase):
     dtype: Dict[str, str]
     kwargs: KwargsAstype = KwargsAstype()
 
-    def get_iter(
+    def get_iter(  # type: ignore
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """

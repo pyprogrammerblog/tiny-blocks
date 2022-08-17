@@ -41,7 +41,7 @@ class Sort(TransformBase):
     ascending: bool = True
     kwargs: KwargsSort = KwargsSort()
 
-    def get_iter(
+    def get_iter(  # type: ignore
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         with tempfile.NamedTemporaryFile(
