@@ -12,7 +12,7 @@ def test_merge_left(postgres_source, mysql_source):
     right_gen = postgres.get_iter()
 
     merge = Merge(how="left", left_on="c", right_on="d")
-    generator = merge.get_iter(left_gen, right_gen)
+    generator = merge.get_iter(source=[left_gen, right_gen])
 
     # exhaust and test
     df = pd.concat(generator)
@@ -29,7 +29,7 @@ def test_merge_inner(postgres_source, mysql_source):
     right_gen = postgres.get_iter()
 
     merge = Merge(how="inner", left_on="c", right_on="d")
-    generator = merge.get_iter(left_gen, right_gen)
+    generator = merge.get_iter(source=[left_gen, right_gen])
 
     # exhaust and test
     df = pd.concat(generator)

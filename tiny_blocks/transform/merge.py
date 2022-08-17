@@ -1,7 +1,7 @@
 import logging
 from sqlite3 import connect
 import tempfile
-from typing import Iterator, Literal, Tuple
+from typing import Iterator, Literal, List
 
 import pandas as pd
 from pydantic import Field
@@ -48,7 +48,7 @@ class Merge(TransformBase):
     kwargs: KwargsMerge = KwargsMerge()
 
     def get_iter(
-        self, source: Tuple[Iterator[pd.DataFrame], Iterator[pd.DataFrame]]
+        self, source: List[Iterator[pd.DataFrame]]
     ) -> Iterator[pd.DataFrame]:
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name

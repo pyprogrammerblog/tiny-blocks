@@ -1,7 +1,7 @@
 import logging
 import sys
 from functools import reduce
-from typing import List, Union, Iterator
+from typing import List, Union, Iterator, NoReturn
 from datetime import datetime
 
 import pandas as pd
@@ -59,6 +59,9 @@ class Pipeline:
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
         self.status: str = Status.PENDING
+        self.start_time: datetime | None = None
+        self.end_time: datetime | None = None
+        self.detail: str = ""
         self._generators: List[Iterator[pd.DataFrame]]
         self._callables: List = []
 
@@ -100,17 +103,20 @@ class Pipeline:
     def __rshift__(
         self,
         next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"],
-    ) -> Union["Pipeline", str]:
+    ) -> Union["Pipeline", NoReturn]:
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, (ExtractBase, TransformBase, FanIn)):
+        if isinstance(next, (ExtractBase, FanIn)):
+            self._callables.append(next.get_iter())
+            return self
+        if isinstance(next, (TransformBase,)):
             self._callables.append(next.get_iter)
             return self
         elif isinstance(next, LoadBase):
             self._callables.append(next.exhaust)
             reduce(lambda x, y: y(x), self._callables)
-            return self.current_status()
+            return None
         else:
             raise ValueError("Unsupported Block Type")
 
