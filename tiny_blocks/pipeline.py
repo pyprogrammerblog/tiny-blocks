@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import List, Union, Iterator
+from typing import List, Union, Generator
 from datetime import datetime
 
 import pandas as pd
@@ -58,7 +58,7 @@ class Pipeline:
         self.supress_exception: bool = supress_exception
         self.supress_output_message: bool = supress_output_message
         self.status: str = Status.PENDING
-        self._generators: List[Iterator[pd.DataFrame]]
+        self._generators: List[Generator[pd.DataFrame]]
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
@@ -144,5 +144,5 @@ class FanIn:
     def __init__(self, *blocks: ExtractBase):
         self.blocks = blocks
 
-    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+    def get_iter(self) -> List[Generator[pd.DataFrame]]:
         return [block.get_iter() for block in self.blocks]

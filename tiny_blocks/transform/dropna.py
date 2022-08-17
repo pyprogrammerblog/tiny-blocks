@@ -41,9 +41,9 @@ class DropNa(TransformBase):
     kwargs: KwargsDropNa = KwargsDropNa()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
-        for chunk in generator:
+        for chunk in source:
             chunk = chunk.dropna(**self.kwargs.to_dict())
             yield chunk

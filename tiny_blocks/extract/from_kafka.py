@@ -1,6 +1,6 @@
 import contextlib
 import logging
-from typing import Iterator, Literal, List
+from typing import Generator, Literal, List
 
 import pandas as pd
 from kafka import KafkaConsumer
@@ -53,7 +53,7 @@ class FromKafka(ExtractBase):
         finally:
             consumer.close()
 
-    def get_iter(self) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Generator[pd.DataFrame]:
 
         with self.kafka_consumer() as consumer:
             for msg_str in consumer:

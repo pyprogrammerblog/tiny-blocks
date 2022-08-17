@@ -1,5 +1,4 @@
 import logging
-import abc
 from typing import Iterator
 import pandas as pd
 from tiny_blocks.base import BaseBlock, KwargsBase
@@ -15,7 +14,7 @@ class KwargsTransformBase(KwargsBase):
     pass
 
 
-class TransformBase(BaseBlock, abc.ABC):
+class TransformBase(BaseBlock):
     """
     Transform Base Block
 
@@ -24,9 +23,8 @@ class TransformBase(BaseBlock, abc.ABC):
     an Iterator of chunked DataFrames.
     """
 
-    @abc.abstractmethod
     def get_iter(
-        self, *generator: Iterator[pd.DataFrame]
+        self, *source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Return an iterator of chunked dataframes

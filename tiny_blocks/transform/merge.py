@@ -49,8 +49,8 @@ class Merge(TransformBase):
 
     def get_iter(
         self,
-        left: Iterator[pd.DataFrame],
-        right: Iterator[pd.DataFrame],
+        left_source: Iterator[pd.DataFrame],
+        right_source: Iterator[pd.DataFrame],
     ) -> Iterator[pd.DataFrame]:
 
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
@@ -58,10 +58,10 @@ class Merge(TransformBase):
         ) as con:
 
             # send records to a temp database (exhaust the generators)
-            for chunk in left:
+            for chunk in left_source:
                 chunk.to_sql(name="table_left", con=con, index=False)
 
-            for chunk in right:
+            for chunk in right_source:
                 chunk.to_sql(name="table_right", con=con, index=False)
 
             # select non-duplicated rows.

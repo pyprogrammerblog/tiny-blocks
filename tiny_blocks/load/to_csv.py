@@ -46,6 +46,10 @@ class ToCSV(LoadBase):
     kwargs: KwargsToCSV = KwargsToCSV()
     path: Path | AnyUrl = Field(..., description="Destination path")
 
-    def exhaust(self, generator: Iterator[pd.DataFrame]):
-        for chunk in generator:
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        """
+        - Loop the source
+        - Send each chunk to CSV
+        """
+        for chunk in source:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())

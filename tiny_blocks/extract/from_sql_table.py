@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, List, Literal, Tuple, Dict
+from typing import Generator, List, Literal, Tuple, Dict
 
 import pandas as pd
 from pydantic import Field
@@ -67,7 +67,7 @@ class FromSQLTable(ExtractBase):
             conn.close()
             engine.dispose()
 
-    def get_iter(self) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Generator[pd.DataFrame]:
         with self.connect_db() as conn:
             for chunk in pd.read_sql_table(
                 table_name=self.table_name, con=conn, **self.kwargs.to_dict()

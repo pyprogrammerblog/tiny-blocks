@@ -44,7 +44,7 @@ class DropDuplicates(TransformBase):
     subset: Set[str] = None
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
         with tempfile.NamedTemporaryFile(
@@ -52,7 +52,7 @@ class DropDuplicates(TransformBase):
         ) as file, sqlite3.connect(file.name) as con:
 
             # send records to a temp database (exhaust the generator)
-            for chunk in generator:
+            for chunk in source:
                 chunk.to_sql(name="temp", con=con, index=False)
 
             # select non-duplicated rows. It is also possible to select

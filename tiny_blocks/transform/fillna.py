@@ -45,8 +45,14 @@ class Fillna(TransformBase):
     value: Union[int, str, dict]
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        for chunk in generator:
+        """
+        1. Loop on each chunk.
+        2. Fill Nan values
+        3. Yield chunk
+        """
+
+        for chunk in source:
             chunk = chunk.fillna(value=self.value, **self.kwargs.to_dict())
             yield chunk

@@ -1,7 +1,7 @@
 import logging
 import sqlite3
 import tempfile
-from typing import Iterator, Literal, List
+from typing import Generator, Literal, List
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
@@ -42,14 +42,14 @@ class Sort(TransformBase):
     kwargs: KwargsSort = KwargsSort()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
+        self, source: Generator[pd.DataFrame]
+    ) -> Generator[pd.DataFrame]:
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:
 
             # send records to a temp database (exhaust the generator)
-            for chunk in generator:
+            for chunk in source:
                 chunk.to_sql(name="temp", con=con, index=False)
 
             # order by column(s) ascending/descending.

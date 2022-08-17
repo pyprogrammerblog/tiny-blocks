@@ -51,11 +51,11 @@ class Apply(TransformBase):
     kwargs: KwargsApply = KwargsApply()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
         func = lru_cache(lambda x: self.func(x))
 
-        for chunk in generator:
+        for chunk in source:
             chunk[self.set_to_column] = chunk[self.apply_to_column].apply(func)
             yield chunk

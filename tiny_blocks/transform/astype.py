@@ -43,11 +43,11 @@ class Astype(TransformBase):
     kwargs: KwargsAstype = KwargsAstype()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Cast types
         """
-        for chunk in generator:
+        for chunk in source:
             chunk = chunk.astype(dtype=self.dtype, **self.kwargs.to_dict())
             yield chunk
