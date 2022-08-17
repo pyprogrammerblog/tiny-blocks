@@ -48,20 +48,19 @@ class Merge(TransformBase):
     kwargs: KwargsMerge = KwargsMerge()
 
     def get_iter(
-        self,
-        left_source: Iterator[pd.DataFrame],
-        right_source: Iterator[pd.DataFrame],
+        self, *source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name
         ) as con:
+            left, right = source
 
             # send records to a temp database (exhaust the generators)
-            for chunk in left_source:
+            for chunk in left:
                 chunk.to_sql(name="table_left", con=con, index=False)
 
-            for chunk in right_source:
+            for chunk in right:
                 chunk.to_sql(name="table_right", con=con, index=False)
 
             # select non-duplicated rows.
