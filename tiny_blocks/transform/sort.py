@@ -1,7 +1,7 @@
 import logging
 import sqlite3
 import tempfile
-from typing import Generator, Literal, List
+from typing import Iterator, Literal, List
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
@@ -42,8 +42,8 @@ class Sort(TransformBase):
     kwargs: KwargsSort = KwargsSort()
 
     def get_iter(
-        self, source: Generator[pd.DataFrame]
-    ) -> Generator[pd.DataFrame]:
+        self, source: Iterator[pd.DataFrame]
+    ) -> Iterator[pd.DataFrame]:
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:

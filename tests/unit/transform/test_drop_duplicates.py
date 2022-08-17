@@ -13,8 +13,8 @@ def test_drop_duplicates(csv_source, subset, expected):
     extract_csv = FromCSV(path=csv_source)
     drop_duplicates = DropDuplicates(subset=subset)
 
-    generator = extract_csv.get_iter()
-    generator = drop_duplicates.get_iter(generator=generator)
+    source = extract_csv.get_iter()
+    generator = drop_duplicates.get_iter(source=source)
 
     # exhaust the generator and assert data
     df = pd.concat(generator)
@@ -26,8 +26,8 @@ def test_drop_duplicates_no_subset(csv_source):
     extract_csv = FromCSV(path=csv_source)
     drop_duplicates = DropDuplicates()
 
-    generator = extract_csv.get_iter()
-    generator = drop_duplicates.get_iter(generator=generator)
+    source = extract_csv.get_iter()
+    generator = drop_duplicates.get_iter(source=source)
 
     # exhaust the generator and assert data
     df = pd.concat(generator)

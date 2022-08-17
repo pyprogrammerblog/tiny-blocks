@@ -1,5 +1,5 @@
 import logging
-from typing import Generator
+from typing import Iterator
 
 import pandas as pd
 from tiny_blocks.base import BaseBlock, KwargsBase
@@ -26,7 +26,7 @@ class ExtractBase(BaseBlock):
     This method return an Iterator of chunked DataFrames
     """
 
-    def get_iter(self) -> Generator[pd.DataFrame, None, None]:
+    def get_iter(self) -> Iterator[pd.DataFrame]:
         """
         Return an iterator of chunked dataframes
 

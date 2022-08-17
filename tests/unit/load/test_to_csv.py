@@ -10,7 +10,7 @@ def test_csv_load_into_sink(csv_source, csv_sink):
     load_into_csv = ToCSV(path=csv_sink)
 
     generator = extract_csv.get_iter()
-    load_into_csv.exhaust(generator=generator)
+    load_into_csv.exhaust(source=generator)
 
     # validations
     assert Path(csv_sink).exists()

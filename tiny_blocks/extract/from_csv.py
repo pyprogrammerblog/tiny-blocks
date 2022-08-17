@@ -1,5 +1,5 @@
 import logging
-from typing import Generator, List, Literal, Sequence, Dict, Any
+from typing import Iterator, List, Literal, Sequence, Dict, Any
 
 import pandas as pd
 from pydantic import Field, FilePath, AnyUrl
@@ -53,6 +53,6 @@ class FromCSV(ExtractBase):
     path: FilePath | AnyUrl = Field(..., description="Destination path")
     kwargs: KwargsFromCSV = KwargsFromCSV()
 
-    def get_iter(self) -> Generator[pd.DataFrame]:
+    def get_iter(self) -> Iterator[pd.DataFrame]:
         for chunk in pd.read_csv(self.path, **self.kwargs.to_dict()):
             yield chunk

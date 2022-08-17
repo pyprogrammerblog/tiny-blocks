@@ -9,7 +9,7 @@ def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
     load_to_sql = ToSQL(dsn_conn=sqlite_sink, table_name="destination")
 
     generator = extract_sql.get_iter()
-    load_to_sql.exhaust(generator=generator)
+    load_to_sql.exhaust(source=generator)
 
     # assert
     df = pd.read_sql_table(table_name="destination", con=sqlite_sink)
@@ -23,7 +23,7 @@ def test_sql_load_into_postgres(postgres_source, postgres_sink):
     load_to_sql = ToSQL(dsn_conn=postgres_sink, table_name="destination")
 
     generator = extract_sql.get_iter()
-    load_to_sql.exhaust(generator=generator)
+    load_to_sql.exhaust(source=generator)
 
     # assert
     df = pd.read_sql_table(table_name="destination", con=postgres_sink)
@@ -37,7 +37,7 @@ def test_sql_load_into_mysql(mysql_source, mysql_sink):
     load_to_sql = ToSQL(dsn_conn=mysql_sink, table_name="destination")
 
     generator = extract_sql.get_iter()
-    load_to_sql.exhaust(generator=generator)
+    load_to_sql.exhaust(source=generator)
 
     # assert
     df = pd.read_sql_table(table_name="destination", con=mysql_sink)
