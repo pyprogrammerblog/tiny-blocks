@@ -1,7 +1,7 @@
 import logging
 import sys
 from functools import reduce
-from typing import List, Union, Iterator, NoReturn
+from typing import List, Union, Iterator, Callable, NoReturn
 from datetime import datetime
 
 import pandas as pd
@@ -62,8 +62,7 @@ class Pipeline:
         self.start_time: datetime | None = None
         self.end_time: datetime | None = None
         self.detail: str = ""
-        self._generators: List[Iterator[pd.DataFrame]]
-        self._callables: List = []
+        self._callables: List = [Callable]
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
