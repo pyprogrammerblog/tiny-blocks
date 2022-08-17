@@ -1,10 +1,8 @@
 import logging
 import sys
 from functools import reduce
-from typing import List, Union, Iterator, Callable, NoReturn
+from typing import List, Union, Callable, NoReturn
 from datetime import datetime
-
-import pandas as pd
 
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
@@ -142,5 +140,5 @@ class FanIn:
     def __init__(self, *blocks: ExtractBase):
         self.blocks = blocks
 
-    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
-        return [block.get_iter() for block in self.blocks]
+    def get_iter(self) -> List[Callable]:
+        return [block.get_iter for block in self.blocks]
