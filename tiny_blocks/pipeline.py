@@ -107,16 +107,12 @@ class Pipeline:
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, (ExtractBase, FanIn)):
-            self._callables.append(next.get_iter())
-            return self
-        if isinstance(next, (TransformBase,)):
+        if isinstance(next, (ExtractBase, FanIn, TransformBase)):
             self._callables.append(next.get_iter)
             return self
         elif isinstance(next, LoadBase):
             self._callables.append(next.exhaust)
-            reduce(lambda x, y: y(x), self._callables)
-            return None
+            return reduce(lambda x, y: y(x), self._callables)  # the magic happens!
         else:
             raise ValueError("Unsupported Block Type")
 
