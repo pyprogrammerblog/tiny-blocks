@@ -54,7 +54,8 @@ class ToKafka(LoadBase):
     def exhaust(self, source: Iterator[pd.DataFrame]):
         """
         - Loop the source
-        - Send each chunk to Kafka
+        - convert each chunk into JSON
+        - Send each chunk (Bulk) to Kafka
         """
         with self.kafka_producer() as producer:
             for chunk in source:
