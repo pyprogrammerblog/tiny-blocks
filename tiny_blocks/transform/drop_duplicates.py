@@ -43,7 +43,7 @@ class DropDuplicates(TransformBase):
     kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
     subset: Set[str] = None
 
-    def get_iter(  # type: ignore
+    def get_iter(
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 

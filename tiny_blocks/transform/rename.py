@@ -42,7 +42,7 @@ class Rename(TransformBase):
     kwargs: KwargsRename = KwargsRename()
     columns: Dict[str, str]
 
-    def get_iter(  # type: ignore
+    def get_iter(
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         for chunk in source:

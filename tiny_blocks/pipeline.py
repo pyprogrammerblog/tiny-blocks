@@ -1,5 +1,6 @@
 import logging
 import sys
+from functools import reduce
 from typing import List, Union, Iterator
 from datetime import datetime
 
@@ -51,7 +52,7 @@ class Pipeline:
         name: str,
         description: str = None,
         supress_output_message: bool = False,
-        supress_exception: bool = True,
+        supress_exception: bool = False,
     ):
         self.name: str = name
         self.description: str | None = description
@@ -59,6 +60,7 @@ class Pipeline:
         self.supress_output_message: bool = supress_output_message
         self.status: str = Status.PENDING
         self._generators: List[Iterator[pd.DataFrame]]
+        self._callables: List = []
 
     def __enter__(self):
         self.start_time = datetime.utcnow()
@@ -102,17 +104,12 @@ class Pipeline:
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, FanIn):
-            self._generators = next.get_iter()
-            return self
-        elif isinstance(next, ExtractBase):
-            self._generators = [next.get_iter()]
-            return self
-        elif isinstance(next, TransformBase):
-            self._generators = [next.get_iter(*self._generators)]
+        if isinstance(next, (ExtractBase, TransformBase, FanIn)):
+            self._callables.append(next.get_iter)
             return self
         elif isinstance(next, LoadBase):
-            next.exhaust(*self._generators)
+            self._callables.append(next.exhaust)
+            reduce(lambda x, y: y(x()), self._callables)
             return self.current_status()
         else:
             raise ValueError("Unsupported Block Type")

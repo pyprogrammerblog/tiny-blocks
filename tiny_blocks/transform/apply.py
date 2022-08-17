@@ -50,7 +50,7 @@ class Apply(TransformBase):
     func: Callable = Field(..., description="Callable")
     kwargs: KwargsApply = KwargsApply()
 
-    def get_iter(  # type: ignore
+    def get_iter(
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
