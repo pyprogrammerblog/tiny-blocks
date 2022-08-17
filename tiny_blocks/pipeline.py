@@ -1,8 +1,9 @@
 import logging
 import sys
-from functools import reduce
-from typing import List, Union, Callable, NoReturn
+from typing import List, Union, Callable, NoReturn, Iterator
 from datetime import datetime
+
+import pandas as pd
 
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
@@ -104,12 +105,14 @@ class Pipeline:
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, (ExtractBase, FanIn, TransformBase)):
-            self._callables.append(next.get_iter)
+        if isinstance(next, (FanIn, ExtractBase)):
+            self._generators = list(next.get_iter())
+            return self
+        elif isinstance(next, TransformBase):
+            self._generators = list(next.get_iter(source=self._generators))
             return self
         elif isinstance(next, LoadBase):
-            self._callables.append(next.exhaust)
-            return reduce(lambda x, y: y(x), self._callables)
+            return next.exhaust(*self._generators)
         else:
             raise ValueError("Unsupported Block Type")
 
@@ -140,5 +143,5 @@ class FanIn:
     def __init__(self, *blocks: ExtractBase):
         self.blocks = blocks
 
-    def get_iter(self) -> List[Callable]:
-        return [block.get_iter for block in self.blocks]
+    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+        return [block.get_iter() for block in self.blocks]
