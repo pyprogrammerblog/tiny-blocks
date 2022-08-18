@@ -29,14 +29,14 @@ class Apply(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Apply
         >>> from tiny_blocks.extract import FromCSV
-        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> apply = Apply(
         ...   apply_to_column="column_A",
         ...   set_to_column="column_b",
         ...   func=lambda x: x + 1,
         >>> )
-        >>> generator = extract_csv.get_iter()
-        >>> generator = apply.get_iter(generator)
+        >>> source = from_csv.get_iter()
+        >>> generator = apply.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 

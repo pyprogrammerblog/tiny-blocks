@@ -31,10 +31,10 @@ class ToCSV(LoadBase):
     Basic Usage:
         >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.extract import FromCSV
-        >>> extract_csv = FromCSV(path="path/to/source.csv")
-        >>> load_into_csv = ToCSV(path="path/to/sink.csv")
-        >>> generator = extract_csv.get_iter()
-        >>> load_into_csv.exhaust(generator=generator)
+        >>> from_csv = FromCSV(path="path/to/source.csv")
+        >>> to_csv = ToCSV(path="path/to/sink.csv")
+        >>> source = from_csv.get_iter()
+        >>> to_csv.exhaust(source)
         >>> df = pd.read_csv("path/to/sink.csv", sep="|")
         >>> assert not df.empty
 

@@ -34,10 +34,10 @@ class ToSQL(LoadBase):
         >>> from tiny_blocks.extract import FromSQLTable
         >>> from tiny_blocks.load import ToSQL
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
-        >>> extract_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
-        >>> load_to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
-        >>> generator = extract_sql.get_iter()
-        >>> load_to_sql.exhaust(generator=generator)
+        >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
+        >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
+        >>> source = from_sql.get_iter()
+        >>> to_sql.exhaust(source)
         >>> df = pd.read_sql_table(table_name="destination", con=str_conn)
         >>> assert not df.empty
 

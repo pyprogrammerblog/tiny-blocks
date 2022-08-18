@@ -28,8 +28,8 @@ class DropNa(TransformBase):
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> drop_na = DropNa()
-        >>> generator = extract_csv.get_iter()
-        >>> generator = drop_na.get_iter(generator)
+        >>> source = extract_csv.get_iter()
+        >>> generator = drop_na.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 

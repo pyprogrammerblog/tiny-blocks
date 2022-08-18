@@ -30,8 +30,8 @@ class DropDuplicates(TransformBase):
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> drop_duplicates = DropDuplicates()
-        >>> generator = extract_csv.get_iter()
-        >>> generator = drop_duplicates.get_iter(generator)
+        >>> source = extract_csv.get_iter()
+        >>> generator = drop_duplicates.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 

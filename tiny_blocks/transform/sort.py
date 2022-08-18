@@ -30,8 +30,8 @@ class Sort(TransformBase):
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> sort = Sort(by=["column_A"], ascending=False)
-        >>> generator = extract_csv.get_iter()
-        >>> generator = sort.get_iter(generator)
+        >>> source = extract_csv.get_iter()
+        >>> generator = sort.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
     """

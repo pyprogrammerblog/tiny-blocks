@@ -28,7 +28,6 @@ Make sure you had install the package by doing ``pip install tiny-blocks`` and t
    from tiny_blocks.transform import DropDuplicates
    from tiny_blocks.transform import Fillna
    from tiny_blocks.load import ToSQL
-   from tiny_blocks import Pipeline
 
    # ETL Blocks
    from_csv = FromCSV(path='/path/to/file.csv')
@@ -37,8 +36,7 @@ Make sure you had install the package by doing ``pip install tiny-blocks`` and t
    to_sql = ToSQL(dsn_conn='psycopg2+postgres:...')
 
    # Run it as a Pipeline
-   with Pipeline(name="My Pipeline") as pipe:
-       pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
+   from_csv >> drop_duplicates >> fill_na >> to_sql
 
 
 .. toctree::
