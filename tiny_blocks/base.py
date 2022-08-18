@@ -7,9 +7,6 @@ from pydantic import BaseModel, Field
 logger = logging.getLogger(__name__)
 
 
-SourceType = List[Iterator[pd.DataFrame]] | Iterator[pd.DataFrame]
-
-
 class KwargsBase(BaseModel):
     """
     Base for Kwargs Models

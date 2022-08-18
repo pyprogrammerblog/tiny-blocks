@@ -5,7 +5,6 @@ from datetime import datetime
 
 import pandas as pd
 
-from tiny_blocks.base import SourceType
 from tiny_blocks.extract.base import ExtractBase
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
@@ -101,7 +100,7 @@ class Pipeline:
 
 
 class Pipe:
-    def __init__(self, source: SourceType):
+    def __init__(self, source: Iterator[pd.DataFrame]):
         self.source = source
 
     def __rshift__(
