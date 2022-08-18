@@ -9,7 +9,7 @@ from tiny_blocks.extract.base import ExtractBase
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 
-__all__ = ["Pipeline", "FanIn", "FanOut"]
+__all__ = ["Pipeline", "FanIn"]
 
 
 logger = logging.getLogger(__name__)
@@ -158,23 +158,3 @@ class FanIn:
 
     def get_iter(self) -> List[Iterator[pd.DataFrame]]:
         return [block.get_iter() for block in self.blocks]
-
-
-class FanOut:
-    """
-    Split data into multiple operations.
-
-    Usage:
-        >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.load import ToSQL
-        >>> from tiny_blocks import FanIn, Pipeline
-        >>> from tiny_blocks.transform import Merge
-        >>>
-        >>> csv_1 = FromCSV(path='/path/to/file1.csv')
-        >>> csv_2 = FromCSV(path='/path/to/file2.csv')
-        >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
-        >>> to_sql_1 = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>> to_sql_2 = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>>
-        >>> FanIn(csv_1, csv_2)  >> merge >> FanOut(to_sql_1, to_sql_2)
-    """
