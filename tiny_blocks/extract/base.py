@@ -5,7 +5,10 @@ import pandas as pd
 from tiny_blocks.base import BaseBlock
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase, KwargsBase
-from tiny_blocks.pipeline import Pipe
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tiny_blocks.pipeline import Pipe
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
 
@@ -41,12 +44,14 @@ class ExtractBase(BaseBlock):
     def __rshift__(
         self,
         next: TransformBase | LoadBase,
-    ) -> Pipe | NoReturn:
+    ) -> NoReturn | "Pipe":
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
+            from tiny_blocks.pipeline import Pipe
+
             return Pipe(source)
         elif isinstance(next, LoadBase):
             return next.exhaust(source=self.get_iter())

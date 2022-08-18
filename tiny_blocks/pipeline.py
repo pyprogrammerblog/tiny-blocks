@@ -1,11 +1,12 @@
 import logging
 import sys
-from typing import List, Union, Callable, NoReturn, Iterator
+from typing import List, Callable, Iterator, Union, NoReturn
 from datetime import datetime
 
 import pandas as pd
 
 from tiny_blocks.base import SourceType
+from tiny_blocks.extract.base import ExtractBase
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
 
@@ -99,6 +100,28 @@ class Pipeline:
         return msg
 
 
+class Pipe:
+    def __init__(self, source: SourceType):
+        self.source = source
+
+    def __rshift__(
+        self, next: Union[TransformBase, LoadBase]
+    ) -> Union["Pipe", NoReturn]:
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.source)
+            return Pipe(source=source)
+        elif isinstance(next, LoadBase):
+            return next.exhaust(source=self.source)
+        else:
+            raise ValueError("Unsupported Block Type")
+
+    def get_iter(self):
+        return self.source
+
+
 class FanIn:
     """
     Gather multiple operations and send them to the next block.
@@ -121,18 +144,21 @@ class FanIn:
         >>> FanIn(csv_1, csv_2)  >> merge >> to_sql
     """
 
-    def __init__(self, source: List[Iterator[pd.DataFrame]]):
-        self.source = source
+    def __init__(self, *blocks: Union[ExtractBase, "Pipe"]):
+        self.blocks = blocks
 
     def __rshift__(self, next: TransformBase) -> "Pipe":
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.source)
+            source = next.get_iter(source=self.get_iter())
             return Pipe(source=source)
         else:
             raise ValueError("Unsupported Block Type")
+
+    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+        return [block.get_iter() for block in self.blocks]
 
 
 class FanOut:
@@ -153,23 +179,3 @@ class FanOut:
         >>>
         >>> FanIn(csv_1, csv_2)  >> merge >> FanOut(to_sql_1, to_sql_2)
     """
-
-
-class Pipe:
-    def __init__(self, source: SourceType):
-        self.source = source
-
-    def __rshift__(
-        self,
-        next: Union[TransformBase, LoadBase, "FanOut"],
-    ) -> Union["Pipe", NoReturn]:
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.source)
-            return Pipe(source=source)
-        elif isinstance(next, LoadBase):
-            return next.exhaust(source=self.source)
-        else:
-            raise ValueError("Unsupported Block Type")
