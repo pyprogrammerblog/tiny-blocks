@@ -37,7 +37,6 @@ from tiny_blocks.extract import FromCSV
 from tiny_blocks.transform import DropDuplicates
 from tiny_blocks.transform import Fillna
 from tiny_blocks.load import ToSQL
-from tiny_blocks import Pipeline
 
 # ETL Blocks
 from_csv = FromCSV(path='/path/to/file.csv')
@@ -46,8 +45,7 @@ fill_na = Fillna(value="Hola Mundo")
 to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
 
 # Run the Pipeline
-with Pipeline(name="Pipeline") as pipe:
-    pipe >> from_csv >> drop_duplicates >> fill_na >> to_sql
+from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
 
 Documentation

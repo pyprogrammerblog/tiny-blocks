@@ -45,15 +45,15 @@ def test_sql_load_into_mysql(mysql_source, mysql_sink):
     assert df.columns.to_list() == ["c", "d", "e"]
 
 
-# def test_sql_load_into_oracle(oracle_source, oracle_sink):
-#
-#     extract_sql = FromSQLTable(dsn_conn=oracle_source, table_name="test")
-#     load_to_sql = ToSQL(dsn_conn=oracle_sink, table_name="destination")
-#
-#     generator = extract_sql.get_iter()
-#     load_to_sql.exhaust(generator=generator)
-#
-#     # assert
-#     df = pd.read_sql_table(table_name="destination", con=oracle_sink)
-#     assert df.shape == (3, 3)
-#     assert df.columns.to_list() == ["c", "d", "e"]
+def test_sql_load_into_oracle(oracle_source, oracle_sink):
+
+    extract_sql = FromSQLTable(dsn_conn=oracle_source, table_name="test")
+    load_to_sql = ToSQL(dsn_conn=oracle_sink, table_name="destination")
+
+    generator = extract_sql.get_iter()
+    load_to_sql.exhaust(source=generator)
+
+    # assert
+    df = pd.read_sql_table(table_name="destination", con=oracle_sink)
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["c", "d", "e"]

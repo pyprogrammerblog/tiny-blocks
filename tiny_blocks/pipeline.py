@@ -5,11 +5,11 @@ from datetime import datetime
 
 import pandas as pd
 
+from tiny_blocks.base import SourceType
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.extract.base import ExtractBase
 
-__all__ = ["Pipeline", "FanIn"]
+__all__ = ["Pipeline", "FanIn", "FanOut"]
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class Pipeline:
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
-        >>>     pipe >> from_csv >> fill_na >> to_sql
+        >>>     from_csv >> fill_na >> to_sql
     """
 
     def __init__(
@@ -98,24 +98,6 @@ class Pipeline:
         msg += f"\n\t Details: {self.detail}"
         return msg
 
-    def __rshift__(
-        self,
-        next: Union[ExtractBase, TransformBase, LoadBase, "FanIn"],
-    ) -> Union["Pipeline", NoReturn]:
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, (FanIn, ExtractBase)):
-            self._generators = list(next.get_iter())
-            return self
-        elif isinstance(next, TransformBase):
-            self._generators = list(next.get_iter(source=self._generators))
-            return self
-        elif isinstance(next, LoadBase):
-            return next.exhaust(*self._generators)
-        else:
-            raise ValueError("Unsupported Block Type")
-
 
 class FanIn:
     """
@@ -136,12 +118,58 @@ class FanIn:
         >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
-        >>> with Pipeline(name="My Pipeline") as pipe:
-        >>>     pipe >> FanIn(csv_1, csv_2)  >> merge >> to_sql
+        >>> FanIn(csv_1, csv_2)  >> merge >> to_sql
     """
 
-    def __init__(self, *blocks: ExtractBase):
-        self.blocks = blocks
+    def __init__(self, source: List[Iterator[pd.DataFrame]]):
+        self.source = source
 
-    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
-        return [block.get_iter() for block in self.blocks]
+    def __rshift__(self, next: TransformBase) -> "Pipe":
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.source)
+            return Pipe(source=source)
+        else:
+            raise ValueError("Unsupported Block Type")
+
+
+class FanOut:
+    """
+    Split data into multiple operations.
+
+    Usage:
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL
+        >>> from tiny_blocks import FanIn, Pipeline
+        >>> from tiny_blocks.transform import Merge
+        >>>
+        >>> csv_1 = FromCSV(path='/path/to/file1.csv')
+        >>> csv_2 = FromCSV(path='/path/to/file2.csv')
+        >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
+        >>> to_sql_1 = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>> to_sql_2 = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>>
+        >>> FanIn(csv_1, csv_2)  >> merge >> FanOut(to_sql_1, to_sql_2)
+    """
+
+
+class Pipe:
+    def __init__(self, source: SourceType):
+        self.source = source
+
+    def __rshift__(
+        self,
+        next: Union[TransformBase, LoadBase, "FanOut"],
+    ) -> Union["Pipe", NoReturn]:
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.source)
+            return Pipe(source=source)
+        elif isinstance(next, LoadBase):
+            return next.exhaust(source=self.source)
+        else:
+            raise ValueError("Unsupported Block Type")

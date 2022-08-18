@@ -1,8 +1,11 @@
 import logging
-from typing import Iterator
+from typing import Iterator, NoReturn
 
 import pandas as pd
-from tiny_blocks.base import BaseBlock, KwargsBase
+from tiny_blocks.base import BaseBlock
+from tiny_blocks.transform.base import TransformBase
+from tiny_blocks.load.base import LoadBase, KwargsBase
+from tiny_blocks.pipeline import Pipe
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
 
@@ -34,3 +37,18 @@ class ExtractBase(BaseBlock):
         extraction block
         """
         raise NotImplementedError
+
+    def __rshift__(
+        self,
+        next: TransformBase | LoadBase,
+    ) -> Pipe | NoReturn:
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.get_iter())
+            return Pipe(source)
+        elif isinstance(next, LoadBase):
+            return next.exhaust(source=self.get_iter())
+        else:
+            raise ValueError("Unsupported Block Type")

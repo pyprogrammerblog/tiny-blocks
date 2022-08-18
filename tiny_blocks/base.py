@@ -1,9 +1,13 @@
 import logging
 from uuid import UUID, uuid4
-
+from typing import Iterator, List
+import pandas as pd
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
+
+
+SourceType = List[Iterator[pd.DataFrame]] | Iterator[pd.DataFrame]
 
 
 class KwargsBase(BaseModel):
