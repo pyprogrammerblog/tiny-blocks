@@ -21,16 +21,6 @@ services:
     ports:
       - "5432:5432"
 
-  oracle:
-    image: wnameless/oracle-xe-11g-r2
-    ports:
-      - "49161:1521"
-    environment:
-      ORACLE_ALLOW_REMOTE: "true"
-      MYSQL_ROOT_USER: "user"
-      MYSQL_ROOT_PASSWORD: "pass"
-      MYSQL_DATABASE: "db"
-
   minio:
     image: minio/minio
     ports:
@@ -67,7 +57,6 @@ services:
     depends_on:
       - postgres
       - mysql
-      - oracle
       - minio
       - zookeeper
       - kafka
