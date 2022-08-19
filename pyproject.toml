@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.5"
+version = "0.1.6"
 description = "Tiny Block Operations for Data Pipelines"
 readme = "README.md"
 license = "LICENSE"
