@@ -1,9 +1,14 @@
 import logging
-import abc
-from typing import Iterator
+from typing import Iterator, NoReturn
 
 import pandas as pd
-from tiny_blocks.base import BaseBlock, KwargsBase
+from tiny_blocks.base import BaseBlock
+from tiny_blocks.transform.base import TransformBase
+from tiny_blocks.load.base import LoadBase, KwargsBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tiny_blocks.pipeline import Pipe
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
 
@@ -19,7 +24,7 @@ class KwargsExtractBase(KwargsBase):
     pass
 
 
-class ExtractBase(BaseBlock, abc.ABC):
+class ExtractBase(BaseBlock):
     """
     Extract Base Block.
 
@@ -27,7 +32,6 @@ class ExtractBase(BaseBlock, abc.ABC):
     This method return an Iterator of chunked DataFrames
     """
 
-    @abc.abstractmethod
     def get_iter(self) -> Iterator[pd.DataFrame]:
         """
         Return an iterator of chunked dataframes
@@ -36,3 +40,20 @@ class ExtractBase(BaseBlock, abc.ABC):
         extraction block
         """
         raise NotImplementedError
+
+    def __rshift__(
+        self,
+        next: TransformBase | LoadBase,
+    ) -> NoReturn | "Pipe":
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.get_iter())
+            from tiny_blocks.pipeline import Pipe
+
+            return Pipe(source)
+        elif isinstance(next, LoadBase):
+            return next.exhaust(source=self.get_iter())
+        else:
+            raise ValueError("Unsupported Block Type")

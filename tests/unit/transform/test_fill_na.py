@@ -8,8 +8,8 @@ def test_fillna(sqlite_source, sqlite_sink):
     extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
     fill_na = Fillna(value="Hola Mundo")
 
-    generator = extract_sql.get_iter()
-    generator = fill_na.get_iter(generator=generator)
+    source = extract_sql.get_iter()
+    generator = fill_na.get_iter(source=source)
 
     # assert
     df = pd.concat(generator)

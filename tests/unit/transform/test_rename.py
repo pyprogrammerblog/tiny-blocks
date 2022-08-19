@@ -9,7 +9,7 @@ def test_rename(sqlite_source, sqlite_sink):
     as_type = Rename(columns={"d": "Hola", "e": "a", "f": "todos"})
 
     generator = extract_sql.get_iter()
-    generator = as_type.get_iter(generator=generator)
+    generator = as_type.get_iter(source=generator)
 
     # exhaust and assert
     df = pd.concat(generator)

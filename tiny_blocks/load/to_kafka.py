@@ -51,9 +51,13 @@ class ToKafka(LoadBase):
         finally:
             producer.close()
 
-    def exhaust(self, generator: Iterator[pd.DataFrame]):
-
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        """
+        - Loop the source
+        - convert each chunk into JSON
+        - Send each chunk (Bulk) to Kafka
+        """
         with self.kafka_producer() as producer:
-            for chunk in generator:
+            for chunk in source:
                 json_msg = chunk.to_json()
                 producer.send(self.topic, json_msg)

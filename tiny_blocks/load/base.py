@@ -1,5 +1,4 @@
 import logging
-import abc
 from typing import Iterator
 
 import pandas as pd
@@ -15,7 +14,7 @@ class KwargsLoadBase(KwargsBase):
     pass
 
 
-class LoadBase(BaseBlock, abc.ABC):
+class LoadBase(BaseBlock):
     """
     Load Base Block
 
@@ -23,8 +22,7 @@ class LoadBase(BaseBlock, abc.ABC):
     the `exhaust` method.
     """
 
-    @abc.abstractmethod
-    def exhaust(self, generator: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[pd.DataFrame]):
         """
         Implement the exhaustion of the incoming iterator.
 

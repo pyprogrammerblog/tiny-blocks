@@ -29,14 +29,14 @@ class Apply(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Apply
         >>> from tiny_blocks.extract import FromCSV
-        >>> extract_csv = FromCSV(path='/path/to/file.csv')
+        >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> apply = Apply(
         ...   apply_to_column="column_A",
         ...   set_to_column="column_b",
         ...   func=lambda x: x + 1,
         >>> )
-        >>> generator = extract_csv.get_iter()
-        >>> generator = apply.get_iter(generator)
+        >>> source = from_csv.get_iter()
+        >>> generator = apply.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 
@@ -51,11 +51,11 @@ class Apply(TransformBase):
     kwargs: KwargsApply = KwargsApply()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
         func = lru_cache(lambda x: self.func(x))
 
-        for chunk in generator:
+        for chunk in source:
             chunk[self.set_to_column] = chunk[self.apply_to_column].apply(func)
             yield chunk

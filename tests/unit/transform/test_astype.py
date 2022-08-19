@@ -8,8 +8,8 @@ def test_astype(sqlite_source, sqlite_sink):
     extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
     as_type = Astype(dtype={"e": "float32"})
 
-    generator = extract_sql.get_iter()
-    generator = as_type.get_iter(generator=generator)
+    source_generator = extract_sql.get_iter()
+    generator = as_type.get_iter(source=source_generator)
 
     # exhaust and assert
     df = pd.concat(generator)

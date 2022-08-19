@@ -12,8 +12,8 @@ def test_apply(sqlite_source):
         set_to_column="new",
     )
 
-    generator = extract_sql.get_iter()
-    generator = enrich.get_iter(generator=generator)
+    source = extract_sql.get_iter()
+    generator = enrich.get_iter(source=source)
 
     # assert
     df = pd.concat(generator)

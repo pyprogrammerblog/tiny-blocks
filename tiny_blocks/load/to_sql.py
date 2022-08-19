@@ -34,10 +34,10 @@ class ToSQL(LoadBase):
         >>> from tiny_blocks.extract import FromSQLTable
         >>> from tiny_blocks.load import ToSQL
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
-        >>> extract_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
-        >>> load_to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
-        >>> generator = extract_sql.get_iter()
-        >>> load_to_sql.exhaust(generator=generator)
+        >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
+        >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
+        >>> source = from_sql.get_iter()
+        >>> to_sql.exhaust(source)
         >>> df = pd.read_sql_table(table_name="destination", con=str_conn)
         >>> assert not df.empty
 
@@ -68,8 +68,13 @@ class ToSQL(LoadBase):
             conn.close()
             engine.dispose()
 
-    def exhaust(self, generator: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        """
+        - Connect to DB
+        - Loop the source
+        - Send each chunk to SQL
+        """
         with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()
-            for chunk in generator:
+            for chunk in source:
                 chunk.to_sql(name=self.table_name, con=conn, **kwargs)

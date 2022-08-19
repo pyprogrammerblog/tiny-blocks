@@ -16,7 +16,7 @@ def test_sort_by_ascending():
         # by a, ascending
         sort = Sort(by=["a"])
         generator = extract_csv.get_iter()
-        generator = sort.get_iter(generator=generator)
+        generator = sort.get_iter(source=generator)
         df = pd.concat(generator)
         assert df.shape == (3, 3)
         assert df.a.to_list() == [1, 4, 6]
@@ -24,7 +24,7 @@ def test_sort_by_ascending():
         # by b, ascending
         sort = Sort(by=["b"], ascending=False)
         generator = extract_csv.get_iter()
-        generator = sort.get_iter(generator=generator)
+        generator = sort.get_iter(source=generator)
         df = pd.concat(generator)
         assert df.shape == (3, 3)
         assert df.a.to_list() == [1, 4, 6]
@@ -32,7 +32,7 @@ def test_sort_by_ascending():
         # by c, descending
         sort = Sort(by=["c"], ascending=False)
         generator = extract_csv.get_iter()
-        generator = sort.get_iter(generator=generator)
+        generator = sort.get_iter(source=generator)
         df = pd.concat(generator)
         assert df.shape == (3, 3)
         assert df.c.to_list() == [3, 2, 1]
@@ -40,7 +40,7 @@ def test_sort_by_ascending():
         # by c, descending
         sort = Sort(by=["c"], ascending=True)
         generator = extract_csv.get_iter()
-        generator = sort.get_iter(generator=generator)
+        generator = sort.get_iter(source=generator)
         df = pd.concat(generator)
         assert df.shape == (3, 3)
         assert df.c.to_list() == [1, 2, 3]

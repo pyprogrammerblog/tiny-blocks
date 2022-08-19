@@ -27,10 +27,10 @@ class Astype(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Astype
         >>> from tiny_blocks.extract import FromCSV
-        >>> extract_sql = FromCSV(path="/path/to/file.csv")
+        >>> from_csv = FromCSV(path="/path/to/file.csv")
         >>> as_type = Astype(dtype={"e": "float32"})
-        >>> generator = extract_sql.get_iter()
-        >>> generator = as_type.get_iter(generator=generator)
+        >>> source = from_csv.get_iter()
+        >>> generator = as_type.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 
@@ -43,11 +43,11 @@ class Astype(TransformBase):
     kwargs: KwargsAstype = KwargsAstype()
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
         """
         Cast types
         """
-        for chunk in generator:
+        for chunk in source:
             chunk = chunk.astype(dtype=self.dtype, **self.kwargs.to_dict())
             yield chunk

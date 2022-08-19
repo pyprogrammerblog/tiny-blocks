@@ -31,8 +31,8 @@ class Fillna(TransformBase):
         >>> from tiny_blocks.extract import FromCSV
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> fill_na = Fillna(value="Hola Mundo")
-        >>> generator = extract_csv.get_iter()
-        >>> generator = fill_na.get_iter(generator)
+        >>> source = extract_csv.get_iter()
+        >>> generator = fill_na.get_iter(source)
         >>> df = pd.concat(generator)
         >>> assert not df.empty
 
@@ -45,8 +45,14 @@ class Fillna(TransformBase):
     value: Union[int, str, dict]
 
     def get_iter(
-        self, generator: Iterator[pd.DataFrame]
+        self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
-        for chunk in generator:
+        """
+        1. Loop on each chunk.
+        2. Fill Nan values
+        3. Yield chunk
+        """
+
+        for chunk in source:
             chunk = chunk.fillna(value=self.value, **self.kwargs.to_dict())
             yield chunk

@@ -31,10 +31,10 @@ class ToCSV(LoadBase):
     Basic Usage:
         >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.extract import FromCSV
-        >>> extract_csv = FromCSV(path="path/to/source.csv")
-        >>> load_into_csv = ToCSV(path="path/to/sink.csv")
-        >>> generator = extract_csv.get_iter()
-        >>> load_into_csv.exhaust(generator=generator)
+        >>> from_csv = FromCSV(path="path/to/source.csv")
+        >>> to_csv = ToCSV(path="path/to/sink.csv")
+        >>> source = from_csv.get_iter()
+        >>> to_csv.exhaust(source)
         >>> df = pd.read_csv("path/to/sink.csv", sep="|")
         >>> assert not df.empty
 
@@ -46,6 +46,10 @@ class ToCSV(LoadBase):
     kwargs: KwargsToCSV = KwargsToCSV()
     path: Path | AnyUrl = Field(..., description="Destination path")
 
-    def exhaust(self, generator: Iterator[pd.DataFrame]):
-        for chunk in generator:
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        """
+        - Loop the source
+        - Send each chunk to CSV
+        """
+        for chunk in source:
             chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())
