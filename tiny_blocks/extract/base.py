@@ -3,6 +3,7 @@ from typing import Iterator
 import pandas as pd
 from tiny_blocks.base import BaseBlock
 from tiny_blocks.load.base import KwargsBase
+from tiny_blocks.pipeline import MixinExtract
 
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
@@ -19,7 +20,7 @@ class KwargsExtractBase(KwargsBase):
     pass
 
 
-class ExtractBase(BaseBlock):
+class ExtractBase(BaseBlock, MixinExtract):
     """
     Extract Base Block.
 
