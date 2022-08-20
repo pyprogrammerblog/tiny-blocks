@@ -41,7 +41,7 @@ class Pipeline:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.load import ToSQL
-        >>> from tiny_blocks import Pipeline
+        >>> from tiny_blocks.pipeline import Pipeline
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> fill_na = Fillna(value="Hola Mundo")
@@ -104,6 +104,35 @@ class Pipeline:
         return msg
 
 
+class FanOut:
+    """
+    Tee the flow into multiple pipes.
+
+    Usage:
+        >>> from tiny_blocks.pipeline import FanOut
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL, ToCSV
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>>
+        >>> from_csv = FromCSV(path='/path/to/source.csv')
+        >>> drop_duplicates = DropDuplicates()
+        >>> to_csv = ToCSV(path='/path/to/sink.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>>
+        >>> from_csv >> FanOut(to_sql) >> drop_duplicates >> to_csv
+    """
+
+    def __init__(self, *load_blocks: LoadBase):
+        self.load_blocks = load_blocks
+
+    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+        for load_block, source in zip(self.load_blocks, sources):
+            try:
+                load_block.exhaust(source=source)
+            except Exception as e:
+                logger.error(str(e))
+
+
 class Pipe:
     def __init__(self, source: Iterator[pd.DataFrame]):
         self.source = source
@@ -112,8 +141,8 @@ class Pipe:
         return self.source
 
     def __rshift__(
-        self, next: TransformBase | "LoadBase" | "FanOut"
-    ) -> Union[NoReturn | "Pipe"]:
+        self, next: Union[TransformBase | LoadBase | FanOut]
+    ) -> NoReturn | "Pipe":
         """
         The `>>` operator for the tiny-blocks library.
         """
@@ -143,7 +172,7 @@ class FanIn:
     Usage:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL
-        >>> from tiny_blocks import FanIn, Pipeline
+        >>> from tiny_blocks.pipeline import FanIn
         >>> from tiny_blocks.transform import Merge
         >>>
         >>> csv_1 = FromCSV(path='/path/to/file1.csv')
@@ -169,63 +198,3 @@ class FanIn:
 
     def get_iter(self) -> List[Iterator[pd.DataFrame]]:
         return [pipe.get_iter() for pipe in self.pipes]
-
-
-class FanOut:
-    """
-    Tee the flow into multiple pipes.
-
-    Usage:
-        >>> from tiny_blocks import FanOut
-        >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import DropDuplicates
-        >>>
-        >>> from_csv = FromCSV(path='/path/to/source.csv')
-        >>> drop_duplicates = DropDuplicates()
-        >>> to_csv = ToCSV(path='/path/to/sink.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>>
-        >>> from_csv >> FanOut(to_sql) >> drop_duplicates >> to_csv
-    """
-
-    def __init__(self, *load_blocks: LoadBase):
-        self.load_blocks = load_blocks
-
-    def exhaust(self, *sources: Iterator[pd.DataFrame]):
-        for load_block, source in zip(self.load_blocks, sources):
-            try:
-                load_block.exhaust(source=source)
-            except Exception as e:
-                logger.error(str(e))
-
-
-class MixinExtract:
-    def get_iter(self) -> Iterator[pd.DataFrame]:
-        """
-        Return an iterator of chunked dataframes
-
-        The `chunksize` is defined as kwargs in each
-        extraction block
-        """
-        raise NotImplementedError
-
-    def __rshift__(
-        self, next: TransformBase | LoadBase | FanOut
-    ) -> NoReturn | Pipe:
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.get_iter())
-            return Pipe(source)
-        elif isinstance(next, LoadBase):
-            return next.exhaust(source=self.get_iter())
-        elif isinstance(next, FanOut):
-            # n sources = a source per each load block + 1 for the next pipe
-            n = len(next.load_blocks) + 1
-            source, *sources = itertools.tee(self.get_iter(), n)
-            next.exhaust(*sources)
-            return Pipe(source=source)
-        else:
-            raise ValueError("Unsupported Block Type")
