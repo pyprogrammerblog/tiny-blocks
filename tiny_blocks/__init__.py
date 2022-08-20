@@ -1,5 +1,4 @@
-from tiny_blocks.pipeline import Pipeline
-from tiny_blocks.base import FanIn, FanOut
+from tiny_blocks.pipeline import Pipeline, FanIn, FanOut
 
 
 __all__ = ["FanIn", "FanOut", "Pipeline"]
