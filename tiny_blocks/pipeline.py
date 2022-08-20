@@ -112,7 +112,7 @@ class Pipe:
         return self.source
 
     def __rshift__(
-        self, next: Union[TransformBase | "LoadBase" | "FanOut"]
+        self, next: TransformBase | "LoadBase" | "FanOut"
     ) -> Union[NoReturn | "Pipe"]:
         """
         The `>>` operator for the tiny-blocks library.
