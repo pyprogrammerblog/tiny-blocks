@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, List, Literal, Sequence, Dict, Any
+from typing import Iterator, List, Literal, Sequence, Dict, Any, Callable
 
 import pandas as pd
 from pydantic import Field, FilePath, AnyUrl
@@ -31,6 +31,30 @@ class KwargsFromCSV(KwargsExtractBase):
     false_values: List = None
     chunksize: int = 1000
     storage_options: Dict[str, Any] = None
+    skipinitialspace: bool = False
+    skiprows: int = None
+    skipfooter: int = None
+    nrows: int = None
+    # NA and Missing Data Handling
+    na_values: str | List[str] | Dict = None
+    keep_default_na: bool = True
+    na_filter: bool = True
+    verbose: bool = False
+    skip_blank_lines: bool = True
+    # Datetime Handling
+    parse_dates: bool | List[int] | List[str] = None
+    infer_datetime_format: bool = False
+    keep_date_col: bool = False
+    date_parser: Callable = None
+    dayfirst: bool = False
+    cache_dates: bool = True
+    # Quoting, Compression, and File Format
+    compression: str = "infer"
+    decimal: str = "."
+    encoding: str = None
+    encoding_errors: str | None = "strict"
+    # Error Handling
+    on_bad_lines: Literal["error", "warn", "skip"] | Callable = "skip"
 
 
 class FromCSV(ExtractBase):
@@ -43,7 +67,6 @@ class FromCSV(ExtractBase):
         >>> read_csv = FromCSV(path="/path/to/file.csv")
         >>> generator = read_csv.get_iter()
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
