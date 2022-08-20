@@ -15,7 +15,7 @@ Tiny-Blocks
 :mod:`FanIn`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: tiny_blocks.base
+.. automodule:: tiny_blocks.pipeline
     :members: FanIn
     :exclude-members:
 
@@ -23,6 +23,6 @@ Tiny-Blocks
 :mod:`FanOut`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: tiny_blocks.base
+.. automodule:: tiny_blocks.pipeline
     :members: FanOut
     :exclude-members:

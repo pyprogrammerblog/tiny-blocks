@@ -87,5 +87,11 @@ def test_basic_flow_fan_out(csv_source, csv_sink, postgres_sink):
     assert to_csv.path.exists()
     df = pd.read_csv(to_csv.path, sep="|")
     assert not df.empty
-    assert df.shape == (3, 6)
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["a", "b", "c"]
+    assert not df.isnull().values.any()
+
+    df = pd.read_sql_table(table_name="test", con=postgres_sink)
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["a", "b", "c"]
     assert not df.isnull().values.any()
