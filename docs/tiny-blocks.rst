@@ -7,7 +7,7 @@ Tiny-Blocks
 :mod:`Pipeline`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: tiny_blocks
+.. automodule:: tiny_blocks.pipeline
     :members: Pipeline
     :exclude-members:
 
@@ -15,6 +15,14 @@ Tiny-Blocks
 :mod:`FanIn`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: tiny_blocks
+.. automodule:: tiny_blocks.base
     :members: FanIn
+    :exclude-members:
+
+
+:mod:`FanOut`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: tiny_blocks.base
+    :members: FanOut
     :exclude-members:

@@ -1,15 +1,9 @@
 import logging
 import sys
-from typing import List, Callable, Iterator, Union, NoReturn
+from typing import List, Callable
 from datetime import datetime
 
-import pandas as pd
-
-from tiny_blocks.extract.base import ExtractBase
-from tiny_blocks.load.base import LoadBase
-from tiny_blocks.transform.base import TransformBase
-
-__all__ = ["Pipeline", "FanIn"]
+__all__ = ["Pipeline"]
 
 
 logger = logging.getLogger(__name__)
@@ -97,64 +91,3 @@ class Pipeline:
         msg += f"\n\t Status: {self.status}"
         msg += f"\n\t Details: {self.detail}"
         return msg
-
-
-class Pipe:
-    def __init__(self, source: Iterator[pd.DataFrame]):
-        self.source = source
-
-    def __rshift__(
-        self, next: Union[TransformBase, LoadBase]
-    ) -> Union["Pipe", NoReturn]:
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.source)
-            return Pipe(source=source)
-        elif isinstance(next, LoadBase):
-            return next.exhaust(source=self.source)
-        else:
-            raise ValueError("Unsupported Block Type")
-
-    def get_iter(self):
-        return self.source
-
-
-class FanIn:
-    """
-    Gather multiple operations and send them to the next block.
-    The next block must accept multiple arguments, like for example:
-    ``tiny_blocks.tranform.Merge``
-
-    For now, FanIn can just gather Extraction Blocks.
-
-    Usage:
-        >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.load import ToSQL
-        >>> from tiny_blocks import FanIn, Pipeline
-        >>> from tiny_blocks.transform import Merge
-        >>>
-        >>> csv_1 = FromCSV(path='/path/to/file1.csv')
-        >>> csv_2 = FromCSV(path='/path/to/file2.csv')
-        >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>>
-        >>> FanIn(csv_1, csv_2)  >> merge >> to_sql
-    """
-
-    def __init__(self, *blocks: Union[ExtractBase, "Pipe"]):
-        self.blocks = blocks
-
-    def __rshift__(self, next: TransformBase) -> "Pipe":
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.get_iter())
-            return Pipe(source=source)
-        else:
-            raise ValueError("Unsupported Block Type")
-
-    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
-        return [block.get_iter() for block in self.blocks]
