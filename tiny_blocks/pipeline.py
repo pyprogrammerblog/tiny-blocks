@@ -29,7 +29,8 @@ class Status:
 
 class FanOut:
     """
-    Tee the flow into multiple pipes.
+    Tee the flow into one/multiple pipes.
+    The main pipeline can continue to another transformation blocks or sink.
 
     Usage:
         >>> from tiny_blocks.pipeline import FanOut
