@@ -60,7 +60,7 @@ class Pipe:
             # n sources = a source per each load block + 1 for the next pipe
             n = len(next.load_blocks) + 1
             source, *sources = itertools.tee(self.source, n)
-            next.exhaust(sources)
+            next.exhaust(*sources)
             return Pipe(source=source)
         else:
             raise ValueError("Unsupported Block Type")
