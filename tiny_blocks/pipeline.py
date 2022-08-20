@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["Pipeline"]
+__all__ = ["Pipeline", "FanIn", "FanOut"]
 
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ class Pipe:
         return self.source
 
     def __rshift__(
-        self, next: Union[TransformBase | LoadBase | "FanOut"]
+        self, next: Union[TransformBase | "LoadBase" | "FanOut"]
     ) -> Union[NoReturn | "Pipe"]:
         """
         The `>>` operator for the tiny-blocks library.
