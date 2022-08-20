@@ -33,7 +33,6 @@ class DropDuplicates(TransformBase):
         >>> source = extract_csv.get_iter()
         >>> generator = drop_duplicates.get_iter(source)
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html

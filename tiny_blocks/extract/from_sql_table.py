@@ -38,7 +38,6 @@ class FromSQLTable(ExtractBase):
         >>> read_sql = FromSQLTable(dsn_conn=str_conn, table_name="test")
         >>> generator = read_sql.get_iter()
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.read_sql_table.html

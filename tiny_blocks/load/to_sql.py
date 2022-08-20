@@ -35,11 +35,10 @@ class ToSQL(LoadBase):
         >>> from tiny_blocks.load import ToSQL
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
         >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
-        >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="destination")
+        >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="sink")
         >>> source = from_sql.get_iter()
         >>> to_sql.exhaust(source)
-        >>> df = pd.read_sql_table(table_name="destination", con=str_conn)
-        >>> assert not df.empty
+        >>> df = pd.read_sql_table(table_name="sink", con=str_conn)
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html

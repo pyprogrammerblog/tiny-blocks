@@ -36,7 +36,6 @@ class ToCSV(LoadBase):
         >>> source = from_csv.get_iter()
         >>> to_csv.exhaust(source)
         >>> df = pd.read_csv("path/to/sink.csv", sep="|")
-        >>> assert not df.empty
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html

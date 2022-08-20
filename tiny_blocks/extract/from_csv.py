@@ -43,7 +43,6 @@ class FromCSV(ExtractBase):
         >>> read_csv = FromCSV(path="/path/to/file.csv")
         >>> generator = read_csv.get_iter()
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html

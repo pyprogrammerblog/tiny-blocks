@@ -38,7 +38,6 @@ class Merge(TransformBase):
         >>> right_source = from_csv_2.get_iter()
         >>> generator = merge.get_iter(source=[left_source, right_source])
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
     """
 
     name: Literal["merge"] = "merge"

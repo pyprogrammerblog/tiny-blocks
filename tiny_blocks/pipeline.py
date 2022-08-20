@@ -91,8 +91,6 @@ class FanIn:
     The next block must accept multiple arguments, like for example:
     ``tiny_blocks.tranform.Merge``
 
-    For now, FanIn can just gather Extraction Blocks.
-
     Usage:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL

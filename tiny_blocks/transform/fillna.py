@@ -34,7 +34,6 @@ class Fillna(TransformBase):
         >>> source = extract_csv.get_iter()
         >>> generator = fill_na.get_iter(source)
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
