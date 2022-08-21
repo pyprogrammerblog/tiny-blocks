@@ -1,5 +1,6 @@
+from __future__ import annotations
 import logging
-from typing import Iterator, NoReturn, Union
+from typing import Iterator
 import pandas as pd
 import functools
 from tiny_blocks.base import BaseBlock, KwargsBase
@@ -38,19 +39,19 @@ class TransformBase(BaseBlock):
         """
         raise NotImplementedError
 
-    def __rshift__(self, next):
+    def __rshift__(self, next: "TransformBase" | LoadBase) -> Pipe | Sink:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
+            source = functools.partial(next.get_iter)
             from tiny_blocks.pipeline import Pipe
 
-            source = functools.partial(next.get_iter)
             return Pipe(source=source)
         elif isinstance(next, LoadBase):
+            exhaust = functools.partial(next.exhaust)
             from tiny_blocks.pipeline import Sink
 
-            exhaust = functools.partial(next.exhaust)
             return Sink(exhaust=exhaust)
         else:
             raise ValueError("Unsupported Block Type")

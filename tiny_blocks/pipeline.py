@@ -4,7 +4,7 @@ from typing import Callable
 from datetime import datetime
 import itertools
 import logging
-from typing import List, Iterator, Union, Tuple
+from typing import List, Iterator, Union, NoReturn
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -59,6 +59,43 @@ class FanOut:
                 logger.error(str(e))
 
 
+class Tee:
+    """
+    Tee the flow into one/multiple pipes.
+    The main pipeline can continue to another transformation blocks or sink.
+    Usage:
+        >>> from tiny_blocks.pipeline import FanOut
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL, ToCSV
+        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import Rename
+        >>>
+        >>> from_csv = FromCSV(path='/path/to/source.csv')
+        >>> drop_dupl = DropDuplicates()
+        >>> rename = Rename(columns={'a': "A"})
+        >>> fillna = Fillna(value="Hola Mundo")
+        >>> to_csv = ToCSV(path='/path/to/sink.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>>
+        >>> pipe_1 = from_csv >> drop_dupl
+        >>> pipe_2 = rename >> to_csv
+        >>> pipe_3 = fillna >> to_sql
+        >>>
+        >>> pipe_1 >> Tee(pipe_2, pipe_3)
+    """
+
+    def __init__(self, *sinks: LoadBase | Sink):
+        self.sinks = sinks
+
+    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+        for sink, source in zip(self.sinks, sources):
+            try:
+                sink.exhaust(source=source)
+            except Exception as e:
+                logger.error(str(e))
+
+
 class Pipe:
     """
     Defines the glue between all blocks.
@@ -73,14 +110,16 @@ class Pipe:
     def get_iter(self):
         return self.source
 
-    def __rshift__(self, next):
+    def __rshift__(
+        self, next: TransformBase | LoadBase | Sink | FanOut | Tee
+    ) -> "Pipe" | NoReturn:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
             return Pipe(source)
-        elif isinstance(next, LoadBase):
+        elif isinstance(next, (LoadBase, Sink)):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
             # n sources = a source per each load block
@@ -90,10 +129,9 @@ class Pipe:
             next.exhaust(*sources)
             return Pipe(source=source)
         elif isinstance(next, Tee):
-            # a source per each sink
+            # a source per each Sink
             n = len(next.sinks)
-            sources = tuple(itertools.tee(self.get_iter(), n))
-            return next.exhaust(*sources)
+            return next.exhaust(*itertools.tee(self.get_iter(), n))
         else:
             raise ValueError("Unsupported Block Type")
 
@@ -133,44 +171,6 @@ class FanIn:
 
     def get_iter(self) -> List[Iterator[pd.DataFrame]]:
         return [pipe.get_iter() for pipe in self.pipes]
-
-
-class Tee:
-    """
-    Tee the flow into one/multiple pipes.
-    The main pipeline can continue to another transformation blocks or sink.
-
-    Usage:
-        >>> from tiny_blocks.pipeline import FanOut
-        >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import Fillna
-        >>> from tiny_blocks.transform import DropDuplicates
-        >>> from tiny_blocks.transform import Rename
-        >>>
-        >>> from_csv = FromCSV(path='/path/to/source.csv')
-        >>> drop_dupl = DropDuplicates()
-        >>> rename = Rename(columns={'a': "A"})
-        >>> fillna = Fillna(value="Hola Mundo")
-        >>> to_csv = ToCSV(path='/path/to/sink.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
-        >>>
-        >>> pipe_1 = from_csv >> drop_dupl
-        >>> pipe_2 = rename >> to_csv
-        >>> pipe_3 = fillna >> to_sql
-        >>>
-        >>> pipe_1 >> Tee(pipe_2, pipe_3)
-    """
-
-    def __init__(self, *sinks: LoadBase | Sink):
-        self.sinks = sinks
-
-    def exhaust(self, *sources: Iterator[pd.DataFrame]):
-        for sink, source in zip(self.sinks, sources):
-            try:
-                sink.exhaust(source=source)
-            except Exception as e:
-                logger.error(str(e))
 
 
 class Pipeline:
