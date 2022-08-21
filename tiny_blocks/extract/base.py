@@ -6,7 +6,7 @@ from tiny_blocks.base import BaseBlock
 from tiny_blocks.load.base import KwargsBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.pipeline import Pipe, FanOut
+from tiny_blocks.pipeline import Pipe, FanOut, Sink, Tee
 
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
@@ -41,7 +41,7 @@ class ExtractBase(BaseBlock):
         raise NotImplementedError
 
     def __rshift__(
-        self, next: TransformBase | LoadBase | FanOut
+        self, next: TransformBase | LoadBase | FanOut | Sink | Tee
     ) -> NoReturn | Pipe:
         """
         The `>>` operator for the tiny-blocks library.
@@ -49,7 +49,7 @@ class ExtractBase(BaseBlock):
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
             return Pipe(source)
-        elif isinstance(next, LoadBase):
+        elif isinstance(next, (LoadBase, Sink)):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
             # n sources = a source per each load block + 1 for the next pipe
@@ -57,5 +57,10 @@ class ExtractBase(BaseBlock):
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)
+        elif isinstance(next, Tee):
+            # n sources = a source per each sink
+            n = len(next.sinks)
+            sources = tuple(itertools.tee(self.get_iter(), n))
+            return next.exhaust(*sources)
         else:
             raise ValueError("Unsupported Block Type")

@@ -1,3 +1,4 @@
+import functools
 import sys
 from typing import Callable
 from datetime import datetime
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["FanIn", "FanOut", "Pipeline"]
+__all__ = ["FanIn", "FanOut", "Tee", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
@@ -58,15 +59,13 @@ class Pipe:
     it joins all blocks till there is a sink.
     """
 
-    def __init__(self, source: Iterator[pd.DataFrame]):
+    def __init__(self, source: Iterator[pd.DataFrame] | functools.partial):
         self.source = source
 
     def get_iter(self):
         return self.source
 
-    def __rshift__(
-        self, next: Union[TransformBase | LoadBase | FanOut]
-    ) -> NoReturn | "Pipe":
+    def __rshift__(self, next):
         """
         The `>>` operator for the tiny-blocks library.
         """
@@ -82,8 +81,21 @@ class Pipe:
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)
+        elif isinstance(next, Tee):
+            # n sources = a source per each sink
+            n = len(next.sinks)
+            sources = tuple(itertools.tee(self.get_iter(), n))
+            return next.exhaust(*sources)
         else:
             raise ValueError("Unsupported Block Type")
+
+
+class Sink:
+    def __init__(self, exhaust: functools.partial):
+        self.exhaust = exhaust
+
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        self.exhaust(source)
 
 
 class FanIn:
@@ -121,6 +133,41 @@ class FanIn:
 
     def get_iter(self) -> List[Iterator[pd.DataFrame]]:
         return [pipe.get_iter() for pipe in self.pipes]
+
+
+class Tee:
+    """
+    Tee the flow into one/multiple pipes.
+    The main pipeline can continue to another transformation blocks or sink.
+
+    Usage:
+        >>> from tiny_blocks.pipeline import FanOut
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL, ToCSV
+        >>> from tiny_blocks.transform import DropDuplicates, Fillna
+        >>>
+        >>> from_csv = FromCSV(path='/path/to/source.csv')
+        >>> drop_dupl = DropDuplicates()
+        >>> fillna = Fillna(value="Hola Mundo")
+        >>> to_csv = ToCSV(path='/path/to/sink.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>>
+        >>> pipe_1 = from_csv
+        >>> pipe_2 = drop_dupl >> to_csv
+        >>> pipe_3 = fillna >> to_sql
+        >>>
+        >>> pipe_1 >> Tee(pipe_2, pipe_3)
+    """
+
+    def __init__(self, *sinks: LoadBase | Sink):
+        self.sinks = sinks
+
+    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+        for sink, source in zip(self.sinks, sources):
+            try:
+                sink.exhaust(source=source)
+            except Exception as e:
+                logger.error(str(e))
 
 
 class Pipeline:
