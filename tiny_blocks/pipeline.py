@@ -1,3 +1,4 @@
+import functools
 import sys
 from typing import Callable
 from datetime import datetime
@@ -14,10 +15,18 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["FanIn", "FanOut", "Pipeline"]
+__all__ = ["FanIn", "FanOut", "Tee", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
+
+
+class Sink:
+    def __init__(self, exhaust: functools.partial):
+        self.exhaust = exhaust  # type: ignore
+
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        self.exhaust(source)
 
 
 class FanOut:
@@ -50,6 +59,43 @@ class FanOut:
                 logger.error(str(e))
 
 
+class Tee:
+    """
+    Tee the flow into one/multiple pipes.
+    The main pipeline can continue to another transformation blocks or sink.
+    Usage:
+        >>> from tiny_blocks.pipeline import FanOut
+        >>> from tiny_blocks.extract import FromCSV
+        >>> from tiny_blocks.load import ToSQL, ToCSV
+        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import Rename
+        >>>
+        >>> from_csv = FromCSV(path='/path/to/source.csv')
+        >>> drop_dupl = DropDuplicates()
+        >>> rename = Rename(columns={'a': "A"})
+        >>> fillna = Fillna(value="Hola Mundo")
+        >>> to_csv = ToCSV(path='/path/to/sink.csv')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>>
+        >>> pipe_1 = from_csv >> drop_dupl
+        >>> pipe_2 = rename >> to_csv
+        >>> pipe_3 = fillna >> to_sql
+        >>>
+        >>> pipe_1 >> Tee(pipe_2, pipe_3)
+    """
+
+    def __init__(self, *sinks: LoadBase | Sink):
+        self.sinks = sinks
+
+    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+        for sink, source in zip(self.sinks, sources):
+            try:
+                sink.exhaust(source=source)
+            except Exception as e:
+                logger.error(str(e))
+
+
 class Pipe:
     """
     Defines the glue between all blocks.
@@ -58,22 +104,22 @@ class Pipe:
     it joins all blocks till there is a sink.
     """
 
-    def __init__(self, source: Iterator[pd.DataFrame]):
+    def __init__(self, source: Iterator[pd.DataFrame] | functools.partial):
         self.source = source
 
     def get_iter(self):
         return self.source
 
     def __rshift__(
-        self, next: Union[TransformBase | LoadBase | FanOut]
-    ) -> NoReturn | "Pipe":
+        self, next: TransformBase | LoadBase | Sink | FanOut | Tee
+    ) -> "Pipe" | NoReturn:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
             return Pipe(source)
-        elif isinstance(next, LoadBase):
+        elif isinstance(next, (LoadBase, Sink)):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
             # n sources = a source per each load block
@@ -82,6 +128,10 @@ class Pipe:
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)
+        elif isinstance(next, Tee):
+            # a source per each Sink
+            n = len(next.sinks)
+            return next.exhaust(*itertools.tee(self.get_iter(), n))
         else:
             raise ValueError("Unsupported Block Type")
 
