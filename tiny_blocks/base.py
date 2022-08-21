@@ -1,6 +1,7 @@
-import logging
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
+import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ class BaseBlock(BaseModel):
 
     uuid: UUID = Field(default_factory=uuid4, description="UUID")
     name: str = Field(..., description="Block name")
+    version: str = Field(default="v1", description="Version Block")
     description: str = Field(default=None, description="Description")
 
     def __str__(self):

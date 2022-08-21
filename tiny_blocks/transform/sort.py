@@ -33,7 +33,6 @@ class Sort(TransformBase):
         >>> source = extract_csv.get_iter()
         >>> generator = sort.get_iter(source)
         >>> df = pd.concat(generator)
-        >>> assert not df.empty
     """
 
     name: Literal["sort"] = "sort"
