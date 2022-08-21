@@ -144,16 +144,19 @@ class Tee:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import DropDuplicates, Fillna
+        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import Rename
         >>>
         >>> from_csv = FromCSV(path='/path/to/source.csv')
         >>> drop_dupl = DropDuplicates()
+        >>> rename = Rename(columns={'a': "A"})
         >>> fillna = Fillna(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
-        >>> pipe_1 = from_csv
-        >>> pipe_2 = drop_dupl >> to_csv
+        >>> pipe_1 = from_csv >> drop_dupl
+        >>> pipe_2 = rename >> to_csv
         >>> pipe_3 = fillna >> to_sql
         >>>
         >>> pipe_1 >> Tee(pipe_2, pipe_3)
