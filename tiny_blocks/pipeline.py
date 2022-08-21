@@ -4,7 +4,7 @@ from typing import Callable
 from datetime import datetime
 import itertools
 import logging
-from typing import List, Iterator, Union, NoReturn
+from typing import List, Iterator, Union, Tuple
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Sink:
     def __init__(self, exhaust: functools.partial):
-        self.exhaust = exhaust
+        self.exhaust = exhaust  # type: ignore
 
     def exhaust(self, source: Iterator[pd.DataFrame]):
         self.exhaust(source)
@@ -90,7 +90,7 @@ class Pipe:
             next.exhaust(*sources)
             return Pipe(source=source)
         elif isinstance(next, Tee):
-            # n sources = a source per each sink
+            # a source per each sink
             n = len(next.sinks)
             sources = tuple(itertools.tee(self.get_iter(), n))
             return next.exhaust(*sources)

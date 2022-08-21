@@ -131,3 +131,39 @@ def test_basic_flow_fan_tee(csv_source, csv_sink, postgres_sink):
     assert df.shape == (4, 3)
     assert df.columns.to_list() == ["a", "b", "c"]
     assert not df.isnull().values.any()
+
+
+def test_basic_flow_fan_tee_2(csv_source, csv_sink, postgres_sink):
+    """
+    Test a basic ETL pipeline
+    """
+    # 1. Extract from two sources
+    from_csv = FromCSV(path=csv_source)
+
+    # 2. Transform
+    fill_na = Fillna(value="Hola Mundo")
+    drop_dupl = DropDuplicates()
+
+    # 3. Load
+    to_csv = ToCSV(path=csv_sink)
+    to_postgres = ToSQL(dsn_conn=postgres_sink, table_name="test")
+
+    ###########
+    # Pipeline
+    pipe_1 = from_csv >> drop_dupl
+    pipe_2 = to_csv
+    pipe_3 = fill_na >> to_postgres
+    pipe_1 >> Tee(pipe_2, pipe_3)
+
+    # testing
+    assert to_csv.path.exists()
+    df = pd.read_csv(to_csv.path, sep="|")
+    assert not df.empty
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["a", "b", "c"]
+    assert not df.isnull().values.any()
+
+    df = pd.read_sql_table(table_name="test", con=postgres_sink)
+    assert df.shape == (3, 3)
+    assert df.columns.to_list() == ["a", "b", "c"]
+    assert not df.isnull().values.any()

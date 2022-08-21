@@ -58,9 +58,9 @@ class ExtractBase(BaseBlock):
             next.exhaust(*sources)
             return Pipe(source=source)
         elif isinstance(next, Tee):
-            # n sources = a source per each sink
+            # a source per each sink
             n = len(next.sinks)
-            sources = tuple(itertools.tee(self.get_iter(), n))
+            sources = itertools.tee(self.get_iter(), n)  # type: ignore
             return next.exhaust(*sources)
         else:
             raise ValueError("Unsupported Block Type")
