@@ -21,6 +21,14 @@ __all__ = ["FanIn", "FanOut", "Tee", "Pipeline"]
 logger = logging.getLogger(__name__)
 
 
+class Sink:
+    def __init__(self, exhaust: functools.partial):
+        self.exhaust = exhaust
+
+    def exhaust(self, source: Iterator[pd.DataFrame]):
+        self.exhaust(source)
+
+
 class FanOut:
     """
     Tee the flow into one/multiple pipes.
@@ -88,14 +96,6 @@ class Pipe:
             return next.exhaust(*sources)
         else:
             raise ValueError("Unsupported Block Type")
-
-
-class Sink:
-    def __init__(self, exhaust: functools.partial):
-        self.exhaust = exhaust
-
-    def exhaust(self, source: Iterator[pd.DataFrame]):
-        self.exhaust(source)
 
 
 class FanIn:
