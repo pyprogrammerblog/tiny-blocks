@@ -60,7 +60,7 @@ class FanOut:
     def exhaust(self, *sources: Iterator[pd.DataFrame]):
         for sink, source in zip(self.sinks, sources):
             try:
-                sink.exhaust(source=source)
+                sink.exhaust(source)
             except Exception as e:
                 logger.error(str(e))
 
@@ -100,7 +100,7 @@ class Tee:
     def exhaust(self, *sources: Iterator[pd.DataFrame]):
         for sink, source in zip(self.sinks, sources):
             try:
-                sink.exhaust(source=source)
+                sink.exhaust(source)
             except Exception as e:
                 logger.error(str(e))
 
