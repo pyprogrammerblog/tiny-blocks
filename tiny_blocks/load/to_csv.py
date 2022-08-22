@@ -35,7 +35,6 @@ class ToCSV(LoadBase):
         >>> to_csv = ToCSV(path="path/to/sink.csv")
         >>> source = from_csv.get_iter()
         >>> to_csv.exhaust(source)
-        >>> df = pd.read_csv("path/to/sink.csv", sep="|")
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html

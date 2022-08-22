@@ -48,6 +48,12 @@ to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
 from_csv >> drop_duplicates >> fill_na >> to_sql
 ```
 
+Examples
+---------
+
+Please visit the [notebooks' folder](https://github.com/pyprogrammerblog/tiny-blocks/tree/master/notebooks).
+
+
 Documentation
 --------------
 
