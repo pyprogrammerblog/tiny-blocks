@@ -53,7 +53,7 @@ class ExtractBase(BaseBlock):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
             # n sources = a source per each load block + 1 for the next pipe
-            n = len(next.load_blocks) + 1
+            n = len(next.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)

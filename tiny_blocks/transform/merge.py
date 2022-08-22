@@ -27,7 +27,7 @@ class Merge(TransformBase):
     """
     Merge. Defines merge functionality between two blocks.
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Merge
         >>> from tiny_blocks.extract import FromCSV

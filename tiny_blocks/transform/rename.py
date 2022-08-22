@@ -23,7 +23,7 @@ class Rename(TransformBase):
     """
     Rename Block. Defines Rename columns functionality
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Rename
         >>> from tiny_blocks.extract import FromCSV

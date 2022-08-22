@@ -32,38 +32,49 @@ class Sink:
 class FanOut:
     """
     Tee the flow into one/multiple pipes.
-    The main pipeline can continue to another transformation blocks or sink.
+    The main pipeline can continue as shown in the example.
 
-    Usage:
+    Usage::
+
+        ... >> FanOut(sink1, sink2, ..., sinkN) >> ...
+
+
+    Examples:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import DropDuplicates, Fillna
         >>>
         >>> from_csv = FromCSV(path='/path/to/source.csv')
         >>> drop_dupl = DropDuplicates()
+        >>> fill_na = Fillna(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
-        >>> from_csv >> FanOut(to_sql) >> drop_dupl >> to_csv
+        >>> from_csv >> FanOut(fill_na >> to_sql) >> drop_dupl >> to_csv
     """
 
-    def __init__(self, *load_blocks: LoadBase):
-        self.load_blocks = load_blocks
+    def __init__(self, *sinks: LoadBase | Sink):
+        self.sinks = sinks
 
     def exhaust(self, *sources: Iterator[pd.DataFrame]):
-        for load_block, source in zip(self.load_blocks, sources):
+        for sink, source in zip(self.sinks, sources):
             try:
-                load_block.exhaust(source=source)
+                sink.exhaust(source=source)
             except Exception as e:
                 logger.error(str(e))
 
 
 class Tee:
     """
-    Tee the flow into one/multiple pipes.
-    The main pipeline can continue to another transformation blocks or sink.
-    Usage:
+    Tee the flow into two or multiple pipes:
+
+    Usage::
+
+        ... >> Tee(sink1, sink2, ..., sinkN)
+
+
+    Examples:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
@@ -124,7 +135,7 @@ class Pipe:
         elif isinstance(next, FanOut):
             # n sources = a source per each load block
             # + 1 for the next pipe
-            n = len(next.load_blocks) + 1
+            n = len(next.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)
@@ -142,7 +153,12 @@ class FanIn:
     The next block must accept multiple arguments, for example:
     ``tiny_blocks.tranform.Merge``
 
-    Usage:
+    Usage::
+
+        FanIn(pipe1, pipe2, ..., pipeN) >> ...
+
+
+    Examples:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL
         >>> from tiny_blocks.pipeline import FanIn

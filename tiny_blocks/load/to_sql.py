@@ -30,7 +30,7 @@ class ToSQL(LoadBase):
     """
     Load SQL Block. Defines the Loading operation to a SQL Database
 
-    Basic Usage:
+    Basic example:
         >>> from tiny_blocks.extract import FromSQLTable
         >>> from tiny_blocks.load import ToSQL
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"

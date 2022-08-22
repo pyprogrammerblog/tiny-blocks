@@ -24,7 +24,7 @@ class DropDuplicates(TransformBase):
     """
     Drop Duplicates Block. Defines the drop duplicates functionality
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.transform import DropDuplicates
         >>> from tiny_blocks.extract import FromCSV

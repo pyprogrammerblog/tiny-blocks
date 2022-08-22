@@ -31,7 +31,7 @@ class FromSQLTable(ExtractBase):
     """
     Read SQL Table Block. Defines the read SQL Table Operation.
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.extract import FromSQLTable
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
