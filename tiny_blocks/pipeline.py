@@ -49,7 +49,7 @@ class FanOut:
         >>> drop_dupl = DropDuplicates()
         >>> fill_na = Fillna(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+po...', table_name="sink")
         >>>
         >>> from_csv >> FanOut(fill_na >> to_sql) >> drop_dupl >> to_csv
     """
@@ -87,13 +87,11 @@ class Tee:
         >>> rename = Rename(columns={'a': "A"})
         >>> fillna = Fillna(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postg...', table_name="sink")
         >>>
         >>> pipe_1 = from_csv >> drop_dupl
         >>> pipe_2 = rename >> to_csv
-        >>> pipe_3 = fillna >> to_sql
-        >>>
-        >>> pipe_1 >> Tee(pipe_2, pipe_3)
+        >>> pipe_1 >> Tee(pipe_2, to_sql)
     """
 
     def __init__(self, *sinks: LoadBase | Sink):
@@ -160,16 +158,18 @@ class FanIn:
 
     Examples:
         >>> from tiny_blocks.extract import FromCSV
-        >>> from tiny_blocks.load import ToSQL
+        >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.pipeline import FanIn
         >>> from tiny_blocks.transform import Merge
+        >>> from tiny_blocks.transform import Fillna
         >>>
-        >>> csv_1 = FromCSV(path='/path/to/file1.csv')
-        >>> csv_2 = FromCSV(path='/path/to/file2.csv')
+        >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
+        >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
+        >>> to_csv = ToCSV(path='/path/to/file3.csv')
+        >>> fillna = Fillna(value="Hola Mundo")
         >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
-        >>> FanIn(csv_1, csv_2)  >> merge >> to_sql
+        >>> FanIn(from_csv_1, from_csv_2 >> fillna)  >> merge >> to_csv
     """
 
     def __init__(self, *pipes: Union["ExtractBase", "Pipe"]):
@@ -207,7 +207,7 @@ class Pipeline:
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> fill_na = Fillna(value="Hola Mundo")
-        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
+        >>> to_sql = ToSQL(dsn_conn='psycopg2+postgr...', table_name="sink")
         >>>
         >>> with Pipeline(name="My Pipeline") as pipe:
         >>>     from_csv >> fill_na >> to_sql
