@@ -48,6 +48,7 @@ Make sure you had install the package by doing ``pip install tiny-blocks`` and t
    extract
    transform
    load
+   examples
    license
    help
 

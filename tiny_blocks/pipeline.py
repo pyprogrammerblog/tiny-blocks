@@ -32,7 +32,7 @@ class Sink:
 class FanOut:
     """
     Tee the flow into one/multiple pipes.
-    The main pipeline can continue to another transformation blocks or sink.
+    The main pipeline can continue as shown in the above example.
 
     Usage:
         >>> from tiny_blocks.pipeline import FanOut
@@ -48,21 +48,21 @@ class FanOut:
         >>> from_csv >> FanOut(to_sql) >> drop_dupl >> to_csv
     """
 
-    def __init__(self, *load_blocks: LoadBase):
-        self.load_blocks = load_blocks
+    def __init__(self, *sinks: LoadBase | Sink):
+        self.sinks = sinks
 
     def exhaust(self, *sources: Iterator[pd.DataFrame]):
-        for load_block, source in zip(self.load_blocks, sources):
+        for sink, source in zip(self.sinks, sources):
             try:
-                load_block.exhaust(source=source)
+                sink.exhaust(source=source)
             except Exception as e:
                 logger.error(str(e))
 
 
 class Tee:
     """
-    Tee the flow into one/multiple pipes.
-    The main pipeline can continue to another transformation blocks or sink.
+    Tee the flow into two or multiple pipes.
+
     Usage:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
@@ -124,7 +124,7 @@ class Pipe:
         elif isinstance(next, FanOut):
             # n sources = a source per each load block
             # + 1 for the next pipe
-            n = len(next.load_blocks) + 1
+            n = len(next.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
             return Pipe(source=source)
