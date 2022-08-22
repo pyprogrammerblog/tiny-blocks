@@ -1,15 +1,26 @@
 .. _examples:
 
-
 Examples
-=============
+==========
 
-Install tiny-blocks::
+The following examples show
 
-    pip install tiny-blocks
+Tee
+------
+::
+
+   source >> pipe1 >> pipe2 >> pipe3 >> ... >> pipeN >> sink
 
 
-Advanced: local setup for development (Ubuntu)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FanIn
+------
+::
 
-These instructions assume that ``git``, ``docker``, and `
+   source >> pipe1 >> pipe2 >> pipe3 >> ... >> pipeN >> sink
+
+
+FanOut
+------
+::
+
+   source >> pipe1 >> pipe2 >> pipe3 >> ... >> pipeN >> sink
