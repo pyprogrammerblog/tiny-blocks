@@ -57,7 +57,7 @@ to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
 from_csv >> fill_na >> to_sql
 ```
 
-Complex examples
+Examples
 ----------------------
 
 For more complex examples please visit 
