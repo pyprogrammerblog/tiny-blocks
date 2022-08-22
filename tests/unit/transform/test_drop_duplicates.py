@@ -6,7 +6,7 @@ from tiny_blocks.transform.drop_duplicates import DropDuplicates
 
 @pytest.mark.parametrize(
     "subset,expected",
-    [({"a"}, (2, 3)), ({"a", "b"}, (1, 3)), ({"a", "b", "c"}, (1, 3))],
+    [({"a"}, (2, 3)), ({"a", "b"}, (3, 3)), ({"a", "b", "c"}, (3, 3))],
 )
 def test_drop_duplicates(csv_source, subset, expected):
 
