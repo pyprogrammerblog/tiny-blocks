@@ -10,7 +10,6 @@ Tiny Blocks to build large and complex ETL pipelines!
 
 Tiny-Blocks is a library for **data engineering** operations. 
 Each **pipeline** is made out of **tiny-blocks** glued with the `>>` operator.
-
 This library relies on a fundamental streaming abstraction consisting of three
 parts: **extract**, **transform**, and **load**. You can view a pipeline 
 as an extraction, followed by zero or more transformations, followed by a sink. 
