@@ -41,8 +41,8 @@ Install it using ``pip``
 pip install tiny-blocks
 ```
 
-Basic usage examples
---------------------
+Usage examples
+---------------
 
 ```python
 from tiny_blocks.extract import FromCSV, FromSQLTable
@@ -53,14 +53,13 @@ from tiny_blocks.pipeline import Tee, FanIn
 # ETL Blocks
 from_csv = FromCSV(path='/path/to/source.csv')
 from_sql = FromSQLTable(dsn_conn='psycopg2+postgres://...', table_name="source")
-drop_dupl = DropDuplicates()
 merge = Merge(left_on="Column A", right_on="Column B", how="left")
 fill_na = Fillna(value="Hola Mundo")
+drop_dupl = DropDuplicates()
 to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
 to_csv = ToCSV(path='/path/to/sink.csv')
 
 # Run a simple Pipeline
-# read csv -> drop duplicates -> fill null values -> write to SQL
 from_csv >> drop_dupl >> fill_na >> to_sql
 
 # Or a more complex one  
