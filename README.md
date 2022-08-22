@@ -13,17 +13,18 @@ Each **pipeline** is made out of **tiny-blocks** glued with the `>>` operator.
 
 ### Pipeline Components: Sources, Pipes, and Sinks
 This library relies on a fundamental streaming abstraction consisting of three
-parts: extract, transform, and load. You can view a pipeline as an extraction, followed
-by zero or more transformations, followed by a sink. Visually, this looks like:
+parts: **extract**, **transform**, and **load**. You can view a pipeline 
+as an extraction, followed by zero or more transformations, followed by a sink. 
+Visually, this looks like:
 
 ```
-extract -> transform1 -> transform2 -> ... -> transformN >> load
+extract -> transform1 -> transform2 -> ... -> transformN -> load
 ```
 
 You can also `fan-in`, `fan-out` or `tee` for more complex operations.
 
 ```
-extract1 -> transform1 -> |-> transform2 -> ... -> | -> transformN >> load1
+extract1 -> transform1 -> |-> transform2 -> ... -> | -> transformN -> load1
 extract2 ---------------> |                        | -> load2
 ```
 
