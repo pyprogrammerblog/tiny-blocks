@@ -64,6 +64,7 @@ class FromCSV(ExtractBase):
     Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> read_csv = FromCSV(path="/path/to/file.csv")
         >>> generator = read_csv.get_iter()
         >>> df = pd.concat(generator)

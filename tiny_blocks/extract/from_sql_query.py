@@ -35,6 +35,7 @@ class FromSQLQuery(ExtractBase):
     Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.extract import FromSQLQuery
+        >>>
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
         >>> sql = "select * from test"
         >>> read_sql = FromSQLQuery(dsn_conn=str_conn, sql=sql)

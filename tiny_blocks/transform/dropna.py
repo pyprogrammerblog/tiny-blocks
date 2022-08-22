@@ -26,6 +26,7 @@ class DropNa(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import DropNa
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> drop_na = DropNa()
         >>> source = extract_csv.get_iter()

@@ -33,6 +33,7 @@ class ToSQL(LoadBase):
     Basic example:
         >>> from tiny_blocks.extract import FromSQLTable
         >>> from tiny_blocks.load import ToSQL
+        >>>
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
         >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
         >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="sink")

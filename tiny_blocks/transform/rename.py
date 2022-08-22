@@ -27,6 +27,7 @@ class Rename(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Rename
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> sort = Rename(columns={"column_name": "new_column_name"})
         >>> source = from_csv.get_iter()

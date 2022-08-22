@@ -30,6 +30,7 @@ class Apply(TransformBase):
         >>> from tiny_blocks.transform import Apply
         >>> from tiny_blocks.extract import FromCSV
         >>> from_csv = FromCSV(path='/path/to/file.csv')
+        >>>
         >>> apply = Apply(
         ...   apply_to_column="column_A",
         ...   set_to_column="column_b",
