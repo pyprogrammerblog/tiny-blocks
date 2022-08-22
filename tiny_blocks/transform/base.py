@@ -2,7 +2,8 @@ from __future__ import annotations
 import logging
 from typing import Iterator
 import pandas as pd
-import functools
+from functools import reduce
+from functools import partial
 from tiny_blocks.base import BaseBlock, KwargsBase
 from tiny_blocks.load.base import LoadBase
 from typing import TYPE_CHECKING
@@ -44,14 +45,16 @@ class TransformBase(BaseBlock):
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            source = functools.partial(next.get_iter)
             from tiny_blocks.pipeline import Pipe
 
+            funcs = [self.get_iter, next.get_iter]
+            source = partial(reduce, lambda r, f: f(r), funcs)
             return Pipe(source=source)
         elif isinstance(next, LoadBase):
-            exhaust = functools.partial(next.exhaust)
             from tiny_blocks.pipeline import Sink
 
+            funcs = [self.get_iter, next.exhaust]
+            exhaust = partial(reduce, lambda r, f: f(r), funcs)
             return Sink(exhaust=exhaust)
         else:
             raise ValueError("Unsupported Block Type")

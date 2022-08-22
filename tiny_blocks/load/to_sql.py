@@ -39,7 +39,6 @@ class ToSQL(LoadBase):
         >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="sink")
         >>> source = from_sql.get_iter()
         >>> to_sql.exhaust(source)
-        >>> df = pd.read_sql_table(table_name="sink", con=str_conn)
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html

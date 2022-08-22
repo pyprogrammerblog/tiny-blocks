@@ -1,5 +1,7 @@
 import sqlite3
 import tempfile
+import glob
+import os
 
 import pandas as pd
 import pytest
@@ -179,3 +181,39 @@ def oracle_sink(oracle_db, oracle_uri):
     Yield a SQL Sink with a connection string to an existing Table DB
     """
     yield oracle_uri
+
+
+def add_mocked_data():
+    # sql
+    dsn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+    if database_exists(dsn):
+        drop_database(dsn)
+    create_database(dsn)
+    data = {"a": ["uno", "dos", "dos"], "b": [4, 5, 6], "c": [7, 8, None]}
+    pd.DataFrame(data=data).to_sql(name="source", con=dsn, index=False)
+
+    # csv
+    files = glob.glob("/code/tests/data/*")
+    for f in files:
+        os.remove(f)
+
+    data = {
+        "d": ["uno", "dos", "tres"],
+        "e": ["uno", "dos", "tres"],
+        "f": [7, None, None],
+    }
+    pd.DataFrame(data=data).to_csv(
+        "/code/tests/data/source.csv", sep="|", index=False
+    )
+
+
+def delete_mocked_data():
+    # sql
+    dsn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+    if database_exists(dsn):
+        drop_database(dsn)
+
+    # csv
+    files = glob.glob("/code/tests/data/*")
+    for f in files:
+        os.remove(f)

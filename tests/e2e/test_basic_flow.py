@@ -5,6 +5,7 @@ from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.load.to_csv import ToCSV
 from tiny_blocks.load.to_sql import ToSQL
 from tiny_blocks.transform.fillna import Fillna
+from tiny_blocks.transform.rename import Rename
 from tiny_blocks.transform.drop_duplicates import DropDuplicates
 from tiny_blocks.transform.merge import Merge
 
@@ -106,7 +107,8 @@ def test_basic_flow_fan_tee(csv_source, csv_sink, postgres_sink):
 
     # 2. Transform
     fill_na = Fillna(value="Hola Mundo")
-    drop_dupl = DropDuplicates()
+    drop_dupl = DropDuplicates(subset=["a"])
+    rename = Rename(columns={"a": "AA"})
 
     # 3. Load
     to_csv = ToCSV(path=csv_sink)
@@ -114,23 +116,24 @@ def test_basic_flow_fan_tee(csv_source, csv_sink, postgres_sink):
 
     ###########
     # Pipeline
-    pipe_1 = from_csv
+    pipe_1 = from_csv >> fill_na
     pipe_2 = drop_dupl >> to_csv
-    pipe_3 = fill_na >> to_postgres
+    pipe_3 = rename >> to_postgres
     pipe_1 >> Tee(pipe_2, pipe_3)
 
     # testing
     assert to_csv.path.exists()
     df = pd.read_csv(to_csv.path, sep="|")
     assert not df.empty
-    assert df.shape == (4, 3)
+    assert df.shape == (2, 3)
     assert df.columns.to_list() == ["a", "b", "c"]
     assert not df.isnull().values.any()
 
     df = pd.read_sql_table(table_name="test", con=postgres_sink)
     assert df.shape == (4, 3)
-    assert df.columns.to_list() == ["a", "b", "c"]
+    assert df.columns.to_list() == ["AA", "b", "c"]
     assert not df.isnull().values.any()
+    assert "AA" in df.columns.to_list()
 
 
 def test_basic_flow_fan_tee_2(csv_source, csv_sink, postgres_sink):

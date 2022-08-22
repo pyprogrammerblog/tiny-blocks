@@ -7,6 +7,7 @@ Changelog
 - Fix in typing for Tee class. 
 - Improve documentation.
 
+
 0.1.10 (2022-08-22)
 -------------------
 
