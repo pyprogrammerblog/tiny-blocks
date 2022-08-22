@@ -28,7 +28,7 @@ class ToCSV(LoadBase):
     """
     Write CSV Block. Defines the load to CSV Operation
 
-    Basic Usage:
+    Basic example:
         >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.extract import FromCSV
         >>> from_csv = FromCSV(path="path/to/source.csv")

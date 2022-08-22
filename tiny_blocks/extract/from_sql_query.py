@@ -32,7 +32,7 @@ class FromSQLQuery(ExtractBase):
     """
     Read SQL Query Block. Defines the read SQL Query Operation
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.extract import FromSQLQuery
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"

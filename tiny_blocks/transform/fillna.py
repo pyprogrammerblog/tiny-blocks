@@ -25,7 +25,7 @@ class Fillna(TransformBase):
     """
     Fill Nan Block. Defines the fill Nan values functionality
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.extract import FromCSV

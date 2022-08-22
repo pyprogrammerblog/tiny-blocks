@@ -34,22 +34,24 @@ class FanOut:
     Tee the flow into one/multiple pipes.
     The main pipeline can continue as shown in the example.
 
-    ```
-    ... >> FanOut(sink1, sink2, ..., sinkN) >> ...
-    ```
+    Usage::
 
-    Usage:
+        ... >> FanOut(sink1, sink2, ..., sinkN) >> ...
+
+
+    Examples:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import DropDuplicates
+        >>> from tiny_blocks.transform import DropDuplicates, Fillna
         >>>
         >>> from_csv = FromCSV(path='/path/to/source.csv')
         >>> drop_dupl = DropDuplicates()
+        >>> fill_na = Fillna(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
         >>>
-        >>> from_csv >> FanOut(to_sql) >> drop_dupl >> to_csv
+        >>> from_csv >> FanOut(fill_na >> to_sql) >> drop_dupl >> to_csv
     """
 
     def __init__(self, *sinks: LoadBase | Sink):
@@ -65,13 +67,14 @@ class FanOut:
 
 class Tee:
     """
-    Tee the flow into two or multiple pipes.
+    Tee the flow into two or multiple pipes:
 
-    ```
-    ... >> FanOut(sink1, sink2, ..., sinkN)
-    ```
+    Usage::
 
-    Usage:
+        ... >> Tee(sink1, sink2, ..., sinkN)
+
+
+    Examples:
         >>> from tiny_blocks.pipeline import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
@@ -150,11 +153,12 @@ class FanIn:
     The next block must accept multiple arguments, for example:
     ``tiny_blocks.tranform.Merge``
 
-    ```
-    FanIn(pipe1, pipe2, ..., pipeN) >> ...
-    ```
+    Usage::
 
-    Usage:
+        FanIn(pipe1, pipe2, ..., pipeN) >> ...
+
+
+    Examples:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL
         >>> from tiny_blocks.pipeline import FanIn

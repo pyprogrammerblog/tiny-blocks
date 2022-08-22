@@ -25,7 +25,7 @@ class Apply(TransformBase):
     The method is applied to a single column.
     For different functionality please rewrite the Block.
 
-    Basic Usage:
+    Basic example:
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Apply
         >>> from tiny_blocks.extract import FromCSV
