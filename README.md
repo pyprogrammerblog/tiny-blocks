@@ -61,7 +61,7 @@ Examples
 ----------------------
 
 For more complex examples please visit 
-the [notebooks' folder](https://github.com/pyprogrammerblog/tiny-blocks/tree/master/notebooks).
+the [notebooks' folder](https://github.com/pyprogrammerblog/tiny-blocks/blob/master/notebooks/Examples.ipynb).
 
 
 Documentation
