@@ -53,7 +53,7 @@ from_csv = FromCSV(path='/path/to/source.csv')
 fill_na = Fillna(value="Hola Mundo")
 to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
 
-# Run a simple Pipeline
+# Pipeline
 from_csv >> fill_na >> to_sql
 ```
 
