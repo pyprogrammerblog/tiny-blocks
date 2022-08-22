@@ -31,6 +31,7 @@ class Merge(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Merge
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> from_csv_1 = FromCSV(path="/path/to/file_1.csv")
         >>> from_csv_2 = FromCSV(path="/path/to/file_2.csv")
         >>> merge = Merge(how="left", left_on="col_A", right_on="col_B")

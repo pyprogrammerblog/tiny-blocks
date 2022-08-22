@@ -27,6 +27,7 @@ class Astype(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Astype
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> from_csv = FromCSV(path="/path/to/file.csv")
         >>> as_type = Astype(dtype={"e": "float32"})
         >>> source = from_csv.get_iter()

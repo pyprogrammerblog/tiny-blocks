@@ -28,6 +28,7 @@ class Sort(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Sort
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> sort = Sort(by=["column_A"], ascending=False)
         >>> source = extract_csv.get_iter()

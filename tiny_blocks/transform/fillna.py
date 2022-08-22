@@ -29,6 +29,7 @@ class Fillna(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> fill_na = Fillna(value="Hola Mundo")
         >>> source = extract_csv.get_iter()

@@ -31,6 +31,7 @@ class ToCSV(LoadBase):
     Basic example:
         >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.extract import FromCSV
+        >>>
         >>> from_csv = FromCSV(path="path/to/source.csv")
         >>> to_csv = ToCSV(path="path/to/sink.csv")
         >>> source = from_csv.get_iter()
