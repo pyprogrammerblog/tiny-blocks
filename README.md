@@ -9,9 +9,7 @@
 Tiny Blocks to build large and complex ETL pipelines!
 
 Tiny-Blocks is a library for **data engineering** operations. 
-Each pipeline is made out of blocks glued with the `>>` operator. Tiny-Blocks 
-use **generators** to stream data. The `chunksize` or buffer size 
-is adjustable per extraction or loading operation.
+Each **pipeline** is made out of **tiny-blocks** glued with the `>>` operator.
 
 ### Pipeline Components: Sources, Pipes, and Sinks
 This library relies on a fundamental streaming abstraction consisting of three
@@ -29,6 +27,8 @@ extract1 -> transform1 -> |-> transform2 -> ... -> | -> transformN >> load1
 extract2 ---------------> |                        | -> load2
 ```
 
+Tiny-Blocks use **generators** to stream data. The `chunksize` or buffer size 
+is adjustable per extraction or loading operation.
 
 Installation
 -------------
