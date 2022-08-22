@@ -28,7 +28,7 @@ extract2 ---------------> |                        | -> load2
 ```
 
 Tiny-Blocks use **generators** to stream data. The `chunksize` or buffer size 
-is adjustable per extraction or loading operation.
+is adjustable.
 
 Installation
 -------------
