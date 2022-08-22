@@ -32,7 +32,11 @@ class Sink:
 class FanOut:
     """
     Tee the flow into one/multiple pipes.
-    The main pipeline can continue as shown in the above example.
+    The main pipeline can continue as shown in the example.
+
+    ```
+    ... >> FanOut(sink1, sink2, ..., sinkN) >> ...
+    ```
 
     Usage:
         >>> from tiny_blocks.pipeline import FanOut
@@ -62,6 +66,10 @@ class FanOut:
 class Tee:
     """
     Tee the flow into two or multiple pipes.
+
+    ```
+    ... >> FanOut(sink1, sink2, ..., sinkN)
+    ```
 
     Usage:
         >>> from tiny_blocks.pipeline import FanOut
@@ -141,6 +149,10 @@ class FanIn:
     Gather multiple operations and send them to the next block.
     The next block must accept multiple arguments, for example:
     ``tiny_blocks.tranform.Merge``
+
+    ```
+    FanIn(pipe1, pipe2, ..., pipeN) >> ...
+    ```
 
     Usage:
         >>> from tiny_blocks.extract import FromCSV
