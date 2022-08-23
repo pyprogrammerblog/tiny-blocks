@@ -205,6 +205,10 @@ def add_mocked_data():
     pd.DataFrame(data=data).to_csv(
         "/code/tests/data/source.csv", sep="|", index=False
     )
+    data = {"A": [1, 1, 1], "B": ["Hola", "Hola", "Mundo"]}
+    pd.DataFrame(data=data).to_csv(
+        "/code/tests/data/source1.csv", sep="|", index=False
+    )
 
 
 def delete_mocked_data():

@@ -126,10 +126,10 @@ class Pipe:
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.get_iter())
+            source = next.get_iter(self.get_iter())
             return Pipe(source)
         elif isinstance(next, (LoadBase, Sink)):
-            return next.exhaust(source=self.get_iter())
+            return next.exhaust(self.get_iter())
         elif isinstance(next, FanOut):
             # n sources = a source per each load block
             # + 1 for the next pipe
