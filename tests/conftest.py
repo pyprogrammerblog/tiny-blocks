@@ -211,6 +211,15 @@ def add_mocked_data():
     )
 
 
+@pytest.fixture
+def delete_csv_sinks():
+
+    yield
+    files = glob.glob("/code/tests/data/*")
+    for f in files:
+        os.remove(f)
+
+
 def delete_mocked_data():
     # sql
     dsn = "postgresql+psycopg2://user:pass@postgres:5432/db"
