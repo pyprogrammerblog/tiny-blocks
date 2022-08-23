@@ -1,15 +1,9 @@
-from __future__ import annotations
 import logging
-from typing import Iterator
+from typing import Iterator, NoReturn
 import pandas as pd
-from functools import reduce
-from functools import partial
 from tiny_blocks.base import BaseBlock, KwargsBase
 from tiny_blocks.load.base import LoadBase
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from tiny_blocks.pipeline import Pipe, Sink
+from tiny_blocks.pipeline import Sink, FanOut
 
 
 __all__ = ["TransformBase", "KwargsTransformBase"]
@@ -40,21 +34,29 @@ class TransformBase(BaseBlock):
         """
         raise NotImplementedError
 
-    def __rshift__(self, next: "TransformBase" | LoadBase) -> Pipe | Sink:
+    def __rshift__(
+        self, next: "TransformBase" | LoadBase | FanOut
+    ) -> NoReturn | Sink:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            from tiny_blocks.pipeline import Pipe
-
-            funcs = [self.get_iter, next.get_iter]
-            source = partial(reduce, lambda r, f: f(r), funcs)
-            return Pipe(source=source)
+            sink = Sink(missing=self.uuid)
+            sink.graph |= {next.uuid: {self.uuid}}
+            sink.blocks.add([self, next])
+            return sink
         elif isinstance(next, LoadBase):
-            from tiny_blocks.pipeline import Sink
-
-            funcs = [self.get_iter, next.exhaust]
-            exhaust = partial(reduce, lambda r, f: f(r), funcs)
-            return Sink(exhaust=exhaust)
+            sink = Sink(missing=self.uuid)
+            sink.graph |= {next.uuid: {self.uuid}}
+            sink.blocks.add([self, next])
+            return sink  # finish here
+        elif isinstance(next, FanOut):
+            sink = Sink(missing=self.uuid)
+            sink.graph |= {
+                next_sink.uuid: {self.uuid} for next_sink in next.sinks
+            }
+            sink.blocks.add(self)
+            sink.blocks.update(next.sinks)
+            return sink  # the pipe continue
         else:
             raise ValueError("Unsupported Block Type")
