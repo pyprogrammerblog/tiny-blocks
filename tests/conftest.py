@@ -30,6 +30,24 @@ def csv_sink():
 
 
 @pytest.fixture(scope="function")
+def csv_sink_2():
+    """
+    Yield a CSV Sink with a path to an existing CSV file
+    """
+    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
+        yield file.name
+
+
+@pytest.fixture(scope="function")
+def csv_sink_3():
+    """
+    Yield a CSV Sink with a path to an existing CSV file
+    """
+    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
+        yield file.name
+
+
+@pytest.fixture(scope="function")
 def sqlite_source():
     """
     Yield a SQL Source with a connection string to an existing Table DB
@@ -204,6 +222,10 @@ def add_mocked_data():
     }
     pd.DataFrame(data=data).to_csv(
         "/code/tests/data/source.csv", sep="|", index=False
+    )
+    data = {"A": [1, 1, 1], "B": ["Hola", "Hola", "Mundo"]}
+    pd.DataFrame(data=data).to_csv(
+        "/code/tests/data/source1.csv", sep="|", index=False
     )
 
 

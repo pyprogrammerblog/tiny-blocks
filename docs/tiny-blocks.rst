@@ -20,14 +20,6 @@ Tiny-Blocks
     :exclude-members:
 
 
-:mod:`Tee`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: tiny_blocks.pipeline
-    :members: Tee
-    :exclude-members:
-
-
 :mod:`Pipeline`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
