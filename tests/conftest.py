@@ -30,6 +30,24 @@ def csv_sink():
 
 
 @pytest.fixture(scope="function")
+def csv_sink_2():
+    """
+    Yield a CSV Sink with a path to an existing CSV file
+    """
+    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
+        yield file.name
+
+
+@pytest.fixture(scope="function")
+def csv_sink_3():
+    """
+    Yield a CSV Sink with a path to an existing CSV file
+    """
+    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
+        yield file.name
+
+
+@pytest.fixture(scope="function")
 def sqlite_source():
     """
     Yield a SQL Source with a connection string to an existing Table DB

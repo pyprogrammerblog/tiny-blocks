@@ -1,4 +1,3 @@
-from typing import Union
 from tiny_blocks.transform.astype import Astype, KwargsAstype
 from tiny_blocks.transform.drop_duplicates import (
     DropDuplicates,
@@ -10,11 +9,6 @@ from tiny_blocks.transform.merge import Merge, KwargsMerge
 from tiny_blocks.transform.rename import Rename, KwargsRename
 from tiny_blocks.transform.sort import Sort, KwargsSort
 from tiny_blocks.transform.apply import Apply, KwargsApply
-
-TransformBlocks = Union[
-    Astype | DropDuplicates | DropNa | Fillna | Merge | Rename | Sort | Apply
-]
-
 
 __all__ = [
     "Apply",

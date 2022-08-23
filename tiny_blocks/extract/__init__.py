@@ -1,4 +1,3 @@
-from typing import Union
 from tiny_blocks.extract.from_csv import (
     FromCSV,
     KwargsFromCSV,
@@ -15,8 +14,6 @@ from tiny_blocks.extract.from_kafka import (
     KwargsFromKafka,
     FromKafka,
 )
-
-ExtractBlocks = Union[FromCSV | FromSQLTable | FromSQLQuery | FromKafka]
 
 
 __all__ = [

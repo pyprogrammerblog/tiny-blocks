@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+from functools import lru_cache
 from typing import Literal, Iterator, Callable
 from pydantic import Field
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
@@ -53,8 +54,8 @@ class Apply(TransformBase):
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
+        func = lru_cache(lambda x: self.func(x))
+
         for chunk in source:
-            chunk[self.set_to_column] = chunk[self.apply_to_column].apply(
-                self.func
-            )
+            chunk[self.set_to_column] = chunk[self.apply_to_column].apply(func)
             yield chunk

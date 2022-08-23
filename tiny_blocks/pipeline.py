@@ -1,21 +1,17 @@
 import sys
-from typing import Callable, Union
+from typing import Callable
 from datetime import datetime
-from pydantic import BaseModel
+import itertools
 import logging
-import graphlib
-from uuid import UUID, uuid4
-from pydantic import Field
-from typing import List, Set, Dict, NoReturn
-from tiny_blocks.load.base import LoadBase
-from tiny_blocks.extract.base import ExtractBase
+from typing import List, Iterator, Union, NoReturn
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.extract import ExtractBlocks
-from tiny_blocks.transform import TransformBlocks
-from tiny_blocks.load import LoadBlocks
+from tiny_blocks.load.base import LoadBase
 
+import pandas as pd
+from typing import TYPE_CHECKING
 
-Blocks = Union[ExtractBlocks | TransformBlocks | LoadBlocks]
+if TYPE_CHECKING:
+    from tiny_blocks.extract.base import ExtractBase
 
 
 __all__ = ["FanIn", "FanOut", "Pipeline"]
@@ -31,7 +27,7 @@ class FanOut:
 
     Usage::
 
-        ... >> FanOut(sink1, sink2, ..., sinkN) >> ...
+        ... >> FanOut(load1, load2, ..., loadN) >> ...
 
 
     Examples:
@@ -46,11 +42,53 @@ class FanOut:
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+po...', table_name="sink")
         >>>
-        >>> from_csv >> FanOut(fill_na >> to_sql) >> drop_dupl >> to_csv
+        >>> from_csv >> FanOut(to_sql) >> drop_dupl >> to_csv
     """
 
-    def __init__(self, *sinks: LoadBase | "Sink"):
+    def __init__(self, *sinks: LoadBase):
         self.sinks = sinks
+
+    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+        for sink, source in zip(self.sinks, sources):
+            try:
+                sink.exhaust(source)
+            except Exception as e:
+                logger.error(str(e))
+
+
+class Pipe:
+    """
+    Defines the glue between all blocks.
+
+    It gets created by a FanIn or ExtractBlock and from there
+    it joins all blocks till there is a sink.
+    """
+
+    def __init__(self, source: Iterator[pd.DataFrame]):
+        self.source = source
+
+    def get_iter(self):
+        return self.source
+
+    def __rshift__(
+        self, next: TransformBase | LoadBase | FanOut
+    ) -> "Pipe" | NoReturn:
+        """
+        The `>>` operator for the tiny-blocks library.
+        """
+        if isinstance(next, TransformBase):
+            source = next.get_iter(source=self.get_iter())
+            return Pipe(source)
+        elif isinstance(next, LoadBase):
+            return next.exhaust(source=self.get_iter())
+        elif isinstance(next, FanOut):
+            # a source per each load block + 1 for the next pipe
+            n = len(next.sinks) + 1
+            source, *sources = itertools.tee(self.get_iter(), n)
+            next.exhaust(*sources)
+            return Pipe(source=source)
+        else:
+            raise ValueError("Unsupported Block Type")
 
 
 class FanIn:
@@ -80,35 +118,21 @@ class FanIn:
         >>> FanIn(from_csv_1, from_csv_2 >> fillna)  >> merge >> to_csv
     """
 
-    def __init__(self, *pipes: ExtractBase | "Sink"):
+    def __init__(self, *pipes: Union["ExtractBase", "Pipe"]):
         self.pipes = pipes
 
-    def __rshift__(
-        self, next: TransformBase | LoadBase
-    ) -> NoReturn | "SmartStream":
+    def __rshift__(self, next: TransformBase) -> "Pipe":
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            smart_stream = SmartStream()
-            smart_stream.graph |= {
-                next.uuid: {pipe.uuid for pipe in self.pipes}
-            }
-            smart_stream.blocks.add(next)
-            smart_stream.blocks.update(self.pipes)
-            smart_stream.current_block = next
-            return smart_stream
-        elif isinstance(next, LoadBase):
-            smart_stream = SmartStream()
-            smart_stream.graph |= {
-                next.uuid: {pipe.uuid for pipe in self.pipes}
-            }
-            smart_stream.blocks.add(next)
-            smart_stream.blocks.update(self.pipes)
-            smart_stream.current_block = next
-            return smart_stream.exhaust(block=next)  # finish here
+            source = next.get_iter(source=self.get_iter())
+            return Pipe(source=source)
         else:
             raise ValueError("Unsupported Block Type")
+
+    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+        return [pipe.get_iter() for pipe in self.pipes]
 
 
 class Pipeline:
@@ -191,119 +215,3 @@ class Pipeline:
         msg += f"\n\t Status: {self.status}"
         msg += f"\n\t Details: {self.detail}"
         return msg
-
-
-class SmartStream(BaseModel):
-    """
-    SmartStream Model
-    """
-
-    uuid: UUID = Field(default_factory=uuid4, description="UUID")
-    name: str = Field(default="Stream", description="Stream name")
-    description: str = Field(default=None, description="Description")
-
-    created: datetime = Field(default_factory=datetime.utcnow)
-    updated: datetime = Field(default_factory=datetime.utcnow)
-
-    graph: Dict[UUID, Set[UUID]]
-    blocks: Set[Blocks] = Field(default_factory=set, description="Blocks")
-    current_block: Blocks
-
-    def __str__(self):
-        return f"SmartStream-{self.uuid}"
-
-    def topological_order(self, until: UUID = None) -> tuple:
-        """
-        Return a tuple with the topological order of the graph.
-
-        For example, the graph:
-        {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
-
-             | -> B -> |
-        A -> |         | -> D
-             | -> C -> |
-
-        returns:
-        ['A', 'C', 'B', 'D'] or ['A', 'B', 'C', 'D']
-        """
-        ts = graphlib.TopologicalSorter(self.graph)
-        return tuple(ts.static_order())
-
-    def exhaust_multiple(self, *blocks: Blocks):
-
-        for block in blocks:
-            try:
-                self.exhaust(block=block)
-            except Exception as e:
-                logger.error(str(e))
-
-    def exhaust(self, block: Blocks):
-        """
-        When a sink is found execute!
-        """
-        generators = {}  # keep fresh generators
-        blocks = {block.uuid: block for block in self.blocks}
-
-        for uuid in self.topological_order(until=block.uuid):
-            block = blocks[uuid]
-            if isinstance(block, ExtractBase):
-                generators[uuid] = block.get_iter()
-            elif isinstance(block, TransformBase):
-                source = [generators[i] for i in self.graph[uuid]]
-                generators[uuid] = block.get_iter(source=source)
-            elif isinstance(block, LoadBase):
-                source = generators[self.graph[uuid]]
-                return block.exhaust(source=source)
-
-    def __rshift__(
-        self, next: "TransformBase" | LoadBase | FanOut
-    ) -> NoReturn | "SmartStream":
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, (TransformBase, LoadBase)):
-            self.graph |= {next.uuid: {self.current_block.uuid}}
-            self.blocks.add(next)
-            self.current_block = next
-            return self
-        elif isinstance(next, FanOut):
-            self.graph |= {
-                sink.uuid: {self.current_block.uuid} for sink in next.sinks
-            }
-            self.blocks.update(*next.sinks)
-            return self
-        else:
-            raise ValueError("Unsupported Block Type")
-
-
-class Sink(BaseModel):
-    """
-    Partial Streams (Sink) are generated by ExtractBlocks, FanOut
-    without any Extract Block
-    """
-
-    missing: UUID
-    graph: Dict[UUID, Set[UUID]]
-    current_block: Blocks
-    blocks: Set[Blocks] = Field(default_factory=set, description="Blocks")
-
-    def __rshift__(
-        self, next: "TransformBase" | LoadBase | FanOut
-    ) -> NoReturn | "Sink":
-        """
-        The `>>` operator for the tiny-blocks library.
-        """
-        if isinstance(next, (TransformBase, LoadBase)):
-            self.graph |= {next.uuid: {self.current_block.uuid}}
-            self.blocks.add(next)
-            self.current_block = next
-            return self
-        elif isinstance(next, FanOut):
-            self.graph |= {
-                sink.uuid: {self.current_block.uuid} for sink in next.sinks
-            }
-            self.blocks.update(next.sinks)
-            self.current_block = next
-            return self
-        else:
-            raise ValueError("Unsupported Block Type")

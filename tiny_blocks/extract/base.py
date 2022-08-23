@@ -1,11 +1,12 @@
 import logging
 from typing import Iterator, NoReturn
+import itertools
 import pandas as pd
 from tiny_blocks.base import BaseBlock
 from tiny_blocks.load.base import KwargsBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.pipeline import FanOut, SmartStream
+from tiny_blocks.pipeline import Pipe, FanOut
 
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]
@@ -41,30 +42,20 @@ class ExtractBase(BaseBlock):
 
     def __rshift__(
         self, next: TransformBase | LoadBase | FanOut
-    ) -> NoReturn | SmartStream:
+    ) -> NoReturn | Pipe:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
-            smart_stream = SmartStream()
-            smart_stream.graph |= {next.uuid: {self.uuid}}
-            smart_stream.blocks.update([self, next])
-            smart_stream.current_block = next
-            return smart_stream
+            source = next.get_iter(source=self.get_iter())
+            return Pipe(source)
         elif isinstance(next, LoadBase):
-            smart_stream = SmartStream()
-            smart_stream.graph |= {next.uuid: {self.uuid}}
-            smart_stream.blocks.update([self, next])
-            smart_stream.current_block = next
-            return smart_stream.exhaust(block=self.uuid)  # finish here
+            return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
-            smart_stream = SmartStream()
-            smart_stream.graph |= {
-                sink.uuid: {self.uuid} for sink in next.sinks
-            }
-            smart_stream.blocks.add(self)
-            smart_stream.blocks.update(next.sinks)
-            smart_stream.exhaust_multiple(*next.sinks)
-            return smart_stream  # the pipe continue
+            # n sources = a source per each load block + 1 for the next pipe
+            n = len(next.sinks) + 1
+            source, *sources = itertools.tee(self.get_iter(), n)
+            next.exhaust(*sources)
+            return Pipe(source=source)
         else:
             raise ValueError("Unsupported Block Type")
