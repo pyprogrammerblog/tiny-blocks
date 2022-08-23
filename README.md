@@ -19,7 +19,7 @@ Visually, this looks like:
 extract -> transform1 -> transform2 -> ... -> transformN -> load
 ```
 
-You can also `fan-in`, `fan-out` or `tee` for more complex operations.
+You can also `fan-in`, `fan-out` for more complex operations.
 
 ```
 extract1 -> transform1 -> |-> transform2 -> ... -> | -> transformN -> load1
