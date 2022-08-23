@@ -29,6 +29,23 @@ Tiny-Blocks use **generators** to stream data. Each **chunk** is a **Pandas Data
 The `chunksize` or buffer size is adjustable per pipeline.
 
 
+Basic usage
+------------
+
+Make sure you had install the package by doing ``pip install tiny-blocks`` and then::
+
+   from tiny_blocks.extract import FromCSV
+   from tiny_blocks.transform import Fillna
+   from tiny_blocks.load import ToSQL
+
+   # ETL Blocks
+   from_csv = FromCSV(path='/path/to/source.csv')
+   fill_na = Fillna(value="Hola Mundo")
+   to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
+
+   # Pipeline
+   from_csv >> fill_na >> to_sql
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
