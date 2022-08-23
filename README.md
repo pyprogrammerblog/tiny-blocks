@@ -27,7 +27,7 @@ extract2 ---------------> |                        | -> load2
 ```
 
 Tiny-Blocks use **generators** to stream data. Each **chunk** is a **Pandas DataFrame**. 
-The `chunksize` or buffer size is adjustable per extraction.
+The `chunksize` or buffer size is adjustable per pipeline.
 
 Installation
 -------------

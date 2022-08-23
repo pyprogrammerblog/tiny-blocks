@@ -7,36 +7,26 @@
 Welcome to tiny-blocks' documentation!
 =======================================
 
-Tiny Blocks to build large and complex pipelines!
-It is a library for streaming operations, composed using the >> operator. This allows for easy extract, transform and load operations.
+Tiny Blocks to build large and complex ETL pipelines!
 
-Pipeline Components: Sources, Pipes, and Sinks
------------------------------------------------
-This library relies on a fundamental streaming abstraction consisting of three parts: extract, transform, and load.
-You can view a pipeline as a extraction, followed by zero or more transformations, followed by a sink.
+Tiny-Blocks is a library for **data engineering** operations.
+Each **pipeline** is made out of **tiny-blocks** glued with the `>>` operator.
+This library relies on a fundamental streaming abstraction consisting of three
+parts: **extract**, **transform**, and **load**. You can view a pipeline
+as an extraction, followed by zero or more transformations, followed by a sink.
 Visually, this looks like::
 
-   source >> pipe1 >> pipe2 >> pipe3 >> ... >> pipeN >> sink
+   extract -> transform1 -> transform2 -> ... -> transformN -> load
 
 
-Basic usage example
--------------------
+You can also `fan-in`, `fan-out` or `tee` for more complex operations::
 
-Make sure you had install the package by doing ``pip install tiny-blocks`` and then::
+   extract1 -> transform1 -> |-> transform2 -> ... -> | -> transformN -> load1
+   extract2 ---------------> |                        | -> load2
 
-   from tiny_blocks.extract import FromCSV
-   from tiny_blocks.transform import DropDuplicates
-   from tiny_blocks.transform import Fillna
-   from tiny_blocks.load import ToSQL
 
-   # ETL Blocks
-   from_csv = FromCSV(path='/path/to/file.csv')
-   drop_duplicates = DropDuplicates()
-   fill_na = Fillna(value="Hola Mundo")
-   to_sql = ToSQL(dsn_conn='psycopg2+postgres:...')
-
-   # Run it as a Pipeline
-   from_csv >> drop_duplicates >> fill_na >> to_sql
+Tiny-Blocks use **generators** to stream data. Each **chunk** is a **Pandas DataFrame**.
+The `chunksize` or buffer size is adjustable per pipeline.
 
 
 .. toctree::
