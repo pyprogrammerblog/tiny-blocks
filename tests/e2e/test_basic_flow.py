@@ -7,7 +7,6 @@ from tiny_blocks.load import ToSQL
 from tiny_blocks.transform import Fillna
 from tiny_blocks.transform import Apply
 from tiny_blocks.transform import Rename
-from tiny_blocks.transform import Sort
 from tiny_blocks.transform import DropDuplicates
 from tiny_blocks.transform import Merge
 
@@ -67,18 +66,16 @@ def test_basic_flow_fan_in(csv_source, postgres_source, csv_sink):
     assert not df.isnull().values.any()
 
 
-def test_basic_flow_fan_out(csv_source, csv_sink, postgres_sink):
+def test_basic_flow_fan_out(sqlite_source, csv_sink, postgres_sink):
     """
     Test a basic ETL pipeline
     """
     # 1. Extract from two sources
-    from_csv = FromCSV(path=csv_source)
+    from_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="TEST")
 
     # 2. Transform
     fill_na = Fillna(value="Hola Mundo")
-    drop_dupl = DropDuplicates()
-    rename = Rename(columns={"a": "A"})
-    sort = Sort(asceding=False)
+    rename = Rename(columns={"f": "F"})
 
     # 3. Load
     to_csv = ToCSV(path=csv_sink)
@@ -86,28 +83,21 @@ def test_basic_flow_fan_out(csv_source, csv_sink, postgres_sink):
 
     ###########
     # Pipeline
-    (
-        from_csv
-        >> drop_dupl
-        >> FanOut(to_csv)
-        >> fill_na
-        >> sort
-        >> rename
-        >> to_postgres
-    )
+    (from_sql >> FanOut(to_csv) >> fill_na >> rename >> to_postgres)
 
     # testing
     assert to_csv.path.exists()
     df = pd.read_csv(to_csv.path, sep="|")
     assert not df.empty
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["a", "b", "c"]
-    assert not df.isnull().values.any()
+    assert df.columns.to_list() == ["d", "e", "f"]
+    assert df.isnull().values.any()
 
     df = pd.read_sql_table(table_name="test", con=postgres_sink)
     assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["a", "b", "c"]
-    assert df.isnull().values.any()
+    assert df.columns.to_list() == ["d", "e", "F"]
+    assert not df.isnull().values.any()
+    assert "Hola Mundo" in df.F.values
 
 
 def test_complex_flows_with_apply(
@@ -120,7 +110,7 @@ def test_complex_flows_with_apply(
     to_csv_2 = ToCSV(path=csv_sink_2)
     to_csv_3 = ToCSV(path=csv_sink_3)
 
-    apply = Apply(apply_to_column="A", set_to_column="A", func=lambda x: x + 1)
+    apply = Apply(apply_to_column="a", set_to_column="a", func=lambda x: x + 1)
 
     """
     csv ->|-> apply -> apply -> |-> csv3 (+2)
@@ -159,6 +149,6 @@ def test_complex_flows_with_apply(
         >> FanOut(to_csv_2, to_csv_3)  # csv2,csv3 3
     )
 
-    assert pd.read_csv(to_csv_1.path, sep="|").iloc[0, 0] == 2
-    assert pd.read_csv(to_csv_2.path, sep="|").iloc[0, 0] == 3
-    assert pd.read_csv(to_csv_3.path, sep="|").iloc[0, 0] == 3
+    assert pd.read_csv(to_csv_1.path, sep="|").iloc[0, 0] == 3
+    assert pd.read_csv(to_csv_2.path, sep="|").iloc[0, 0] == 5
+    assert pd.read_csv(to_csv_3.path, sep="|").iloc[0, 0] == 5
