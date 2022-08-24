@@ -37,8 +37,9 @@ class ToSQL(LoadBase):
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
         >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
         >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="sink")
-        >>> source = from_sql.get_iter()
-        >>> to_sql.exhaust(source)
+        >>>
+        >>> generator = from_sql.get_iter()
+        >>> to_sql.exhaust(generator)
 
     For more Kwargs info:
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html

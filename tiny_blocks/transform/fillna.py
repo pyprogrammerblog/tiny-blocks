@@ -32,8 +32,9 @@ class Fillna(TransformBase):
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> fill_na = Fillna(value="Hola Mundo")
-        >>> source = extract_csv.get_iter()
-        >>> generator = fill_na.get_iter(source)
+        >>>
+        >>> generator = extract_csv.get_iter()
+        >>> generator = fill_na.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:

@@ -37,6 +37,7 @@ class FromSQLTable(ExtractBase):
         >>>
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
         >>> read_sql = FromSQLTable(dsn_conn=str_conn, table_name="test")
+        >>>
         >>> generator = read_sql.get_iter()
         >>> df = pd.concat(generator)
 

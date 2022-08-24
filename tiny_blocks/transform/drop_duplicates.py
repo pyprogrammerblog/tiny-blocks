@@ -31,8 +31,9 @@ class DropDuplicates(TransformBase):
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> drop_duplicates = DropDuplicates()
-        >>> source = extract_csv.get_iter()
-        >>> generator = drop_duplicates.get_iter(source)
+        >>>
+        >>> generator = extract_csv.get_iter()
+        >>> generator = drop_duplicates.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:

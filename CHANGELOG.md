@@ -5,6 +5,13 @@ Changelog
 -------------------
 
 - Improve documentation.
+- Added examples in notebooks.
+
+
+0.1.12 (2022-08-23)
+-------------------
+
+- Improve documentation.
 
 
 0.1.11 (2022-08-22)

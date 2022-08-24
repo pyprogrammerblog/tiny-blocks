@@ -34,8 +34,9 @@ class ToCSV(LoadBase):
         >>>
         >>> from_csv = FromCSV(path="path/to/source.csv")
         >>> to_csv = ToCSV(path="path/to/sink.csv")
-        >>> source = from_csv.get_iter()
-        >>> to_csv.exhaust(source)
+        >>>
+        >>> generator = from_csv.get_iter()
+        >>> to_csv.exhaust(generator)
 
     See info about Kwargs:
     https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
