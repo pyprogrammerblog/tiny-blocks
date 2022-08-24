@@ -29,8 +29,9 @@ class DropNa(TransformBase):
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> drop_na = DropNa()
-        >>> source = extract_csv.get_iter()
-        >>> generator = drop_na.get_iter(source)
+        >>>
+        >>> generator = extract_csv.get_iter()
+        >>> generator = drop_na.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:

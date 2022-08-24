@@ -30,8 +30,9 @@ class Astype(TransformBase):
         >>>
         >>> from_csv = FromCSV(path="/path/to/file.csv")
         >>> as_type = Astype(dtype={"e": "float32"})
-        >>> source = from_csv.get_iter()
-        >>> generator = as_type.get_iter(source)
+        >>>
+        >>> generator = from_csv.get_iter()
+        >>> generator = as_type.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:

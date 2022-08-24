@@ -35,6 +35,7 @@ class Merge(TransformBase):
         >>> from_csv_1 = FromCSV(path="/path/to/file_1.csv")
         >>> from_csv_2 = FromCSV(path="/path/to/file_2.csv")
         >>> merge = Merge(how="left", left_on="col_A", right_on="col_B")
+        >>>
         >>> left_source = from_csv_1.get_iter()
         >>> right_source = from_csv_2.get_iter()
         >>> generator = merge.get_iter(source=[left_source, right_source])

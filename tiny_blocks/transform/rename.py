@@ -30,8 +30,9 @@ class Rename(TransformBase):
         >>>
         >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> sort = Rename(columns={"column_name": "new_column_name"})
-        >>> source = from_csv.get_iter()
-        >>> generator = sort.get_iter(source)
+        >>>
+        >>> generator = from_csv.get_iter()
+        >>> generator = sort.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:

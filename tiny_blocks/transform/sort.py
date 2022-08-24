@@ -31,8 +31,9 @@ class Sort(TransformBase):
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
         >>> sort = Sort(by=["column_A"], ascending=False)
-        >>> source = extract_csv.get_iter()
-        >>> generator = sort.get_iter(source)
+        >>>
+        >>> generator = extract_csv.get_iter()
+        >>> generator = sort.get_iter(generator)
         >>> df = pd.concat(generator)
     """
 

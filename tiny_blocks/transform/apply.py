@@ -29,15 +29,16 @@ class Apply(TransformBase):
         >>> import pandas as pd
         >>> from tiny_blocks.transform import Apply
         >>> from tiny_blocks.extract import FromCSV
-        >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>>
+        >>> from_csv = FromCSV(path='/path/to/file.csv')
         >>> apply = Apply(
         ...   apply_to_column="column_A",
         ...   set_to_column="column_b",
         ...   func=lambda x: x + 1,
         >>> )
-        >>> source = from_csv.get_iter()
-        >>> generator = apply.get_iter(source)
+        >>>
+        >>> generator = from_csv.get_iter()
+        >>> generator = apply.get_iter(generator)
         >>> df = pd.concat(generator)
 
     For more Kwargs info:
