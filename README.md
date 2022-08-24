@@ -6,7 +6,7 @@
 [![GitHub Actions](https://github.com/pyprogrammerblog/tiny-blocks/workflows/CI/badge.svg/)](https://github.com/pyprogrammerblog/tiny-blocks/workflows/CI/badge.svg/)
 [![PyPI version](https://badge.fury.io/py/tiny-blocks.svg)](https://badge.fury.io/py/tiny-blocks)
 
-Tiny Blocks to build large and complex ETL pipelines!
+Tiny Blocks to build large and complex ETL data pipelines!
 
 Tiny-Blocks is a library for **data engineering** operations. 
 Each **pipeline** is made out of **tiny-blocks** glued with the `>>` operator.
