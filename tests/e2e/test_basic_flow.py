@@ -83,7 +83,7 @@ def test_basic_flow_fan_out(sqlite_source, csv_sink, postgres_sink):
 
     ###########
     # Pipeline
-    (from_sql >> FanOut(to_csv) >> fill_na >> rename >> to_postgres)
+    from_sql >> FanOut(to_csv) >> fill_na >> rename >> to_postgres
 
     # testing
     assert to_csv.path.exists()

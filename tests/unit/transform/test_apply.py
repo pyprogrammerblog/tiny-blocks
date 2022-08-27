@@ -6,14 +6,14 @@ from tiny_blocks.transform.apply import Apply
 def test_apply(sqlite_source):
 
     extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
-    enrich = Apply(
+    apply = Apply(
         func=lambda x: x + 1,
         apply_to_column="d",
         set_to_column="new",
     )
 
-    source = extract_sql.get_iter()
-    generator = enrich.get_iter(source=source)
+    generator = extract_sql.get_iter()
+    generator = apply.get_iter(source=generator)
 
     # assert
     df = pd.concat(generator)
