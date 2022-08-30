@@ -55,6 +55,7 @@ class FromSQLQuery(ExtractBase):
     @contextmanager
     def connect_db(self) -> Connection:
         """
+        Opens a DB transaction.
         Yields a connection to Database defined in `dsn_conn`.
 
         Parameters set on the connection are:
