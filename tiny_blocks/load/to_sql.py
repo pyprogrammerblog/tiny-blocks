@@ -68,8 +68,7 @@ class ToSQL(LoadBase):
     def exhaust(self, source: Iterator[pd.DataFrame]):
         """
         - Connect to DB
-        - Loop the source
-        - Send each chunk to SQL
+        - Loop the source and send each chunk to SQL
         """
         with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()
