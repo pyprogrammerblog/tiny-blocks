@@ -57,4 +57,4 @@ class ToCSV(LoadBase):
             for chunk in source:
                 chunk.to_csv(path_or_buf=file, **self.kwargs.to_dict())
 
-            shutil.move(file, self.path)
+            shutil.copy(file.name, str(self.path))
