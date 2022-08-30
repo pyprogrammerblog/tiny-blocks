@@ -63,7 +63,7 @@ class FromSQLQuery(ExtractBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        with engine.begin() as conn:
+        with engine.begin() as conn:  # open a transaction
             conn.execution_options(stream_results=True, autocommit=True)
             yield conn
 

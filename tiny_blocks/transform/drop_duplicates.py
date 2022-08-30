@@ -65,6 +65,6 @@ class DropDuplicates(TransformBase):
             """
 
             # yield records now without duplicates
-            chunk = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
+            size = self.kwargs.chunksize
+            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=size):
                 yield chunk
