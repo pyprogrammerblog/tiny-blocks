@@ -60,13 +60,9 @@ class ToSQL(LoadBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        conn = engine.connect()
-        conn.execution_options(stream_results=True, autocommit=True)
-        try:
+        with engine.begin() as conn:
+            conn.execution_options(stream_results=True, autocommit=True)
             yield conn
-        finally:
-            conn.close()
-            engine.dispose()
 
     def exhaust(self, source: Iterator[pd.DataFrame]):
         """
