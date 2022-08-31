@@ -53,6 +53,7 @@ class ToSQL(LoadBase):
     @contextmanager
     def connect_db(self) -> Connection:
         """
+        Opens a DB transaction.
         Yields a connection to Database defined in `dsn_conn`.
 
         Parameters set on the connection are:
@@ -60,19 +61,14 @@ class ToSQL(LoadBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        conn = engine.connect()
-        conn.execution_options(stream_results=True, autocommit=True)
-        try:
+        with engine.begin() as conn:  # open a transaction
+            conn.execution_options(stream_results=True, autocommit=True)
             yield conn
-        finally:
-            conn.close()
-            engine.dispose()
 
     def exhaust(self, source: Iterator[pd.DataFrame]):
         """
         - Connect to DB
-        - Loop the source
-        - Send each chunk to SQL
+        - Loop the source and send each chunk to SQL
         """
         with self.connect_db() as conn:
             kwargs = self.kwargs.to_dict()

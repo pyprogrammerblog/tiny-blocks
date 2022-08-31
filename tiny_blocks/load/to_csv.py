@@ -1,6 +1,8 @@
 import logging
+import shutil
 from pathlib import Path
 from typing import Iterator, Literal, Dict, Any
+import tempfile
 
 import pandas as pd
 from pydantic import Field, AnyUrl
@@ -51,5 +53,8 @@ class ToCSV(LoadBase):
         - Loop the source
         - Send each chunk to CSV
         """
-        for chunk in source:
-            chunk.to_csv(path_or_buf=self.path, **self.kwargs.to_dict())
+        with tempfile.NamedTemporaryFile(suffix=".csv") as file:
+            for chunk in source:
+                chunk.to_csv(path_or_buf=file, **self.kwargs.to_dict())
+
+            shutil.copy(file.name, str(self.path))

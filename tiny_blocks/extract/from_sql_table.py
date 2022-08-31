@@ -53,6 +53,7 @@ class FromSQLTable(ExtractBase):
     @contextmanager
     def connect_db(self) -> Connection:
         """
+        Opens a DB transaction.
         Yields a connection to Database defined in `dsn_conn`.
 
         Parameters set on the connection are:
@@ -60,13 +61,9 @@ class FromSQLTable(ExtractBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        conn = engine.connect()
-        conn.execution_options(stream_results=True, autocommit=True)
-        try:
+        with engine.begin() as conn:  # open a transaction
+            conn.execution_options(stream_results=True, autocommit=True)
             yield conn
-        finally:
-            conn.close()
-            engine.dispose()
 
     def get_iter(self) -> Iterator[pd.DataFrame]:
         with self.connect_db() as conn:

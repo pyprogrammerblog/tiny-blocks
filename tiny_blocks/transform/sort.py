@@ -60,7 +60,7 @@ class Sort(TransformBase):
             {'ASC' if self.ascending else 'DESC'}
             """
 
-            # yield records now without duplicates
+            # yield sorted records
             chunk = self.kwargs.chunksize
             for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
                 yield chunk
