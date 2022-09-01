@@ -5,29 +5,31 @@ services:
     image: mysql:latest
     command: mysqld --sql_mode=""
     environment:
-      MYSQL_DATABASE: "db"
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "pass"
-      MYSQL_ROOT_PASSWORD: "pass"
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: pass
     ports:
       - "3306:3306"
 
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: "db"
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "pass"
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
     ports:
       - "5432:5432"
 
-  minio:
-    image: minio/minio
+  oracle:
+    image: gvenzl/oracle-xe
     ports:
-      - "9000:9000"
+      - "1521:1521"
     environment:
-      MINIO_ACCESS_KEY: "access_key"
-      MINIO_SECRET_KEY: "secret_key"
+      ORACLE_PASSWORD : root
+      ORACLE_DATABASE : db
+      APP_USER: user
+      APP_USER_PASSWORD: pass
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
@@ -57,7 +59,7 @@ services:
     depends_on:
       - postgres
       - mysql
-      - minio
+      - oracle
       - zookeeper
       - kafka
     environment:
@@ -65,9 +67,8 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=$PYTHONPATH:/code
       - POETRY_VIRTUALENVS_IN_PROJECT=true
+      - LD_LIBRARY_PATH=/code/oracle/instantclient_21_7
       - SHELL=/bin/bash
-      - MINIO_ACCESS_KEY=access_key
-      - MINIO_SECRET_KEY=secret_key
     ports:
       - "8888:8888"  # for jupyter notebooks
     volumes:

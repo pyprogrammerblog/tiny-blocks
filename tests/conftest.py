@@ -159,7 +159,7 @@ def mysql_sink(mysql_db, mysql_uri):
 
 @pytest.fixture(scope="function")
 def oracle_uri():
-    yield "oracle+cx_oracle://user:pass@oracle:3306?service_name=db"
+    yield "oracle+cx_oracle://user:pass@oracle:1521?service_name=db"
 
 
 @pytest.fixture(scope="function")
