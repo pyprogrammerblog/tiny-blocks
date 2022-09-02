@@ -22,14 +22,12 @@ services:
       - "5432:5432"
 
   oracle:
+    container_name: oracle
     image: gvenzl/oracle-xe
     ports:
       - "1521:1521"
     environment:
       ORACLE_PASSWORD : root
-      ORACLE_DATABASE : db
-      APP_USER: user
-      APP_USER_PASSWORD: pass
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'

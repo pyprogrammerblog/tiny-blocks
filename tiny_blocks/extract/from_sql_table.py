@@ -61,8 +61,8 @@ class FromSQLTable(ExtractBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        with engine.begin() as conn:  # open a transaction
-            conn.execution_options(stream_results=True, autocommit=True)
+        with engine.connect() as conn:  # open a connection
+            conn.execution_options(stream_results=True)
             yield conn
 
     def get_iter(self) -> Iterator[pd.DataFrame]:

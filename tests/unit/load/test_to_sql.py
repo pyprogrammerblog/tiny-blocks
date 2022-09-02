@@ -1,6 +1,7 @@
 import pandas as pd
 from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.load.to_sql import ToSQL
+from sqlalchemy import create_engine
 
 
 def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
@@ -54,6 +55,6 @@ def test_sql_load_into_oracle(oracle_source, oracle_sink):
     load_to_sql.exhaust(source=generator)
 
     # assert
-    df = pd.read_sql_table(table_name="destination", con=oracle_sink)
+    df = pd.read_sql_table(table_name="destination", con=oracle_source)
     assert df.shape == (3, 3)
     assert df.columns.to_list() == ["c", "d", "e"]
