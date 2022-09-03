@@ -33,14 +33,3 @@ def test_extract_from_sql_mysql(mysql_source):
     df = pd.concat(generator)
     assert df.columns.to_list() == ["c", "d", "e"]
     assert df.shape == (3, 3)
-
-
-def test_extract_from_sql_oracle(oracle_source):
-
-    read_sql = FromSQLQuery(dsn_conn=oracle_source, sql="select * from test")
-    generator = read_sql.get_iter()
-
-    # exhaust the generator and validate
-    df = pd.concat(generator)
-    assert df.columns.to_list() == ["c", "d", "e"]
-    assert df.shape == (3, 3)

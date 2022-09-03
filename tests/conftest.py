@@ -158,40 +158,11 @@ def mysql_sink(mysql_db, mysql_uri):
 
 
 @pytest.fixture(scope="function")
-def oracle_uri():
-    yield "oracle+cx_oracle://SYSTEM:root@oracle:1521?service_name=XEPDB1"
-
-
-@pytest.fixture(scope="function")
-def oracle_conn(oracle_uri):
-    engine = create_engine(oracle_uri)
-    conn = engine.connect()
-    conn.execution_options(stream_results=True, autocommit=True)
-    try:
-        yield conn
-    finally:
-        conn.close()
-        engine.dispose()
-
-
-@pytest.fixture(scope="function")
-def oracle_source(oracle_conn, oracle_uri):
-    """
-    Yield a SQL Source with a connection string to an existing Table DB
-    """
-    data = {"c": [1, 2, 3], "d": [4, 5, 5], "e": [7, 8, None]}
-    pd.DataFrame(data=data).to_sql(name="test", con=oracle_conn, index=False, if_exists="append")
-    yield oracle_uri
-    oracle_conn.execute("DROP TABLE test")
-
-
-@pytest.fixture(scope="function")
-def oracle_sink(oracle_conn, oracle_uri):
+def oracle_sink(oracle_db, oracle_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB
     """
     yield oracle_uri
-    oracle_conn.execute("DROP TABLE destination")
 
 
 def add_mocked_data():

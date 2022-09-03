@@ -1,5 +1,5 @@
 import pandas as pd
-from tiny_blocks import FanIn, Pipeline, FanOut
+from tiny_blocks import FanIn, FanOut
 from tiny_blocks.extract import FromSQLTable
 from tiny_blocks.extract import FromCSV
 from tiny_blocks.load import ToCSV
@@ -27,8 +27,7 @@ def test_basic_flow(csv_source, postgres_source, csv_sink):
 
     ###########
     # Pipeline
-    with Pipeline(name="Pipeline 1"):
-        csv >> fill_na >> drop_dupl >> to_csv
+    csv >> fill_na >> drop_dupl >> to_csv
 
     # testing
     assert to_csv.path.exists()

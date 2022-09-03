@@ -21,14 +21,6 @@ services:
     ports:
       - "5432:5432"
 
-  oracle:
-    container_name: oracle
-    image: gvenzl/oracle-xe
-    ports:
-      - "1521:1521"
-    environment:
-      ORACLE_PASSWORD : root
-
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
@@ -57,7 +49,6 @@ services:
     depends_on:
       - postgres
       - mysql
-      - oracle
       - zookeeper
       - kafka
     environment:
