@@ -46,6 +46,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: app
+    depends_on:
+      - postgres
+      - mysql
+      - kafka
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1
