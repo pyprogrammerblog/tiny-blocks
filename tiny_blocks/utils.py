@@ -28,7 +28,7 @@ class FanOut:
 
 
     Examples:
-        >>> from tiny_blocks.pipeline import FanOut
+        >>> from tiny_blocks import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
         >>> from tiny_blocks.transform import DropDuplicates, Fillna
@@ -102,7 +102,7 @@ class FanIn:
     Examples:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToCSV
-        >>> from tiny_blocks.pipeline import FanIn
+        >>> from tiny_blocks.utils import FanIn
         >>> from tiny_blocks.transform import Merge
         >>> from tiny_blocks.transform import Fillna
         >>>

@@ -6,7 +6,7 @@ from tiny_blocks.base import BaseBlock
 from tiny_blocks.load.base import KwargsBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.pipeline import Pipe, FanOut
+from tiny_blocks.utils import Pipe, FanOut
 
 
 __all__ = ["ExtractBase", "KwargsExtractBase"]

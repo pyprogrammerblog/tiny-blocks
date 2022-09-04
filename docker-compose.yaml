@@ -46,17 +46,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: app
-    depends_on:
-      - postgres
-      - mysql
-      - zookeeper
-      - kafka
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=$PYTHONPATH:/code
       - POETRY_VIRTUALENVS_IN_PROJECT=true
-      - LD_LIBRARY_PATH=/code/oracle/instantclient_21_7
       - SHELL=/bin/bash
     ports:
       - "8888:8888"  # for jupyter notebooks
