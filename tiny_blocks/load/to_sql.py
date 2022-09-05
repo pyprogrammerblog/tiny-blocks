@@ -70,7 +70,7 @@ class ToSQL(LoadBase):
 
     def exhaust(self, source: Iterator[pd.DataFrame]):
         """
-        - Connect to DB
+        - Connect to DB and yield a transaction
         - Loop the source and send each chunk to SQL
         """
         with self.connect_db() as conn:
