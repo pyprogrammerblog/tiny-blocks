@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Iterator, Literal, Dict, Any
+from typing import Iterator, Literal, Dict, Any, Sequence, List
 import tempfile
 
 import pandas as pd
@@ -21,8 +21,24 @@ class KwargsToCSV(KwargsLoadBase):
     """
 
     sep: str = "|"
+    na_rep: str = None
+    float_format: str = None
+    columns: Sequence = None
+    header: bool | List | str = True
     index: bool = False
+    index_label: str | Sequence | Literal["False"] = None
+    mode: str = "a"
+    encoding: str = None
+    compression: str | Dict = "infer"
+    quoting: str = None
+    quotechar: str = None
+    line_terminator: str = None
     chunksize: int = 1000
+    date_format: str = None
+    doublequote: bool = None
+    escapechar: str = None
+    decimal: str = None
+    errors: str = None
     storage_options: Dict[str, Any] = None
 
 

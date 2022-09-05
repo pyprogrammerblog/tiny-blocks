@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, Literal
+from typing import Iterator, Literal, List
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
@@ -15,7 +15,10 @@ class KwargsDropNa(KwargsTransformBase):
     Kwargs for DropNa
     """
 
-    ignore_index: bool = None
+    subset: str | List[str] = None
+    axis: Literal["index", "columns"] = None
+    how: Literal["any", "all"] = None
+    thresh: int = None
 
 
 class DropNa(TransformBase):

@@ -36,12 +36,11 @@ class DropDuplicates(TransformBase):
         >>> generator = drop_duplicates.get_iter(generator)
         >>> df = pd.concat(generator)
 
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
     kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
+    keep: Literal["first", "last"] | None = "first"
     subset: Set[str] = None
 
     def get_iter(

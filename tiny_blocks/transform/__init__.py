@@ -9,7 +9,7 @@ from tiny_blocks.transform.merge import Merge, KwargsMerge
 from tiny_blocks.transform.rename import Rename, KwargsRename
 from tiny_blocks.transform.sort import Sort, KwargsSort
 from tiny_blocks.transform.apply import Apply, KwargsApply
-from tiny_blocks.transform.drop import Drop, KwargsDrop
+from tiny_blocks.transform.drop_columns import DropColumns, KwargsDropColumns
 
 __all__ = [
     "Apply",
@@ -28,6 +28,6 @@ __all__ = [
     "KwargsRename",
     "Sort",
     "KwargsSort",
-    "Drop",
-    "KwargsDrop"
+    "DropColumns",
+    "KwargsDropColumns",
 ]

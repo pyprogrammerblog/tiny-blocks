@@ -22,6 +22,7 @@ class KwargsFromCSV(KwargsExtractBase):
     names: List[str] = None
     index_col: int | str | Sequence[str] | Sequence[int] = None
     usecols: List[str] = None
+    squeeze: bool = False
     prefix: str = None
     mangle_dupe_cols: bool = True
     dtype: Dict = None
@@ -50,11 +51,24 @@ class KwargsFromCSV(KwargsExtractBase):
     cache_dates: bool = True
     # Quoting, Compression, and File Format
     compression: str = "infer"
+    thousands: str = None
     decimal: str = "."
+    lineterminator: str = None
+    quotechar: str = None
+    quoting: int = None
+    doublequote: bool = True
+    escapechar: str = None
+    comment: str = None
     encoding: str = None
     encoding_errors: str | None = "strict"
+    dialect: str = None
     # Error Handling
     on_bad_lines: Literal["error", "warn", "skip"] | Callable = "skip"
+    # others
+    delim_whitespace: bool = False
+    low_memory: bool = True
+    memory_map: bool = False
+    float_precision: str = None
 
 
 class FromCSV(ExtractBase):

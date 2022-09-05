@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, Literal, Dict
+from typing import Iterator, Literal, Dict, Sequence, Callable
 
 import pandas as pd
 from pydantic import Field
@@ -20,10 +20,13 @@ class KwargsToSQL(KwargsLoadBase):
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
     """
 
-    chunksize: int = 1000
-    index: bool = False
+    schema: str = None
     if_exists: Literal["fail", "replace", "append"] = "append"
+    index: bool = False
+    index_label: str | Sequence = None
     dtype: Dict = None
+    chunksize: int = 1000
+    method: Literal["multi"] | Callable = None
 
 
 class ToSQL(LoadBase):

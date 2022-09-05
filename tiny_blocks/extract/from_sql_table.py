@@ -20,6 +20,7 @@ class KwargsFromSQLTable(KwargsExtractBase):
     https://pandas.pydata.org/docs/reference/api/pandas.read_sql_table.html
     """
 
+    schema: str = None
     index_col: str | List[str] = None
     coerce_float: bool = True
     parse_dates: List | Tuple | Dict = None

@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, Literal, Union
+from typing import Iterator, Literal, Union, Dict
 
 import pandas as pd
 from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
@@ -17,8 +17,9 @@ class KwargsFillNa(KwargsTransformBase):
     """
 
     method: Literal["backfill", "bfill", "pad", "ffill"] = None
+    axis: Literal["index", "columns"] = None
     limit: int = None
-    axis: int = None
+    downcast: Dict = None
 
 
 class Fillna(TransformBase):

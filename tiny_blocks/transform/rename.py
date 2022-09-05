@@ -16,7 +16,9 @@ class KwargsRename(KwargsTransformBase):
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     """
 
-    pass
+    axis: Literal["index", "columns"] = None
+    level: int = None
+    errors: Literal["ignore", "raise"] = None
 
 
 class Rename(TransformBase):
