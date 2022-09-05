@@ -27,7 +27,7 @@ class KwargsToCSV(KwargsLoadBase):
     header: bool | List | str = True
     index: bool = False
     index_label: str | Sequence | Literal["False"] = None
-    mode: str = "a"
+    mode: str = None
     encoding: str = None
     compression: str | Dict = "infer"
     quoting: str = None
