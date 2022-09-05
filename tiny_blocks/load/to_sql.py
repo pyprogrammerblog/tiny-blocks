@@ -20,7 +20,7 @@ class KwargsToSQL(KwargsLoadBase):
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
     """
 
-    schema: str = None
+    schma: str = Field(None, alias="schema")
     if_exists: Literal["fail", "replace", "append"] = "append"
     index: bool = False
     index_label: str | Sequence = None
