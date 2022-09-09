@@ -1,9 +1,11 @@
 import pandas as pd
 import pandera as pa
+import pytest
 from pandera.typing import Series
 from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.transform.validate import Validate
 from tiny_blocks.transform.validate import SchemaErrors
+from pandera.errors import SchemaError
 
 
 class SchemaModel(pa.SchemaModel):
@@ -25,7 +27,7 @@ def test_validate_lazy_true(csv_source):
     except SchemaErrors as e:
         errors_df = pd.read_json(str(e))
         assert not errors_df.empty
-        assert errors_df.shape == (6, 6)
+        assert errors_df.shape == (6, 6)  # 6 errors in total
 
 
 def test_validate_lazy_false(csv_source):
@@ -36,9 +38,5 @@ def test_validate_lazy_false(csv_source):
     generator = from_csv.get_iter()
     generator = validate.get_iter(source=generator)
 
-    try:
+    with pytest.raises(SchemaError):
         pd.concat(generator)
-    except Exception as e:
-        errors_df = pd.read_json(str(e))
-        assert not errors_df.empty
-        assert errors_df.shape == (6, 6)

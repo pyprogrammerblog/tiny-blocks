@@ -19,6 +19,14 @@ class SchemaErrors(Exception):
     pass
 
 
+class SchemaError(Exception):
+    """
+    Raised when first error found. Lazy=False
+    """
+
+    pass
+
+
 class Validate(TransformBase):
     """
     Validate block. Defines block to apply validation.
