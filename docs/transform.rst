@@ -66,3 +66,11 @@ Transform Operations
 .. automodule:: tiny_blocks.transform.sort
     :members: Sort
     :exclude-members: get_iter
+
+
+:mod:`Validate`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: tiny_blocks.transform.validate
+    :members: Validate
+    :exclude-members: get_iter

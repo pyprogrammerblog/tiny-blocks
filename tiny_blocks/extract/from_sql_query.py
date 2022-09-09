@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import Iterator, List, Literal, Dict
+from typing import Iterator, List, Literal, Dict, Tuple
 
 import pandas as pd
 from pydantic import Field
@@ -22,10 +22,10 @@ class KwargsFromSQLQuery(KwargsExtractBase):
 
     index_col: str | List[str] = None
     coerce_float: bool = True
-    columns: List[str] = None
+    params: List | Tuple | Dict = None
     parse_dates: List | Dict = None
-    dtype: Dict = None
     chunksize: int = 1000
+    dtype: Dict = None
 
 
 class FromSQLQuery(ExtractBase):
@@ -63,7 +63,7 @@ class FromSQLQuery(ExtractBase):
             - Connection mode `stream_results` set as `True`.
         """
         engine = create_engine(self.dsn_conn)
-        with engine.begin() as conn:  # open a transaction
+        with engine.connect() as conn:  # open a connection
             conn.execution_options(stream_results=True, autocommit=True)
             yield conn
 

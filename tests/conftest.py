@@ -158,42 +158,6 @@ def mysql_sink(mysql_db, mysql_uri):
 
 
 @pytest.fixture(scope="function")
-def oracle_uri():
-    yield "oracle+cx_oracle://user:pass@oracle:3306?service_name=db"
-
-
-@pytest.fixture(scope="function")
-def oracle_db(oracle_uri):
-    if database_exists(oracle_uri):
-        drop_database(oracle_uri)
-    create_database(oracle_uri)
-    yield
-    drop_database(oracle_uri)
-
-
-@pytest.fixture(scope="function")
-def oracle_conn(oracle_db, oracle_uri):
-    engine = create_engine(oracle_uri)
-    conn = engine.connect()
-    conn.execution_options(stream_results=True, autocommit=True)
-    try:
-        yield conn
-    finally:
-        conn.close()
-        engine.dispose()
-
-
-@pytest.fixture(scope="function")
-def oracle_source(oracle_db, oracle_conn, oracle_uri):
-    """
-    Yield a SQL Source with a connection string to an existing Table DB
-    """
-    data = {"c": [1, 2, 3], "d": [4, 5, 5], "e": [7, 8, None]}
-    pd.DataFrame(data=data).to_sql(name="test", con=oracle_conn, index=False)
-    yield oracle_uri
-
-
-@pytest.fixture(scope="function")
 def oracle_sink(oracle_db, oracle_uri):
     """
     Yield a SQL Sink with a connection string to an existing Table DB

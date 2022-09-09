@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.13"
+version = "0.1.15"
 description = "Tiny Block Operations for Data Pipelines"
 readme = "README.md"
 license = "LICENSE"
@@ -32,6 +32,7 @@ cx-Oracle = "^8.3.0"
 kafka-python = "^2.0.2"
 types-requests = "^2.28.9"
 requests = "^2.28.1"
+pandera = "^0.12.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

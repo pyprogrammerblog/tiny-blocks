@@ -18,11 +18,3 @@ Tiny-Blocks
 .. automodule:: tiny_blocks.pipeline
     :members: FanOut
     :exclude-members:
-
-
-:mod:`Pipeline`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: tiny_blocks.pipeline
-    :members: Pipeline
-    :exclude-members:
