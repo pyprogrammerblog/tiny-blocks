@@ -47,13 +47,13 @@ class Validate(TransformBase):
         self, source: Iterator[pd.DataFrame]
     ) -> Iterator[pd.DataFrame]:
 
-        collector = pd.DataFrame()
+        failure_cases = pd.DataFrame()
 
         for chunk in source:
             try:
                 yield self.schema_model.validate(chunk, lazy=self.lazy)
             except pa.errors.SchemaErrors as errs:
-                collector = pd.concat([collector, errs.failure_cases])
+                failure_cases = pd.concat([failure_cases, errs.failure_cases])
 
-        if not collector.empty:
-            raise SchemaErrors(collector.to_json(orient="records"))
+        if not failure_cases.empty:
+            raise SchemaErrors(failure_cases.to_json(orient="records"))
