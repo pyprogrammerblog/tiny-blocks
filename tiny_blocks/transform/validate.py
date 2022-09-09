@@ -20,9 +20,11 @@ class SchemaErrors(Exception):
 
 class Validate(TransformBase):
     """
-    Validate block. Defines block to apply validation.
-
+    Validate block. Defines block to apply Pandera validation.
     When `lazy=True` all errors are collected and raised at the end.
+
+    For more info:
+    https://pandera.readthedocs.io/en/stable/schema_models.html
 
     Basic example:
         >>> import pandas as pd
