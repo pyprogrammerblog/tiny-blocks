@@ -10,6 +10,7 @@ from tiny_blocks.transform.rename import Rename, KwargsRename
 from tiny_blocks.transform.sort import Sort, KwargsSort
 from tiny_blocks.transform.apply import Apply, KwargsApply
 from tiny_blocks.transform.drop_columns import DropColumns, KwargsDropColumns
+from tiny_blocks.transform.validate import Validate
 
 __all__ = [
     "Apply",
@@ -30,4 +31,5 @@ __all__ = [
     "KwargsSort",
     "DropColumns",
     "KwargsDropColumns",
+    "Validate",
 ]
