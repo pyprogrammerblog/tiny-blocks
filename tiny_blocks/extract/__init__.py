@@ -2,6 +2,10 @@ from tiny_blocks.extract.from_csv import (
     FromCSV,
     KwargsFromCSV,
 )
+from tiny_blocks.extract.from_excel import (
+    FromExcel,
+    KwargsFromExcel,
+)
 from tiny_blocks.extract.from_sql_table import (
     FromSQLTable,
     KwargsFromSQLTable,
@@ -19,6 +23,8 @@ from tiny_blocks.extract.from_kafka import (
 __all__ = [
     "FromCSV",
     "KwargsFromCSV",
+    "FromExcel",
+    "KwargsFromExcel",
     "FromSQLTable",
     "KwargsFromSQLTable",
     "FromSQLQuery",
