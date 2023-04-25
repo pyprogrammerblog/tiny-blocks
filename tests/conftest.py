@@ -2,7 +2,7 @@ import pytest
 import tempfile
 from sqlalchemy import create_engine, text
 from sqlalchemy_utils import create_database, database_exists, drop_database
-from datetime import datetime
+import csv
 
 
 @pytest.fixture(scope="function")
@@ -17,8 +17,15 @@ def csv_source():
         {"name": "Jeroen", "age": 33},
     ]
 
-    for row in data:
-        pass
+    with tempfile.NamedTemporaryFile(encoding="utf-8") as file, open(
+        file.name, "w", newline=""
+    ) as csvfile:
+
+        writer = csv.DictWriter(csvfile, fieldnames=["name", "age"])
+        writer.writeheader()
+
+        for row in data:
+            writer.writerow(row)
 
 
 @pytest.fixture(scope="function")
