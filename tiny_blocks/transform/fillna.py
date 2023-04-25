@@ -1,60 +1,37 @@
 import logging
-from typing import Iterator, Literal, Union, Dict
+from typing import Iterator, Literal, Union
+from tiny_blocks.transform.base import TransformBase
+from tiny_blocks.base import Row
 
-import pandas as pd
-from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["Fillna", "KwargsFillNa"]
+__all__ = ["FillNone"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class KwargsFillNa(KwargsTransformBase):
+class FillNone(TransformBase):
     """
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
-    """
-
-    method: Literal["backfill", "bfill", "pad", "ffill"] = None
-    axis: Literal["index", "columns"] = None
-    limit: int = None
-    downcast: Dict = None
-
-
-class Fillna(TransformBase):
-    """
-    Fill Nan Block. Defines the fill Nan values functionality
+    Fill None Block. Defines the fill Nan values functionality
 
     Basic example:
-        >>> import pandas as pd
         >>> from tiny_blocks.transform import Fillna
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
-        >>> fill_na = Fillna(value="Hola Mundo")
+        >>> fill_na = FillNone(value="Hola Mundo")
         >>>
         >>> generator = extract_csv.get_iter()
         >>> generator = fill_na.get_iter(generator)
-        >>> df = pd.concat(generator)
-
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html
     """
 
-    name: Literal["fillna"] = "fillna"
-    kwargs: KwargsFillNa = KwargsFillNa()
+    name: Literal["fill_none"] = "fill_none"
     value: Union[int, str, dict]
 
-    def get_iter(
-        self, source: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
-        """
-        1. Loop on each chunk.
-        2. Fill Nan values
-        3. Yield chunk
-        """
+    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
-        for chunk in source:
-            chunk = chunk.fillna(value=self.value, **self.kwargs.to_dict())
-            yield chunk
+        for row in source:
+            for key, value in row.items():
+                if value is None:
+                    row[key] = self.value
+            yield row

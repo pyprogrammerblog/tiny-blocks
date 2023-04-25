@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.15"
+version = "0.1.16"
 description = "Tiny Block Operations for Data Pipelines"
 readme = "README.md"
 license = "LICENSE"
@@ -19,7 +19,7 @@ create = true  # this creates a .venv folder
 in-project = true
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 pydantic = "^1.9.1"
 pandas = "^1.4.3"
 SQLAlchemy = "^1.4.39"

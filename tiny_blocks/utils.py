@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["FanIn", "FanOut"]
+__all__ = ["FanIn", "FanOut", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ class FanOut:
                 logger.error(str(e))
 
 
-class Pipe:
+class Pipeline:
     """
     Defines the glue between all blocks.
 
@@ -69,7 +69,7 @@ class Pipe:
 
     def __rshift__(
         self, next: TransformBase | LoadBase | FanOut
-    ) -> "Pipe" | NoReturn:
+    ) -> "Pipeline" | NoReturn:
         """
         The `>>` operator for the tiny-blocks library.
         """
@@ -83,7 +83,7 @@ class Pipe:
             n = len(next.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
-            return Pipe(source=source)
+            return Pipeline(source=source)
         else:
             raise ValueError("Unsupported Block Type")
 
@@ -115,16 +115,16 @@ class FanIn:
         >>> FanIn(from_csv_1, from_csv_2 >> fillna)  >> merge >> to_csv
     """
 
-    def __init__(self, *pipes: Union["ExtractBase", "Pipe"]):
+    def __init__(self, *pipes: Union["ExtractBase", "Pipeline"]):
         self.pipes = pipes
 
-    def __rshift__(self, next: TransformBase) -> "Pipe":
+    def __rshift__(self, next: TransformBase) -> "Pipeline":
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
-            return Pipe(source=source)
+            return Pipeline(source=source)
         else:
             raise ValueError("Unsupported Block Type")
 

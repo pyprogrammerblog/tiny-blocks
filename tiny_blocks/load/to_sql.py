@@ -43,9 +43,6 @@ class ToSQL(LoadBase):
         >>>
         >>> generator = from_sql.get_iter()
         >>> to_sql.exhaust(generator)
-
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
     """
 
     name: Literal["to_sql"] = "to_sql"
@@ -73,7 +70,9 @@ class ToSQL(LoadBase):
         - Connect to DB and yield a transaction
         - Loop the source and send each chunk to SQL
         """
-        with self.connect_db() as conn:
-            kwargs = self.kwargs.to_dict()
+        engine = create_engine(self.dsn_conn)
+        with engine.begin() as conn:  # open a transaction
+            conn.execution_options(stream_results=True, autocommit=True)
+
             for chunk in source:
                 chunk.to_sql(name=self.table_name, con=conn, **kwargs)

@@ -51,6 +51,7 @@ class Merge(TransformBase):
     def get_iter(
         self, source: List[Iterator[pd.DataFrame]]
     ) -> Iterator[pd.DataFrame]:
+
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name
         ) as con:

@@ -1,4 +1,4 @@
-FROM python:3.10.2
+FROM python:3.10.9
 
 LABEL maintainer="Jose-Maria Vazquez-Jimenez"
 RUN apt-get update

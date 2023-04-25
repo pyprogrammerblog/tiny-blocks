@@ -1,17 +1,6 @@
 version: "3.3"
 services:
 
-  mysql:
-    image: mysql:latest
-    command: mysqld --sql_mode=""
-    environment:
-      MYSQL_DATABASE: db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: pass
-      MYSQL_ROOT_PASSWORD: pass
-    ports:
-      - "3306:3306"
-
   postgres:
     image: postgres:latest
     environment:
@@ -48,12 +37,11 @@ services:
     container_name: app
     depends_on:
       - postgres
-      - mysql
       - kafka
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1
-      - PYTHONPATH=$PYTHONPATH:/code
+      - PYTHONPATH=/code
       - POETRY_VIRTUALENVS_IN_PROJECT=true
       - SHELL=/bin/bash
     ports:

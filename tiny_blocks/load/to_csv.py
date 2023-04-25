@@ -64,13 +64,27 @@ class ToCSV(LoadBase):
     kwargs: KwargsToCSV = KwargsToCSV()
     path: Path | AnyUrl = Field(..., description="Destination path")
 
-    def exhaust(self, source: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[Row]):
         """
         - Loop the source
         - Send each chunk to CSV
         """
-        with tempfile.NamedTemporaryFile(suffix=".csv") as file:
-            for chunk in source:
-                chunk.to_csv(path_or_buf=file, **self.kwargs.to_dict())
+        with tempfile.NamedTemporaryFile(suffix=".csv") as file, open(
+            file.name, "w", newline=self.newline
+        ) as csvfile:
 
+            if self.headers:
+                fieldnames = self.headers
+            else:
+                row = next(source)  # use first row for extracting fieldnames
+                fieldnames = list(row.columns())
+                itertools.chain([row], source)  # put it back into the source
+
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for row in source:  # here we exhaust the rest of rows
+                writer.writerow(row)
+
+            # if no errors, we create the final file.
             shutil.copy(file.name, str(self.path))

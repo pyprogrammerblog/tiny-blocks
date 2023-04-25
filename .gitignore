@@ -95,3 +95,4 @@ flake8.txt
 .dockerignore
 /source/
 /docs/_build/
+/.vscode/

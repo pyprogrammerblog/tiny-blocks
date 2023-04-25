@@ -1,23 +1,13 @@
 import logging
 from typing import Iterator, Literal, List
+from tiny_blocks.base import Row
+from tiny_blocks.transform.base import TransformBase
 
-import pandas as pd
-from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["DropColumns", "KwargsDropColumns"]
+__all__ = ["DropColumns"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsDropColumns(KwargsTransformBase):
-    """
-    More info:
-
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop.html
-    """
-
-    errors: Literal["ignore", "raise"] = "ignore"
 
 
 class DropColumns(TransformBase):
@@ -34,20 +24,20 @@ class DropColumns(TransformBase):
         >>>
         >>> generator = extract_csv.get_iter()
         >>> generator = drop_na.get_iter(generator)
-        >>> df = pd.concat(generator)
-
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop.html
     """
 
     name: Literal["drop_columns"] = "drop_columns"
-    kwargs: KwargsDropColumns = KwargsDropColumns()
     columns: List[str]
+    errors: Literal["ignore", "raise"] = "ignore"
 
-    def get_iter(
-        self, source: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
+    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
-        for chunk in source:
-            chunk = chunk.drop(columns=self.columns, **self.kwargs.to_dict())
-            yield chunk
+        for row in source:
+            try:
+                for key, value in row.items():
+                    del row[key]
+            except KeyError as error:
+                if self.errors == "raise":
+                    raise error
+
+            yield row
