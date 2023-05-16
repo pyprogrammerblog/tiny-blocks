@@ -1,26 +1,15 @@
 import logging
-from sqlite3 import connect
 import tempfile
-from typing import Iterator, Literal, List
-
-import pandas as pd
+from sqlite3 import connect
 from pydantic import Field
-from tiny_blocks.transform.base import (
-    KwargsTransformBase,
-    TransformBase,
-)
+from typing import Iterator, Literal, List
+from tiny_blocks.transform.base import TransformBase
 
-__all__ = ["KwargsMerge", "Merge"]
+
+__all__ = ["Merge"]
+
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsMerge(KwargsTransformBase):
-    """
-    Kwargs for merge
-    """
-
-    chunksize: int = 1000
 
 
 class Merge(TransformBase):
@@ -46,7 +35,6 @@ class Merge(TransformBase):
     how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
     left_on: str = Field(..., description="Column on the left table")
     right_on: str = Field(..., description="Column on the right table")
-    kwargs: KwargsMerge = KwargsMerge()
 
     def get_iter(
         self, source: List[Iterator[pd.DataFrame]]

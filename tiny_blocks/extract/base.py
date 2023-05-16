@@ -3,32 +3,23 @@ from typing import Iterator, NoReturn
 import itertools
 import pandas as pd
 from tiny_blocks.base import BaseBlock
-from tiny_blocks.load.base import KwargsBase
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.utils import Pipe, FanOut
 
 
-__all__ = ["ExtractBase", "KwargsExtractBase"]
+__all__ = ["ExtractBase"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsExtractBase(KwargsBase):
-    """
-    Kwargs Extract Block
-    """
-
-    pass
 
 
 class ExtractBase(BaseBlock):
     """
     Extract Base Block.
 
-    Each extraction Block implement the `get_iter` method.
-    This method return an Iterator of chunked DataFrames
+    Each extraction Block implements the `get_iter` method.
+    This method returns an Iterator of chunked DataFrames
     """
 
     def get_iter(self) -> Iterator[pd.DataFrame]:

@@ -10,6 +10,9 @@ class Row(dict):
     def columns(self):
         return list(self.keys())
 
+    def values(self):
+        return list(self.values())
+
 
 class BaseBlock(BaseModel):
     """

@@ -10,6 +10,21 @@ services:
     ports:
       - "5432:5432"
 
+  minio:
+    image: minio/minio:latest
+    container_name: s3_storage
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ACCESS_KEY=access-key
+      - MINIO_SECRET_KEY=secret-key
+      - CONSOLE_ACCESS_KEY=test
+      - CONSOLE_SECRET_KEY=test
+    command: server --address ":9000" --console-address ":9001" /data
+    volumes:
+      - ./data:/code/data
+
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:

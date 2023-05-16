@@ -3,43 +3,12 @@ from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.load.to_sql import ToSQL
 
 
-def test_sql_load_into_sqlite(sqlite_source, sqlite_sink):
+def test_to_sql(postgres_uri, source_data):
 
-    extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
-    load_to_sql = ToSQL(dsn_conn=sqlite_sink, table_name="destination")
-
-    generator = extract_sql.get_iter()
-    load_to_sql.exhaust(source=generator)
-
-    # assert
-    df = pd.read_sql_table(table_name="destination", con=sqlite_sink)
-    assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["d", "e", "f"]
-
-
-def test_sql_load_into_postgres(postgres_source, postgres_sink):
-
-    extract_sql = FromSQLTable(dsn_conn=postgres_source, table_name="test")
-    load_to_sql = ToSQL(dsn_conn=postgres_sink, table_name="destination")
-
-    generator = extract_sql.get_iter()
-    load_to_sql.exhaust(source=generator)
+    to_sql = ToSQL(dsn_conn=postgres_uri)
+    to_sql.exhaust(source=source_data)
 
     # assert
     df = pd.read_sql_table(table_name="destination", con=postgres_sink)
     assert df.shape == (3, 3)
     assert df.columns.to_list() == ["d", "e", "f"]
-
-
-def test_sql_load_into_mysql(mysql_source, mysql_sink):
-
-    extract_sql = FromSQLTable(dsn_conn=mysql_source, table_name="test")
-    load_to_sql = ToSQL(dsn_conn=mysql_sink, table_name="destination")
-
-    generator = extract_sql.get_iter()
-    load_to_sql.exhaust(source=generator)
-
-    # assert
-    df = pd.read_sql_table(table_name="destination", con=mysql_sink)
-    assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["c", "d", "e"]

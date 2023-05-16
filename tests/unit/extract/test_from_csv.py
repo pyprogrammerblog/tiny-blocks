@@ -1,13 +1,15 @@
-import pandas as pd
 from tiny_blocks.extract.from_csv import FromCSV
 
 
-def test_extract_from_csv(csv_source):
+def test_extract_from_sql(csv_source):
 
-    read_csv = FromCSV(path=csv_source)
-    generator = read_csv.get_iter()
+    from_sql = FromCSV(path=csv_source.name)
+    generator = from_sql.get_iter()
 
-    # exhaust the generator and validate
-    df = pd.concat(generator)
-    assert df.shape == (4, 3)
-    assert df.columns.to_list() == ["a", "b", "c"]
+    # exhaust the generator
+    data = list(generator)
+
+    # assertions
+    assert len(data) == 4
+    assert data[0].columns() == ["name", "age"]
+    assert data[0].values() == ["Mateo", 30]

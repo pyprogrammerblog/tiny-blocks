@@ -31,11 +31,11 @@ class FanOut:
         >>> from tiny_blocks import FanOut
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToSQL, ToCSV
-        >>> from tiny_blocks.transform import DropDuplicates, Fillna
+        >>> from tiny_blocks.transform import DropDuplicates, FillNone
         >>>
         >>> from_csv = FromCSV(path='/path/to/source.csv')
         >>> drop_dupl = DropDuplicates()
-        >>> fill_na = Fillna(value="Hola Mundo")
+        >>> fill_na = FillNone(value="Hola Mundo")
         >>> to_csv = ToCSV(path='/path/to/sink.csv')
         >>> to_sql = ToSQL(dsn_conn='psycopg2+po...', table_name="sink")
         >>>
@@ -103,16 +103,15 @@ class FanIn:
         >>> from tiny_blocks.extract import FromCSV
         >>> from tiny_blocks.load import ToCSV
         >>> from tiny_blocks.utils import FanIn
-        >>> from tiny_blocks.transform import Merge
-        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.transform import Merge, FillNone
         >>>
         >>> from_csv_1 = FromCSV(path='/path/to/file1.csv')
         >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
         >>> to_csv = ToCSV(path='/path/to/file3.csv')
-        >>> fillna = Fillna(value="Hola Mundo")
+        >>> fill_none = FillNone(value="Hola Mundo")
         >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
         >>>
-        >>> FanIn(from_csv_1, from_csv_2 >> fillna)  >> merge >> to_csv
+        >>> FanIn(from_csv_1, from_csv_2 >> fill_none)  >> merge >> to_csv
     """
 
     def __init__(self, *pipes: Union["ExtractBase", "Pipeline"]):

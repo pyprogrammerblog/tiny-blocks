@@ -43,23 +43,45 @@ Basic usage
 
 ```python
 from tiny_blocks.extract import FromCSV
-from tiny_blocks.transform import Fillna
+from tiny_blocks.transform import FillNone
 from tiny_blocks.load import ToSQL
 
 # ETL Blocks
 from_csv = FromCSV(path='/path/to/source.csv')
-fill_na = Fillna(value="Hola Mundo")
+fill_na = FillNone(value="Hola Mundo")
 to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
 
 # Pipeline
 from_csv >> fill_na >> to_sql
 ```
 
-Examples
-----------------------
+Complex usage
+----------------
 
-For more complex examples please visit 
-the [notebooks' folder](https://github.com/pyprogrammerblog/tiny-blocks/blob/master/notebooks/Examples.ipynb).
+```python
+from tiny_blocks.extract import FromCSV, FromSQL
+from tiny_blocks.transform import FillNone, DropColumns
+from tiny_blocks.load import ToSQL, ToCSV
+from tiny_blocks.utils import PipelineSystem
+
+
+with PipelineSystem(name="My Pipeline System") as system:
+
+    # Pipeline 1
+    from_sql = FromSQL(dsn_conn='psycopg2+postgres://...', query="select * from source;")
+    fill_na = FillNone(value="Hola Mundo")
+    to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
+
+    system >> from_sql >> fill_na >> to_sql
+
+    # Pipeline 2
+    from_csv = FromCSV(path='/path/to/source.csv')
+    drop_column = DropColumns(columns=["wrong_column"])
+    to_csv = ToCSV(path='/path/to/sink.csv')
+
+    system >> from_csv >> drop_column >> to_csv
+
+```
 
 
 Documentation

@@ -1,35 +1,27 @@
 import logging
 from pydantic import Field
-from contextlib import contextmanager
-from typing import Iterator, Literal
 from tiny_blocks.base import Row
+from typing import Iterator, Literal
 from sqlalchemy import create_engine, text
-from sqlalchemy.engine import Connection
 from tiny_blocks.extract.base import ExtractBase
 
-__all__ = ["FromSQLQuery"]
+
+__all__ = ["FromSQL"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class FromSQLQuery(ExtractBase):
+class FromSQL(ExtractBase):
     """
     Read SQL Query Block. Defines the read SQL Query Operation
 
     Basic example:
-        >>> import pandas as pd
-        >>> from tiny_blocks.extract import FromSQLQuery
+        >>> from tiny_blocks.extract import FromSQL
         >>>
-        >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
-        >>> sql = "select * from test"
-        >>> read_sql = FromSQLQuery(dsn_conn=str_conn, sql=sql)
-        >>>
+        >>> dsn_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
+        >>> read_sql = FromSQL(dsn_conn=dsn_conn, sql="select * from test")
         >>> generator = read_sql.get_iter()
-        >>> df = pd.concat(generator)
-
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.read_sql_query.html
     """
 
     name: Literal["read_sql"] = "read_sql"

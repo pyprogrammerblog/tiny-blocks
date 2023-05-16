@@ -1,9 +1,9 @@
-from pydantic import Field, FilePath, AnyUrl
+from pydantic import Field, FilePath, validator, BaseModel
 from tiny_blocks.extract.base import ExtractBase
-from tiny_blocks.base import Row
 from typing import Iterator, Literal, List
+from tiny_blocks.base import Row
+from pathlib import Path
 
-import pandas as pd
 import logging
 import csv
 import boto3
@@ -13,7 +13,7 @@ import tempfile
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["FromCSV", "FromS3CSV"]
+__all__ = ["FromCSV"]
 
 
 class FromCSV(ExtractBase):
@@ -24,15 +24,19 @@ class FromCSV(ExtractBase):
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> read_csv = FromCSV(path="/path/to/file.csv")
-        >>>
         >>> generator = read_csv.get_iter()
-        >>> df = pd.concat(generator)
     """
 
     name: Literal["read_csv"] = Field(default="read_csv")
-    path: FilePath | AnyUrl = Field(..., description="Path")
+    path: FilePath = Field(..., description="Path")
     headers: List[str] = Field(default=None)
     newline: str = Field(default="")
+
+    @validator("path")
+    def directory_exists(cls, path):
+        if not Path(path).parent.is_dir():
+            raise ValueError(f"Folder '{Path(path).parent}' does not exists")
+        return path
 
     def get_iter(self) -> Iterator[Row]:
 
@@ -50,7 +54,6 @@ class FromS3CSV(ExtractBase):
         >>>
         >>> read_csv = FromCSV(key='key', bucket="bucket", s3_config={...})
         >>> generator = read_csv.get_iter()
-        >>> df = pd.concat(generator)
     """
 
     name: Literal["read_csv"] = Field(default="read_csv")

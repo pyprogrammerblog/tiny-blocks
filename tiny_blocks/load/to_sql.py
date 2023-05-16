@@ -1,32 +1,15 @@
 import logging
-from contextlib import contextmanager
-from typing import Iterator, Literal, Dict, Sequence, Callable
-
-import pandas as pd
 from pydantic import Field
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Connection
-from tiny_blocks.load.base import KwargsLoadBase, LoadBase
+from typing import Iterator, Literal
+from sqlalchemy import create_engine, text
+from tiny_blocks.load.base import LoadBase
+from tiny_blocks.base import Row
 
-__all__ = ["ToSQL", "KwargsToSQL"]
+
+__all__ = ["ToSQL"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsToSQL(KwargsLoadBase):
-    """
-    For more Kwargs info:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
-    """
-
-    schma: str = Field(None, alias="schema")
-    if_exists: Literal["fail", "replace", "append"] = "append"
-    index: bool = False
-    index_label: str | Sequence = None
-    dtype: Dict = None
-    chunksize: int = 1000
-    method: Literal["multi"] | Callable = None
 
 
 class ToSQL(LoadBase):
@@ -34,12 +17,12 @@ class ToSQL(LoadBase):
     Load SQL Block. Defines the Loading operation to a SQL Database
 
     Basic example:
-        >>> from tiny_blocks.extract import FromSQLTable
+        >>> from tiny_blocks.extract import FromSQL
         >>> from tiny_blocks.load import ToSQL
         >>>
         >>> str_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
-        >>> from_sql = FromSQLTable(dsn_conn=str_conn, table_name="source")
-        >>> to_sql = ToSQL(dsn_conn=str_conn, table_name="sink")
+        >>> from_sql = FromSQL(dsn_conn=str_conn, query="select * from source")
+        >>> to_sql = ToSQL(dsn_conn=str_conn, table="sink")
         >>>
         >>> generator = from_sql.get_iter()
         >>> to_sql.exhaust(generator)
@@ -47,32 +30,23 @@ class ToSQL(LoadBase):
 
     name: Literal["to_sql"] = "to_sql"
     dsn_conn: str = Field(..., description="Connection string")
-    table_name: str = Field(..., description="Destination Table")
-    kwargs: KwargsToSQL = KwargsToSQL()
+    table: str = Field(..., description="Destination Table")
+    table_flag: str = Field(default=None, description="Flag Table")
 
-    @contextmanager
-    def connect_db(self) -> Connection:
-        """
-        Opens a DB transaction.
-        Yields a connection to Database defined in `dsn_conn`.
-
-        Parameters set on the connection are:
-            - `autocommit` mode set to `True`.
-            - Connection mode `stream_results` set as `True`.
-        """
-        engine = create_engine(self.dsn_conn)
-        with engine.begin() as conn:  # open a transaction
-            conn.execution_options(stream_results=True, autocommit=True)
-            yield conn
-
-    def exhaust(self, source: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[Row]):
         """
         - Connect to DB and yield a transaction
         - Loop the source and send each chunk to SQL
         """
-        engine = create_engine(self.dsn_conn)
-        with engine.begin() as conn:  # open a transaction
+        with create_engine(self.dsn_conn).begin() as conn:  # transaction
             conn.execution_options(stream_results=True, autocommit=True)
 
-            for chunk in source:
-                chunk.to_sql(name=self.table_name, con=conn, **kwargs)
+            for row in source:  # here we exhaust
+                stmt = (
+                    f"INSERT INTO {self.table} ({', '.join(row.columns())}) "
+                    f"VALUES ({', '.join('%s' * len(row))})"
+                )
+                conn.execute(text(stmt), row.values())
+
+            if self.table_flag:
+                conn.execute(text(f"TRUNCATE TABLE {self.table_flag};"))

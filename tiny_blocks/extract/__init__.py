@@ -1,34 +1,10 @@
-from tiny_blocks.extract.from_csv import (
-    FromCSV,
-    KwargsFromCSV,
-)
-from tiny_blocks.extract.from_excel import (
-    FromExcel,
-    KwargsFromExcel,
-)
-from tiny_blocks.extract.from_sql_table import (
-    FromSQLTable,
-    KwargsFromSQLTable,
-)
-from tiny_blocks.extract.from_sql_query import (
-    KwargsFromSQLQuery,
-    FromSQLQuery,
-)
-from tiny_blocks.extract.from_kafka import (
-    KwargsFromKafka,
-    FromKafka,
-)
+from tiny_blocks.extract.from_csv import FromCSV
+from tiny_blocks.extract.from_sql import FromSQL
+from tiny_blocks.extract.from_kafka import FromKafka
 
 
 __all__ = [
     "FromCSV",
-    "KwargsFromCSV",
-    "FromExcel",
-    "KwargsFromExcel",
-    "FromSQLTable",
-    "KwargsFromSQLTable",
-    "FromSQLQuery",
-    "KwargsFromSQLQuery",
     "FromKafka",
-    "KwargsFromKafka",
+    "FromSQL",
 ]

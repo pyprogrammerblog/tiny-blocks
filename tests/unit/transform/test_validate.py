@@ -1,42 +1,40 @@
-import pandas as pd
-import pandera as pa
-import pytest
-from pandera.typing import Series
-from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.transform.validate import Validate
-from tiny_blocks.transform.validate import SchemaErrors
-from pandera.errors import SchemaError
+from pydantic import BaseModel, Field, ValidationError
 
 
-class SchemaModel(pa.SchemaModel):
-    a: Series[int]
-    b: Series[int] = pa.Field(le=5)
-    c: Series[int] = pa.Field(le=3)
+class LazyValidationModel(BaseModel):
+    name: str
+    age: int
 
 
-def test_validate_lazy_true(csv_source):
+class ExtrictValidationModel(BaseModel):
+    name: str = Field(max_length=3)
+    age: int = Field(lt=20)
 
-    from_csv = FromCSV(path=csv_source, kwargs={"chunksize": 1})
-    validate = Validate(schema_model=SchemaModel, lazy=True)
 
-    generator = from_csv.get_iter()
-    generator = validate.get_iter(source=generator)
+def test_validate_lazy(source_data):
 
+    validate = Validate(model=LazyValidationModel)
+    generator = validate.get_iter(source=source_data)
+
+    # exhaust the generator (no errors)
+    data = list(generator)
+
+    # assertions
+    assert len(data) == 4
+    assert data[0].columns() == ["name", "age"]
+    assert data[0].values() == ["Mateo", 30]
+
+
+def test_validate_extrict(source_data):
+
+    validate = Validate(model=ExtrictValidationModel)
+    generator = validate.get_iter(source=source_data)
+
+    # exhaust the generator and check for validation errors
     try:
-        pd.concat(generator)
-    except SchemaErrors as e:
-        errors_df = pd.read_json(str(e))
-        assert not errors_df.empty
-        assert errors_df.shape == (6, 6)  # 6 errors in total
-
-
-def test_validate_lazy_false(csv_source):
-
-    from_csv = FromCSV(path=csv_source, kwargs={"chunksize": 1})
-    validate = Validate(schema_model=SchemaModel, lazy=False)
-
-    generator = from_csv.get_iter()
-    generator = validate.get_iter(source=generator)
-
-    with pytest.raises(SchemaError):
-        pd.concat(generator)
+        list(generator)
+    except ValidationError as e:
+        assert isinstance(e.model, ExtrictValidationModel)
+        assert isinstance(e.errors, list)
+        assert e.errors[0] == 1

@@ -1,45 +1,20 @@
 import logging
 import shutil
-from pathlib import Path
-from typing import Iterator, Literal, Dict, Any, Sequence, List
 import tempfile
+import itertools
+import csv
 
-import pandas as pd
-from pydantic import Field, AnyUrl
-from tiny_blocks.load.base import KwargsLoadBase, LoadBase
+from pathlib import Path
+from tiny_blocks.base import Row
+from pydantic import Field, validator
+from typing import Iterator, Literal, List
+from tiny_blocks.load.base import LoadBase
 
-__all__ = ["ToCSV", "KwargsToCSV"]
+
+__all__ = ["ToCSV"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsToCSV(KwargsLoadBase):
-    """
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
-    """
-
-    sep: str = "|"
-    na_rep: str = None
-    float_format: str = None
-    columns: Sequence = None
-    header: bool | List | str = True
-    index: bool = False
-    index_label: str | Sequence | Literal["False"] = None
-    mode: str = None
-    encoding: str = None
-    compression: str | Dict = "infer"
-    quoting: str = None
-    quotechar: str = None
-    line_terminator: str = None
-    chunksize: int = 1000
-    date_format: str = None
-    doublequote: bool = None
-    escapechar: str = None
-    decimal: str = None
-    errors: str = None
-    storage_options: Dict[str, Any] = None
 
 
 class ToCSV(LoadBase):
@@ -60,9 +35,16 @@ class ToCSV(LoadBase):
     https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
-    name: Literal["to_csv"] = "to_csv"
-    kwargs: KwargsToCSV = KwargsToCSV()
-    path: Path | AnyUrl = Field(..., description="Destination path")
+    name: Literal["to_csv"] = Field(default="to_csv")
+    path: Path = Field(..., description="Destination path")
+    headers: List[str] = Field(default=None)
+    newline: str = Field(default="")
+
+    @validator("path")
+    def directory_exists(cls, path):
+        if not Path(path).parent.is_dir():
+            raise ValueError(f"Folder '{Path(path).parent}' does not exists.")
+        return path
 
     def exhaust(self, source: Iterator[Row]):
         """
@@ -83,7 +65,7 @@ class ToCSV(LoadBase):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            for row in source:  # here we exhaust the rest of rows
+            for row in source:  # here we exhaust the rest of the rows
                 writer.writerow(row)
 
             # if no errors, we create the final file.

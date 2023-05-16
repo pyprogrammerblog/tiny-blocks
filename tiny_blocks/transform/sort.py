@@ -2,22 +2,14 @@ import logging
 import sqlite3
 import tempfile
 from typing import Iterator, Literal, List
+from tiny_blocks.transform.base import TransformBase
+from tiny_blocks.base import Row
 
-import pandas as pd
-from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["Sort", "KwargsSort"]
+__all__ = ["Sort"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsSort(KwargsTransformBase):
-    """
-    Kwargs for DropDuplicates
-    """
-
-    chunksize: int = 1000
 
 
 class Sort(TransformBase):
@@ -40,11 +32,9 @@ class Sort(TransformBase):
     name: Literal["sort"] = "sort"
     by: List[str]
     ascending: bool = True
-    kwargs: KwargsSort = KwargsSort()
 
-    def get_iter(
-        self, source: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
+    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:
@@ -61,6 +51,5 @@ class Sort(TransformBase):
             """
 
             # yield sorted records
-            chunk = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
-                yield chunk
+            for row in con.execute(sql):
+                yield Row(row)

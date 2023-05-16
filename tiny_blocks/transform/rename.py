@@ -1,4 +1,7 @@
 import logging
+import itertools
+
+from pydantic import Field
 from typing import Dict, Iterator, Literal
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.base import Row
@@ -25,18 +28,15 @@ class Rename(TransformBase):
     """
 
     name: Literal["rename"] = "rename"
-    columns: Dict[str, str]
-    errors: Literal["ignore", "raise"] = "ignore"
+    columns: Dict[str, str] = Field(description="Mapping dictionary")
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
-        for row in source:
+        first_row = next(source)
+        if missing := set(first_row.columns()) - set(self.columns.keys()):
+            raise ValueError(f"'{', '.join(missing)}' do not exists.")
 
+        for row in itertools.chain([first_row], source):
             for new_key, old_key in self.columns.items():
-                try:
-                    row[new_key] = row.pop(old_key)
-                except KeyError as error:
-                    if self.errors == "raise":
-                        raise error
-
+                row[new_key] = row.pop(old_key)
             yield row

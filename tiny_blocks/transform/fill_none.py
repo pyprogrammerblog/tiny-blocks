@@ -1,5 +1,7 @@
 import logging
-from typing import Iterator, Literal, Union
+import itertools
+from pydantic import Field
+from typing import Iterator, Literal, Any, List
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.base import Row
 
@@ -15,7 +17,7 @@ class FillNone(TransformBase):
     Fill None Block. Defines the fill Nan values functionality
 
     Basic example:
-        >>> from tiny_blocks.transform import Fillna
+        >>> from tiny_blocks.transform import FillNone
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
@@ -26,12 +28,21 @@ class FillNone(TransformBase):
     """
 
     name: Literal["fill_none"] = "fill_none"
-    value: Union[int, str, dict]
+    value: Any = Field(..., description="Value to be filled")
+    subset: List[str] = Field(default_factory=list)
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
-        for row in source:
+        # check the subset exists in the source
+        first_row = next(source)
+        if missing_columns := set(first_row.columns()) - set(self.subset):
+            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
+
+        # fill none values
+        for row in itertools.chain([first_row], source):
             for key, value in row.items():
+                if self.subset and key not in self.subset:
+                    continue
                 if value is None:
                     row[key] = self.value
             yield row

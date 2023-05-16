@@ -2,22 +2,14 @@ import logging
 import sqlite3
 import tempfile
 from typing import Iterator, Literal, Set
+from tiny_blocks.base import Row
+from tiny_blocks.transform.base import TransformBase
 
-import pandas as pd
-from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
 
-__all__ = ["DropDuplicates", "KwargsDropDuplicates"]
+__all__ = ["DropDuplicates"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsDropDuplicates(KwargsTransformBase):
-    """
-    Kwargs for DropDuplicates
-    """
-
-    chunksize: int = 1000
 
 
 class DropDuplicates(TransformBase):
@@ -39,13 +31,10 @@ class DropDuplicates(TransformBase):
     """
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
-    kwargs: KwargsDropDuplicates = KwargsDropDuplicates()
     keep: Literal["first", "last"] | None = "first"
     subset: Set[str] = None
 
-    def get_iter(
-        self, source: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
+    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"

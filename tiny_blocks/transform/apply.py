@@ -17,7 +17,7 @@ class Apply(TransformBase):
     Apply function. Defines block to apply function.
 
     The method is applied to a single column.
-    For different functionality please rewrite the Block.
+    For different functionality, please rewrite the Block.
 
     Basic example:
         >>> from tiny_blocks.transform import Apply

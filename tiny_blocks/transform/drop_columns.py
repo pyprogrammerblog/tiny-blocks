@@ -1,4 +1,7 @@
 import logging
+import itertools
+
+from pydantic import Field
 from typing import Iterator, Literal, List
 from tiny_blocks.base import Row
 from tiny_blocks.transform.base import TransformBase
@@ -27,17 +30,15 @@ class DropColumns(TransformBase):
     """
 
     name: Literal["drop_columns"] = "drop_columns"
-    columns: List[str]
-    errors: Literal["ignore", "raise"] = "ignore"
+    columns: List[str] = Field(description="Columns to be dropped")
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
-        for row in source:
-            try:
-                for key, value in row.items():
-                    del row[key]
-            except KeyError as error:
-                if self.errors == "raise":
-                    raise error
+        first_row = next(source)
+        if missing_columns := set(first_row.columns()) - set(self.columns):
+            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
 
+        for row in itertools.chain([first_row], source):
+            for key, value in row.items():
+                del row[key]
             yield row
