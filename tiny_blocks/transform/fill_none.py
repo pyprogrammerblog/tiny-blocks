@@ -28,14 +28,14 @@ class FillNone(TransformBase):
     """
 
     name: Literal["fill_none"] = "fill_none"
-    value: Any = Field(..., description="Value to be filled")
+    value: Any = Field(description="Value to be filled")
     subset: List[str] = Field(default_factory=list)
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
         # check the subset exists in the source
         first_row = next(source)
-        if missing_columns := set(first_row.columns()) - set(self.subset):
+        if missing_columns := set(self.subset) - set(first_row.columns()):
             raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
 
         # fill none values

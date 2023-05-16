@@ -30,7 +30,7 @@ class Apply(TransformBase):
         >>> generator = apply.get_iter(generator)
     """
 
-    name: Literal["apply"] = "apply"
+    name: Literal["apply"] = Field(default="apply")
     func: Callable = Field(..., description="Callable")
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:

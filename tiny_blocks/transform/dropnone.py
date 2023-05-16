@@ -33,17 +33,4 @@ class DropNone(TransformBase):
     subset: List[str] = Field(default_factory=list)
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
-
-        # check the subset exists in the source
-        first_row = next(source)
-        if missing_columns := set(first_row.columns()) - set(self.subset):
-            raise ValueError(f"'{', '.join(missing_columns)}' do not exist")
-
-        # drop None values
-        for row in itertools.chain([first_row], source):
-            for key, value in row.items():
-                if self.subset and key not in self.subset:
-                    continue
-                if value is None:
-                    del key
-            yield row
+        pass

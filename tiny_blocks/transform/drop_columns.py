@@ -34,11 +34,11 @@ class DropColumns(TransformBase):
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
+        # check the columns exist in the source
         first_row = next(source)
         if missing_columns := set(first_row.columns()) - set(self.columns):
             raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
 
         for row in itertools.chain([first_row], source):
-            for key, value in row.items():
-                del row[key]
-            yield row
+            row = {k:v for k,v in row.items() if k in self.columns}
+            yield Row(row)

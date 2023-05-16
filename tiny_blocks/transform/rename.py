@@ -32,10 +32,12 @@ class Rename(TransformBase):
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
+        # check the columns exist in the source
         first_row = next(source)
-        if missing := set(first_row.columns()) - set(self.columns.keys()):
-            raise ValueError(f"'{', '.join(missing)}' do not exists.")
+        if missing_columns := set(self.columns) - set(first_row.columns()):
+            raise ValueError(f"'{', '.join(missing_columns)}' do not exists.")
 
+        # rename columns
         for row in itertools.chain([first_row], source):
             for new_key, old_key in self.columns.items():
                 row[new_key] = row.pop(old_key)
