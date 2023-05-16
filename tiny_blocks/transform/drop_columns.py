@@ -36,7 +36,7 @@ class DropColumns(TransformBase):
 
         # check the columns exist in the source
         first_row = next(source)
-        if missing_columns := set(first_row.columns()) - set(self.columns):
+        if missing_columns := set(self.columns) - set(first_row.columns()):
             raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
 
         for row in itertools.chain([first_row], source):
