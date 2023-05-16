@@ -39,6 +39,7 @@ class DropColumns(TransformBase):
         if missing_columns := set(self.columns) - set(first_row.columns()):
             raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
 
+        # drop keys not present in columns' list
         for row in itertools.chain([first_row], source):
             row = {k:v for k,v in row.items() if k in self.columns}
             yield Row(row)
