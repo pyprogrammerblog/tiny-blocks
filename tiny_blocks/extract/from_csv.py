@@ -5,9 +5,6 @@ from pathlib import Path
 
 import logging
 import csv
-import boto3
-import tempfile
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import logging
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Iterator, Literal, Type
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Session, SQLModel, create_engine, select
 from tiny_blocks.extract.base import ExtractBase
 
 

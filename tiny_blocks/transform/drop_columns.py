@@ -35,7 +35,7 @@ class DropColumns(TransformBase):
         # Create an output model
         first_row = next(source)
         input_model = first_row.__class__
-        output_model =
+        output_model = ...
 
         # Output regenerated data
         for row in itertools.chain([first_row], source):
