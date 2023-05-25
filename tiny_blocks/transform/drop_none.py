@@ -23,14 +23,27 @@ class DropNone(TransformBase):
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
-        >>> drop_none = DropNone()
+        >>> drop = DropNone()
         >>>
         >>> generator = extract_csv.get_iter()
-        >>> generator = drop_none.get_iter(generator)
+        >>> generator = drop.get_iter(generator)
     """
 
     name: Literal["drop_none"] = "drop_none"
     subset: List[str] = Field(default_factory=list)
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
-        pass
+
+        # check the subset exists in the source
+        first_row = next(source)
+        if missing_columns := set(self.subset) - set(first_row.columns()):
+            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
+
+        # fill none values
+        for row in itertools.chain([first_row], source):
+            for key, value in row.items():
+                if self.subset and key not in self.subset:
+                    continue
+                if value is None:
+                    row[key] = self.value
+            yield row

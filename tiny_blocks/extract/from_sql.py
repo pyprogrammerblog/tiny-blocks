@@ -1,8 +1,7 @@
 import logging
-from pydantic import Field
-from tiny_blocks.base import Row
-from typing import Iterator, Literal
-from sqlalchemy import create_engine, text
+from pydantic import BaseModel
+from typing import Iterator, Literal, Type
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 from tiny_blocks.extract.base import ExtractBase
 
 
@@ -20,18 +19,24 @@ class FromSQL(ExtractBase):
         >>> from tiny_blocks.extract import FromSQL
         >>>
         >>> dsn_conn = "postgresql+psycopg2://user:pass@postgres:5432/db"
-        >>> read_sql = FromSQL(dsn_conn=dsn_conn, sql="select * from test")
+        >>> read_sql = FromSQL(
+        >>> ... dsn_conn="postgresql+psycopg2://...",
+        >>> ... row_model="select * from test",
+        >>> )
         >>> generator = read_sql.get_iter()
     """
 
-    name: Literal["read_sql"] = "read_sql"
+    name: Literal["read_sql"] = Field(default="read_sql")
     dsn_conn: str = Field(..., description="Connection string")
-    query: str = Field(..., description="SQL Query")
+    row_model: Type[BaseModel] = Field(..., description="Row model")
+    size: int = Field(default=1000, description="Chunk size")
 
-    def get_iter(self) -> Iterator[Row]:
+    def get_iter(self) -> Iterator[BaseModel]:
+        class SQLRowModel(self.row_model, SQLModel):
+            pass
 
-        with create_engine(self.dsn_conn).connect() as conn:  # open connection
-            conn.execution_options(stream_results=True)
-
-            for row in conn.execute(text(self.query)):
-                yield Row(row)
+        with Session(create_engine(self.dsn_conn)) as session:
+            statement = select(SQLRowModel())
+            while rows := session.exec(statement).fetchmany(size=self.size):
+                for row in rows:
+                    yield self.row_model(**row.dict())

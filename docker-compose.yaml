@@ -12,7 +12,6 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: s3_storage
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -49,7 +48,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
     depends_on:
       - postgres
       - kafka

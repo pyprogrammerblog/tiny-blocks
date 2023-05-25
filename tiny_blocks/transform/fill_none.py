@@ -35,8 +35,8 @@ class FillNone(TransformBase):
 
         # check the subset exists in the source
         first_row = next(source)
-        if missing_columns := set(self.subset) - set(first_row.columns()):
-            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
+        if not_exist := set(self.subset) - set(first_row.columns()):
+            raise ValueError(f"'{', '.join(not_exist)}' do not exist.")
 
         # fill none values
         for row in itertools.chain([first_row], source):

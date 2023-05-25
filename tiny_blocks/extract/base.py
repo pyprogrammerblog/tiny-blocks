@@ -5,7 +5,7 @@ import pandas as pd
 from tiny_blocks.base import BaseBlock
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.utils import Pipe, FanOut
+from tiny_blocks.utils import Pipeline, FanOut
 
 
 __all__ = ["ExtractBase"]
@@ -33,13 +33,13 @@ class ExtractBase(BaseBlock):
 
     def __rshift__(
         self, next: TransformBase | LoadBase | FanOut
-    ) -> NoReturn | Pipe:
+    ) -> NoReturn | Pipeline:
         """
         The `>>` operator for the tiny-blocks library.
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
-            return Pipe(source)
+            return Pipeline(source)
         elif isinstance(next, LoadBase):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
@@ -47,6 +47,6 @@ class ExtractBase(BaseBlock):
             n = len(next.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
             next.exhaust(*sources)
-            return Pipe(source=source)
+            return Pipeline(source=source)
         else:
             raise ValueError("Unsupported Block Type")

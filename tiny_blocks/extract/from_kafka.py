@@ -3,7 +3,6 @@ import json
 import logging
 from typing import Iterator, Literal, List
 from kafka import KafkaConsumer
-from tiny_blocks.base import Row
 from tiny_blocks.extract.base import ExtractBase
 
 logger = logging.getLogger(__name__)

@@ -5,8 +5,7 @@ import itertools
 import csv
 
 from pathlib import Path
-from tiny_blocks.base import Row
-from pydantic import Field, validator
+from pydantic import Field, validator, BaseModel
 from typing import Iterator, Literal, List
 from tiny_blocks.load.base import LoadBase
 
@@ -37,8 +36,8 @@ class ToCSV(LoadBase):
 
     name: Literal["to_csv"] = Field(default="to_csv")
     path: Path = Field(..., description="Destination path")
-    headers: List[str] = Field(default=None)
-    newline: str = Field(default="")
+    headers: List[str] = Field(default=None, description="Headers")
+    newline: str = Field(default="", description="New line string")
 
     @validator("path")
     def directory_exists(cls, path):
@@ -46,7 +45,7 @@ class ToCSV(LoadBase):
             raise ValueError(f"Folder '{Path(path).parent}' does not exists.")
         return path
 
-    def exhaust(self, source: Iterator[Row]):
+    def exhaust(self, source: Iterator[BaseModel]):
         """
         - Loop the source
         - Send each chunk to CSV
@@ -59,14 +58,14 @@ class ToCSV(LoadBase):
                 fieldnames = self.headers
             else:
                 row = next(source)  # use first row for extracting fieldnames
-                fieldnames = list(row.columns())
+                fieldnames = list(row.__fields__.keys())
                 itertools.chain([row], source)  # put it back into the source
 
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
             for row in source:  # here we exhaust the rest of the rows
-                writer.writerow(row)
+                writer.writerow(row.dict())
 
             # if no errors, we create the final file.
             shutil.copy(file.name, str(self.path))

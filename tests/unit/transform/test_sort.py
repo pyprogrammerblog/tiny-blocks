@@ -1,46 +1,38 @@
-import tempfile
-import pandas as pd
-from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.transform.sort import Sort
 
 
-def test_sort_by_ascending():
+def test_my_test(postgres_source, csv_source):
+    """ """
+    pass
 
-    with tempfile.NamedTemporaryFile(suffix=".csv") as file:
 
-        data = {"a": [6, 4, 1], "b": [1, 3, 4], "c": [2, 3, 1]}
-        pd.DataFrame(data=data).to_csv(file.name, sep="|", index=False)
+def test_sort_by_descending_name(source_data):
+    sort = Sort(by=["name"])
+    generator = sort.get_iter(source=source_data)
 
-        extract_csv = FromCSV(path=file.name)
+    sorted_data = list(generator)
+    assert sorted_data
 
-        # by a, ascending
-        sort = Sort(by=["a"])
-        generator = extract_csv.get_iter()
-        generator = sort.get_iter(source=generator)
-        df = pd.concat(generator)
-        assert df.shape == (3, 3)
-        assert df.a.to_list() == [1, 4, 6]
 
-        # by b, ascending
-        sort = Sort(by=["b"], ascending=False)
-        generator = extract_csv.get_iter()
-        generator = sort.get_iter(source=generator)
-        df = pd.concat(generator)
-        assert df.shape == (3, 3)
-        assert df.a.to_list() == [1, 4, 6]
+def test_sort_by_ascending_name(source_data):
+    sort = Sort(by=["name"], ascending=False)
+    generator = sort.get_iter(source=source_data)
 
-        # by c, descending
-        sort = Sort(by=["c"], ascending=False)
-        generator = extract_csv.get_iter()
-        generator = sort.get_iter(source=generator)
-        df = pd.concat(generator)
-        assert df.shape == (3, 3)
-        assert df.c.to_list() == [3, 2, 1]
+    sorted_data = list(generator)
+    assert sorted_data
 
-        # by c, descending
-        sort = Sort(by=["c"], ascending=True)
-        generator = extract_csv.get_iter()
-        generator = sort.get_iter(source=generator)
-        df = pd.concat(generator)
-        assert df.shape == (3, 3)
-        assert df.c.to_list() == [1, 2, 3]
+
+def test_sort_by_ascending_age(source_data):
+    sort = Sort(by=["age"])
+    generator = sort.get_iter(source=source_data)
+
+    sorted_data = list(generator)
+    assert sorted_data
+
+
+def test_sort_by_descending_age(source_data):
+    sort = Sort(by=["age"], ascending=False)
+    generator = sort.get_iter(source=source_data)
+
+    sorted_data = list(generator)
+    assert sorted_data

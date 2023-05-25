@@ -1,9 +1,8 @@
 import logging
 import itertools
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Iterator, Literal, List
-from tiny_blocks.base import Row
 from tiny_blocks.transform.base import TransformBase
 
 
@@ -18,28 +17,26 @@ class DropColumns(TransformBase):
     Drop Columns Block. Defines the drop columns functionality
 
     Basic example:
-        >>> import pandas as pd
         >>> from tiny_blocks.transform import DropColumns
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> extract_csv = FromCSV(path='/path/to/file.csv')
-        >>> drop_na = DropColumns(columns=["a"])
+        >>> drop_na = DropColumns(columns=["Column A"])
         >>>
         >>> generator = extract_csv.get_iter()
         >>> generator = drop_na.get_iter(generator)
     """
 
-    name: Literal["drop_columns"] = "drop_columns"
+    name: Literal["drop_columns"] = Field(default="drop_columns")
     columns: List[str] = Field(description="Columns to be dropped")
 
-    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+    def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # check the columns exist in the source
+        # Create an output model
         first_row = next(source)
-        if missing_columns := set(self.columns) - set(first_row.columns()):
-            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
+        input_model = first_row.__class__
+        output_model =
 
-        # drop keys not present in columns' list
+        # Output regenerated data
         for row in itertools.chain([first_row], source):
-            row = {k:v for k,v in row.items() if k in self.columns}
-            yield Row(row)
+            yield output_model(**row.dict())

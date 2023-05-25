@@ -1,9 +1,9 @@
+import itertools
 import logging
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Iterator, Literal
-from sqlalchemy import create_engine, text
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.base import Row
+from sqlmodel import Session, SQLModel, create_engine
 
 
 __all__ = ["ToSQL"]
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class ToSQL(LoadBase):
     """
-    Load SQL Block. Defines the Loading operation to a SQL Database
+    Load SQL Block. Defines the Loading operation to an SQL Database
 
     Basic example:
         >>> from tiny_blocks.extract import FromSQL
@@ -28,25 +28,21 @@ class ToSQL(LoadBase):
         >>> to_sql.exhaust(generator)
     """
 
-    name: Literal["to_sql"] = "to_sql"
+    name: Literal["to_sql"] = Field(default="to_sql")
     dsn_conn: str = Field(..., description="Connection string")
-    table: str = Field(..., description="Destination Table")
-    table_flag: str = Field(default=None, description="Flag Table")
+    table_name: str = Field(..., description="Table name")
 
-    def exhaust(self, source: Iterator[Row]):
+    def exhaust(self, source: Iterator[BaseModel]):
         """
         - Connect to DB and yield a transaction
         - Loop the source and send each chunk to SQL
         """
-        with create_engine(self.dsn_conn).begin() as conn:  # transaction
-            conn.execution_options(stream_results=True, autocommit=True)
+        first_row = next(source)
 
-            for row in source:  # here we exhaust
-                stmt = (
-                    f"INSERT INTO {self.table} ({', '.join(row.columns())}) "
-                    f"VALUES ({', '.join('%s' * len(row))})"
-                )
-                conn.execute(text(stmt), row.values())
+        class SQLRowModel(first_row.__class__, SQLModel):
+            __tablename__ = self.table_name
 
-            if self.table_flag:
-                conn.execute(text(f"TRUNCATE TABLE {self.table_flag};"))
+        with Session(create_engine(self.dsn_conn)) as session:
+            for row in itertools.chain([first_row], source):
+                session.add(SQLRowModel(**row.dict()))
+            session.commit()

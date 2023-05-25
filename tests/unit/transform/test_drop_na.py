@@ -1,4 +1,4 @@
-from tiny_blocks.transform.dropna import DropNone
+from tiny_blocks.transform.drop_none import DropNone
 
 
 def test_drop_na(sqlite_source, sqlite_sink):

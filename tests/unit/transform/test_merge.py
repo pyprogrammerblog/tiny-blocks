@@ -1,12 +1,12 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import FromSQLTable
+from tiny_blocks.extract.from_sql import FromSQL
 from tiny_blocks.transform.merge import Merge
 
 
 def test_merge_left(postgres_source, mysql_source):
 
-    postgres = FromSQLTable(dsn_conn=postgres_source, table_name="test")
-    mysql = FromSQLTable(dsn_conn=mysql_source, table_name="test")
+    postgres = FromSQL(dsn_conn=postgres_source, table_name="test")
+    mysql = FromSQL(dsn_conn=mysql_source, table_name="test")
 
     left_gen = mysql.get_iter()
     right_gen = postgres.get_iter()
@@ -22,8 +22,8 @@ def test_merge_left(postgres_source, mysql_source):
 
 def test_merge_inner(postgres_source, mysql_source):
 
-    postgres = FromSQLTable(dsn_conn=postgres_source, table_name="test")
-    mysql = FromSQLTable(dsn_conn=mysql_source, table_name="test")
+    postgres = FromSQL(dsn_conn=postgres_source, table_name="test")
+    mysql = FromSQL(dsn_conn=mysql_source, table_name="test")
 
     left_gen = mysql.get_iter()
     right_gen = postgres.get_iter()

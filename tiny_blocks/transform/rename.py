@@ -1,10 +1,9 @@
 import logging
 import itertools
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Dict, Iterator, Literal
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.base import Row
 
 __all__ = ["Rename"]
 
@@ -27,18 +26,16 @@ class Rename(TransformBase):
         >>> generator = sort.get_iter(generator)
     """
 
-    name: Literal["rename"] = "rename"
+    name: Literal["rename"] = Field(default="Rename")
     columns: Dict[str, str] = Field(description="Mapping dictionary")
 
-    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+    def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # check the columns exist in the source
+        # Create an output model
         first_row = next(source)
-        if missing_columns := set(self.columns) - set(first_row.columns()):
-            raise ValueError(f"'{', '.join(missing_columns)}' do not exists.")
+        input_model = first_row.__class__
+        output_model =
 
-        # rename columns
+        # Output regenerated data
         for row in itertools.chain([first_row], source):
-            for new_key, old_key in self.columns.items():
-                row[new_key] = row.pop(old_key)
-            yield row
+            yield output_model(**row.dict())

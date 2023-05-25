@@ -1,11 +1,11 @@
 import pandas as pd
-from tiny_blocks.extract.from_sql_table import FromSQLTable
+from tiny_blocks.extract.from_sql import FromSQL
 from tiny_blocks.transform.apply import Apply
 
 
 def test_apply(sqlite_source):
 
-    extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
+    extract_sql = FromSQL(dsn_conn=sqlite_source, table_name="test")
     apply = Apply(
         func=lambda x: x + 1,
         apply_to_column="d",

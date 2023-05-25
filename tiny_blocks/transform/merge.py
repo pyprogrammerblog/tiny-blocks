@@ -2,6 +2,7 @@ import logging
 import tempfile
 from sqlite3 import connect
 from pydantic import Field
+from tiny_blocks.base import Row
 from typing import Iterator, Literal, List
 from tiny_blocks.transform.base import TransformBase
 
@@ -36,9 +37,7 @@ class Merge(TransformBase):
     left_on: str = Field(..., description="Column on the left table")
     right_on: str = Field(..., description="Column on the right table")
 
-    def get_iter(
-        self, source: List[Iterator[pd.DataFrame]]
-    ) -> Iterator[pd.DataFrame]:
+    def get_iter(self, source: List[Iterator[Row]]) -> Iterator[Row]:
 
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name
@@ -53,7 +52,7 @@ class Merge(TransformBase):
                 chunk.to_sql(name="table_right", con=con, index=False)
 
             # select non-duplicated rows.
-            # It is possible select a non-duplicated subset of rows.
+            # It is possible to select a non-duplicated subset of rows.
             sql = (
                 f"SELECT * FROM table_left "
                 f"{self.how.capitalize()} JOIN table_right "
@@ -63,5 +62,5 @@ class Merge(TransformBase):
 
             # yield joined records
             kwargs = self.kwargs.dict()
-            for chunk in pd.read_sql_query(con=con, sql=sql, **kwargs):
+            for chunk in con.execute(sql=sql):
                 yield chunk

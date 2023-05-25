@@ -4,6 +4,9 @@ import tempfile
 from typing import Iterator, Literal, Set
 from tiny_blocks.base import Row
 from tiny_blocks.transform.base import TransformBase
+from typing import Optional, List
+from pydantic import create_model
+from sqlmodel import Field, Session, SQLModel, create_engine
 
 
 __all__ = ["DropDuplicates"]
@@ -32,7 +35,7 @@ class DropDuplicates(TransformBase):
 
     name: Literal["drop_duplicates"] = "drop_duplicates"
     keep: Literal["first", "last"] | None = "first"
-    subset: Set[str] = None
+    subset: List[str] = Field(default_factory=list)
 
     def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
 
@@ -40,19 +43,21 @@ class DropDuplicates(TransformBase):
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:
 
+            first_row = next(source)
+
+            source_model = create_model("Source", **first_row)
+
+            class SourceSQLModel(source_model, SQLModel, table=True):
+                id: Optional[int] = Field(default=None, primary_key=True)
+
             # send records to a temp database (exhaust the generator)
-            for chunk in source:
-                chunk.to_sql(name="temp", con=con, index=False)
+            for row in source:
+                row.to_sql(name="temp", con=con, index=False)
 
             # select non-duplicated rows. It is also possible to select
             # a non-duplicated subset of rows.
-            sql = f"""
-            SELECT *
-            FROM temp
-            GROUP BY {", ".join(self.subset or chunk.columns.to_list())} ;
-            """
+            by = ", ".join(self.subset)
 
             # yield records now without duplicates
-            size = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=size):
-                yield chunk
+            for row in con.execute(sql=f"select * from temp group by {by}"):
+                yield Row(row)

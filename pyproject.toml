@@ -21,18 +21,16 @@ in-project = true
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.9.1"
-pandas = "^1.4.3"
 SQLAlchemy = "^1.4.39"
 PyMySQL = "^1.0.2"
 psycopg2 = "^2.9.3"
 cryptography = "^37.0.4"
 boto3 = "^1.24.43"
 minio = "^7.1.11"
-cx-Oracle = "^8.3.0"
 kafka-python = "^2.0.2"
 types-requests = "^2.28.9"
 requests = "^2.28.1"
-pandera = "^0.12.0"
+sqlmodel = "^0.0.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

@@ -47,9 +47,9 @@ from tiny_blocks.transform import FillNone
 from tiny_blocks.load import ToSQL
 
 # ETL Blocks
-from_csv = FromCSV(path='/path/to/source.csv')
+from_csv = FromCSV(path='/path/to/source.csv', row_model=)
 fill_na = FillNone(value="Hola Mundo")
-to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
+to_sql = ToSQL(dsn_conn='psycopg2+postgres://...')
 
 # Pipeline
 from_csv >> fill_na >> to_sql

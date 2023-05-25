@@ -6,6 +6,11 @@ Clone the project and move inside:
 git clone https://github.com/pyprogrammerblog/tiny-blocks.git
 cd tiny-blocks
 ```
+
+Build docker:
+```shell
+docker-compose build --no-cache
+```
  
 Install the virtualenv on the root project folder:
 ```shell

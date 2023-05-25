@@ -1,9 +1,9 @@
 import logging
 import sqlite3
 import tempfile
+from pydantic import Field, BaseModel
 from typing import Iterator, Literal, List
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.base import Row
 
 
 __all__ = ["Sort"]
@@ -17,7 +17,6 @@ class Sort(TransformBase):
     Sort Block. Defines the Sorting operation
 
     Basic example:
-        >>> import pandas as pd
         >>> from tiny_blocks.transform import Sort
         >>> from tiny_blocks.extract import FromCSV
         >>>
@@ -29,15 +28,17 @@ class Sort(TransformBase):
         >>> df = pd.concat(generator)
     """
 
-    name: Literal["sort"] = "sort"
-    by: List[str]
-    ascending: bool = True
+    name: Literal["sort"] = Field(default="sort")
+    by: List[str] = Field(description="Sorted by columns")
+    ascending: bool = Field(default=True, description="Ascending/Descending")
 
-    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+    def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
         with tempfile.NamedTemporaryFile(
             suffix=".sqlite"
         ) as file, sqlite3.connect(file.name) as con:
+
+            first_row = next(source)
 
             # send records to a temp database (exhaust the generator)
             for chunk in source:

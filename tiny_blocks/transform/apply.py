@@ -1,9 +1,7 @@
 import logging
-from pydantic import Field
-from functools import lru_cache
+from pydantic import Field, BaseModel
 from typing import Literal, Iterator, Callable
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.base import Row
 
 
 __all__ = ["Apply"]
@@ -33,8 +31,8 @@ class Apply(TransformBase):
     name: Literal["apply"] = Field(default="apply")
     func: Callable = Field(..., description="Callable")
 
-    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+    def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
         for row in source:
-            row = self.func(row)
-            yield row
+
+            yield row.__class__()

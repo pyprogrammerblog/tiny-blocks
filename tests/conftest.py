@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 def source_data() -> Iterator[Row]:
     data = [
         {"name": "Mateo", "age": 30},
-        {"name": "Marcos", "age": 31},
-        {"name": "Lucas", "age": 32},
+        {"name": "Marcos", "age": 30},
+        {"name": "Lucas", "age": 33},
         {"name": "Juan", "age": 33},
     ]
     return (Row(row) for row in data)

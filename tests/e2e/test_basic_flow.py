@@ -1,10 +1,10 @@
 import pandas as pd
 from tiny_blocks import FanIn, FanOut
-from tiny_blocks.extract import FromSQLTable
+from tiny_blocks.extract import FromSQL
 from tiny_blocks.extract import FromCSV
 from tiny_blocks.load import ToCSV
 from tiny_blocks.load import ToSQL
-from tiny_blocks.transform import Fillna
+from tiny_blocks.transform import FillNone
 from tiny_blocks.transform import Apply
 from tiny_blocks.transform import Rename
 from tiny_blocks.transform import DropDuplicates
@@ -19,7 +19,7 @@ def test_basic_flow(csv_source, postgres_source, csv_sink):
     csv = FromCSV(path=csv_source)
 
     # 2. Transform
-    fill_na = Fillna(value="Hola Mundo")
+    fill_na = FillNone(value="Hola Mundo")
     drop_dupl = DropDuplicates()
 
     # 3. Load
@@ -43,11 +43,11 @@ def test_basic_flow_fan_in(csv_source, postgres_source, csv_sink):
     """
     # 1. Extract from two sources
     csv = FromCSV(path=csv_source)
-    postgres = FromSQLTable(dsn_conn=postgres_source, table_name="test")
+    postgres = FromSQL(dsn_conn=postgres_source, table_name="test")
 
     # 2. Transform
     merge = Merge(how="left", left_on="c", right_on="d")
-    fill_na = Fillna(value="Hola Mundo")
+    fill_na = FillNone(value="Hola Mundo")
     drop_dupl = DropDuplicates()
 
     # 3. Load
@@ -70,10 +70,10 @@ def test_basic_flow_fan_out(sqlite_source, csv_sink, postgres_sink):
     Test a basic ETL pipeline
     """
     # 1. Extract from two sources
-    from_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="TEST")
+    from_sql = FromSQL(dsn_conn=sqlite_source, table_name="TEST")
 
     # 2. Transform
-    fill_na = Fillna(value="Hola Mundo")
+    fill_na = FillNone(value="Hola Mundo")
     rename = Rename(columns={"f": "F"})
 
     # 3. Load

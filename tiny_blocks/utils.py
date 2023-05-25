@@ -3,8 +3,9 @@ import logging
 from typing import List, Iterator, Union, NoReturn
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
+from tiny_blocks.base import Row
+from dataclasses import field
 
-import pandas as pd
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -75,7 +76,7 @@ class Pipeline:
         """
         if isinstance(next, TransformBase):
             source = next.get_iter(source=self.get_iter())
-            return Pipe(source)
+            return Pipeline(source)
         elif isinstance(next, LoadBase):
             return next.exhaust(source=self.get_iter())
         elif isinstance(next, FanOut):
@@ -127,5 +128,5 @@ class FanIn:
         else:
             raise ValueError("Unsupported Block Type")
 
-    def get_iter(self) -> List[Iterator[pd.DataFrame]]:
+    def get_iter(self) -> List[Iterator[Row]]:
         return [pipe.get_iter() for pipe in self.pipes]

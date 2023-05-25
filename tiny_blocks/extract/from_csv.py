@@ -1,7 +1,6 @@
 from pydantic import Field, FilePath, validator, BaseModel
 from tiny_blocks.extract.base import ExtractBase
-from typing import Iterator, Literal, List
-from tiny_blocks.base import Row
+from typing import Iterator, Literal, List, Type
 from pathlib import Path
 
 import logging
@@ -29,8 +28,9 @@ class FromCSV(ExtractBase):
 
     name: Literal["read_csv"] = Field(default="read_csv")
     path: FilePath = Field(..., description="Path")
-    headers: List[str] = Field(default=None)
-    newline: str = Field(default="")
+    row_model: Type[BaseModel] = Field(..., description="Row model")
+    headers: List[str] = Field(default=None, description="Headers")
+    newline: str = Field(default="", description="Newline")
 
     @validator("path")
     def directory_exists(cls, path):
@@ -38,35 +38,8 @@ class FromCSV(ExtractBase):
             raise ValueError(f"Folder '{Path(path).parent}' does not exists")
         return path
 
-    def get_iter(self) -> Iterator[Row]:
+    def get_iter(self) -> Iterator[BaseModel]:
 
         with open(self.path, newline=self.newline) as csvfile:
             for row in csv.DictReader(csvfile, fieldnames=self.headers):
-                yield Row(row)
-
-
-class FromS3CSV(ExtractBase):
-    """
-    ReadS3CSV Block. Defines the read CSV Operation from S3
-
-    Basic example:
-        >>> from tiny_blocks.extract import FromCSV
-        >>>
-        >>> read_csv = FromCSV(key='key', bucket="bucket", s3_config={...})
-        >>> generator = read_csv.get_iter()
-    """
-
-    name: Literal["read_csv"] = Field(default="read_csv")
-    s3_config: dict = Field(..., description="S3 configuration")
-    bucket: str = Field(..., description="Bucket name")
-    key: str = Field(..., description="Key Object")
-    headers: List[str] = Field(default=None)
-
-    def get_iter(self) -> Iterator[Row]:
-
-        with tempfile.NamedTemporaryFile(mode="r", encoding="utf-8") as f:
-            s3 = boto3.resource("s3", **self.s3_config)
-            s3.download_fileobj(self.bucket, self.key, f)
-
-            for row in csv.DictReader(f, fieldnames=self.headers):
-                yield Row(row)
+                yield self.row_model(**row)
