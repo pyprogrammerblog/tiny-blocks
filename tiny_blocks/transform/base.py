@@ -1,7 +1,8 @@
 from __future__ import annotations
 import logging
 from typing import Iterator
-from tiny_blocks.base import BaseBlock, Row
+from pydantic import BaseModel
+from tiny_blocks.base import BaseBlock
 
 
 __all__ = ["TransformBase"]
@@ -19,7 +20,7 @@ class TransformBase(BaseBlock):
     an Iterator of Rows.
     """
 
-    def get_iter(self, source) -> Iterator[Row]:
+    def get_iter(self, source) -> Iterator[BaseModel]:
         """
         Return an iterator of chunked dataframes
 

@@ -52,4 +52,4 @@ class Sort(TransformBase):
 
             # yield sorted records
             for row in con.execute(sql):
-                yield Row(row)
+                yield row

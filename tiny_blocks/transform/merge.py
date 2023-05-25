@@ -1,8 +1,7 @@
 import logging
 import tempfile
 from sqlite3 import connect
-from pydantic import Field
-from tiny_blocks.base import Row
+from pydantic import Field, BaseModel
 from typing import Iterator, Literal, List
 from tiny_blocks.transform.base import TransformBase
 
@@ -18,7 +17,6 @@ class Merge(TransformBase):
     Merge. Defines merge functionality between two blocks.
 
     Basic example:
-        >>> import pandas as pd
         >>> from tiny_blocks.transform import Merge
         >>> from tiny_blocks.extract import FromCSV
         >>>
@@ -29,15 +27,16 @@ class Merge(TransformBase):
         >>> left_source = from_csv_1.get_iter()
         >>> right_source = from_csv_2.get_iter()
         >>> generator = merge.get_iter(source=[left_source, right_source])
-        >>> df = pd.concat(generator)
     """
 
-    name: Literal["merge"] = "merge"
+    name: Literal["merge"] = Field(default="merge")
     how: Literal["left", "right", "outer", "inner", "cross"] = "inner"
     left_on: str = Field(..., description="Column on the left table")
     right_on: str = Field(..., description="Column on the right table")
 
-    def get_iter(self, source: List[Iterator[Row]]) -> Iterator[Row]:
+    def get_iter(
+        self, source: List[Iterator[BaseModel]]
+    ) -> Iterator[BaseModel]:
 
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file, connect(
             file.name

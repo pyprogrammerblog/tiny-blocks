@@ -1,6 +1,7 @@
 import logging
 from typing import Iterator
-from tiny_blocks.base import BaseBlock, Row
+from tiny_blocks.base import BaseBlock
+from pydantic import BaseModel
 
 
 __all__ = ["LoadBase"]
@@ -17,7 +18,7 @@ class LoadBase(BaseBlock):
     the `exhaust` method.
     """
 
-    def exhaust(self, source: Iterator[Row]):
+    def exhaust(self, source: Iterator[BaseModel]):
         """
         Implement the exhaustion of the incoming iterator.
 

@@ -1,9 +1,8 @@
 import logging
 import itertools
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Iterator, Literal, Any, List
 from tiny_blocks.transform.base import TransformBase
-from tiny_blocks.base import Row
 
 
 __all__ = ["FillNone"]
@@ -31,7 +30,7 @@ class FillNone(TransformBase):
     value: Any = Field(description="Value to be filled")
     subset: List[str] = Field(default_factory=list)
 
-    def get_iter(self, source: Iterator[Row]) -> Iterator[Row]:
+    def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
         # check the subset exists in the source
         first_row = next(source)

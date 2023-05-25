@@ -1,10 +1,9 @@
 import itertools
 import logging
+from pydantic import BaseModel
 from typing import List, Iterator, Union, NoReturn
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
-from tiny_blocks.base import Row
-from dataclasses import field
 
 from typing import TYPE_CHECKING
 
@@ -46,7 +45,7 @@ class FanOut:
     def __init__(self, *sinks: LoadBase):
         self.sinks = sinks
 
-    def exhaust(self, *sources: Iterator[pd.DataFrame]):
+    def exhaust(self, *sources: Iterator[BaseModel]):
         for sink, source in zip(self.sinks, sources):
             try:
                 sink.exhaust(source)
@@ -58,11 +57,11 @@ class Pipeline:
     """
     Defines the glue between all blocks.
 
-    It gets created by a FanIn or ExtractBlock and from there
+    It gets created by a FanIn or ExtractBlock, and from there
     it joins all blocks till there is a sink.
     """
 
-    def __init__(self, source: Iterator[pd.DataFrame]):
+    def __init__(self, source: Iterator[BaseModel]):
         self.source = source
 
     def get_iter(self):
@@ -92,7 +91,7 @@ class Pipeline:
 class FanIn:
     """
     Gather multiple operations and send them to the next block.
-    The next block must accept multiple arguments, for example:
+    The next block must accept multiple arguments, for example,
     ``tiny_blocks.tranform.Merge``
 
     Usage::
@@ -128,5 +127,5 @@ class FanIn:
         else:
             raise ValueError("Unsupported Block Type")
 
-    def get_iter(self) -> List[Iterator[Row]]:
+    def get_iter(self) -> List[Iterator[BaseModel]]:
         return [pipe.get_iter() for pipe in self.pipes]

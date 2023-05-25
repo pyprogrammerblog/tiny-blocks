@@ -1,9 +1,10 @@
 import contextlib
 import json
 import logging
-from typing import Iterator, Literal, List
 from kafka import KafkaConsumer
+from typing import Iterator, Literal, List, Type
 from tiny_blocks.extract.base import ExtractBase
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +15,12 @@ __all__ = ["FromKafka"]
 class FromKafka(ExtractBase):
     """FromKafka Block. Defines the read Kafka Operation"""
 
-    name: Literal["from_kafka"] = "from_kafka"
-    topic: str
-    group_id: str
-    bootstrap_servers: List[str]
-    consumer_timeout: int = 1000
+    name: Literal["from_kafka"] = Field(default="from_kafka")
+    row_model: Type[BaseModel] = Field(..., description="Row model")
+    topic: str = Field(..., description="Kafka topic")
+    group_id: str = Field(..., description="Group Id")
+    bootstrap_servers: List[str] = Field(..., description="Bootstrap servers")
+    consumer_timeout: int = Field(default=1000, description="Consumer Timeout")
 
     @contextlib.contextmanager
     def kafka_consumer(self) -> KafkaConsumer:
@@ -46,8 +48,8 @@ class FromKafka(ExtractBase):
         finally:
             consumer.close()
 
-    def get_iter(self) -> Iterator[Row]:
+    def get_iter(self) -> Iterator[BaseModel]:
 
         with self.kafka_consumer() as consumer:
             for msg_str in consumer:
-                yield Row(json.loads(msg_str))
+                yield self.row_model(**json.loads(msg_str))
