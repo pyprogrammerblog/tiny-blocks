@@ -25,7 +25,6 @@ class Sort(TransformBase):
         >>>
         >>> generator = extract_csv.get_iter()
         >>> generator = sort.get_iter(generator)
-        >>> df = pd.concat(generator)
     """
 
     name: Literal["sort"] = Field(default="sort")
