@@ -5,8 +5,9 @@ import itertools
 import csv
 
 from pathlib import Path
+from dataclasses import dataclass
 from pydantic import Field, validator, BaseModel
-from typing import Iterator, Literal, List
+from typing import Iterator, Literal, List, Set
 from tiny_blocks.load.base import LoadBase
 
 
@@ -29,42 +30,44 @@ class ToCSV(LoadBase):
         >>>
         >>> generator = from_csv.get_iter()
         >>> to_csv.exhaust(generator)
-
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
-    name: Literal["to_csv"] = Field(default="to_csv")
-    path: Path = Field(..., description="Destination path")
-    headers: List[str] = Field(default=None, description="Headers")
-    newline: str = Field(default="", description="New line string")
+    def __init__(
+        self, path: Path, columns: Set[str] = None, newline: str = "", **kwargs
+    ):
+        super().__init__(**kwargs)
 
-    @validator("path")
-    def directory_exists(cls, path):
         if not Path(path).parent.is_dir():
             raise ValueError(f"Folder '{Path(path).parent}' does not exists.")
-        return path
+
+        self.path: Path = path
+        self.columns: Set[str] = columns
+        self.newline: str = newline
 
     def exhaust(self, source: Iterator[BaseModel]):
-        """
-        - Loop the source
-        - Send each chunk to CSV
-        """
+        """ """
         with tempfile.NamedTemporaryFile(suffix=".csv") as file, open(
             file.name, "w", newline=self.newline
         ) as csvfile:
 
-            if self.headers:
-                fieldnames = self.headers
-            else:
-                row = next(source)  # use first row for extracting fieldnames
-                fieldnames = list(row.__fields__.keys())
-                itertools.chain([row], source)  # put it back into the source
+            # use first row for extracting fieldnames
+            try:
+                first_row = next(source)
+            except StopIteration:
+                raise ValueError(f"Source is empty. No data to write.")
 
+            fields = set(first_row.__fields__.keys())
+            if self.columns and (not_exist := self.columns - fields):
+                raise ValueError(f"Not found: {', '.join(not_exist)}")
+            elif self.columns:
+                fieldnames = self.columns
+            else:
+                fieldnames = fields
+
+            # create a dict writer, write the header and the records
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-
-            for row in source:  # here we exhaust the rest of the rows
+            for row in itertools.chain([first_row], source):
                 writer.writerow(row.dict())
 
             # if no errors, we create the final file.

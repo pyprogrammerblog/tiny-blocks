@@ -1,6 +1,6 @@
-from pydantic import Field, FilePath, validator, BaseModel
 from tiny_blocks.extract.base import ExtractBase
-from typing import Iterator, Literal, List, Type
+from typing import Iterator, List, Type
+from pydantic import BaseModel
 from pathlib import Path
 
 import logging
@@ -23,20 +23,24 @@ class FromCSV(ExtractBase):
         >>> generator = read_csv.get_iter()
     """
 
-    name: Literal["read_csv"] = Field(default="read_csv")
-    path: FilePath = Field(..., description="Path")
-    row_model: Type[BaseModel] = Field(..., description="Row model")
-    headers: List[str] = Field(default=None, description="Headers")
-    newline: str = Field(default="", description="Newline")
+    def __init__(
+        self,
+        path: Path,
+        row_model: Type[BaseModel],
+        newline: str = "",
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
 
-    @validator("path")
-    def directory_exists(cls, path):
-        if not Path(path).parent.is_dir():
-            raise ValueError(f"Folder '{Path(path).parent}' does not exists")
-        return path
+        self.path = path
+        self.row_model = row_model
+        self.newline = newline
+
+        if not Path(path).exists():
+            raise ValueError(f"Folder '{path}' does not exists")
 
     def get_iter(self) -> Iterator[BaseModel]:
 
         with open(self.path, newline=self.newline) as csvfile:
-            for row in csv.DictReader(csvfile, fieldnames=self.headers):
+            for row in csv.DictReader(csvfile):
                 yield self.row_model(**row)

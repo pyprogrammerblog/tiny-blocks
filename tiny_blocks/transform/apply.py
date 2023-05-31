@@ -34,5 +34,5 @@ class Apply(TransformBase):
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
         for row in source:
-
-            yield row.__class__()
+            self.func(row)
+            yield row

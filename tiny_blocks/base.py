@@ -6,14 +6,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class BaseBlock(BaseModel):
+class BaseBlock:
     """
     Base Block class
     """
 
-    name: str = Field(..., description="Block name")
-    version: str = Field(default="v1", description="Version Block")
-    description: str = Field(default=None, description="Description")
+    def __init__(self, version: float = 1.0, description: str = None):
+        """
+        Constructor
+        """
+        self.name = self.__class__.__name__
+        self.version = version
+        self.description = description
 
     def __str__(self):
         return f"Block-{self.name}"

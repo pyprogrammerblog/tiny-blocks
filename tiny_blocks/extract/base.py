@@ -1,11 +1,12 @@
 import logging
-from typing import Iterator, NoReturn
 import itertools
-import pandas as pd
+
+from dataclasses import dataclass
+from typing import Iterator, NoReturn
 from tiny_blocks.base import BaseBlock
-from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 from tiny_blocks.utils import Pipeline, FanOut
+from tiny_blocks.transform.base import TransformBase
 
 
 __all__ = ["ExtractBase"]
@@ -22,12 +23,9 @@ class ExtractBase(BaseBlock):
     This method returns an Iterator of chunked DataFrames
     """
 
-    def get_iter(self) -> Iterator[pd.DataFrame]:
+    def get_iter(self) -> Iterator[dataclass]:
         """
-        Return an iterator of chunked dataframes
-
-        The `chunksize` is defined as kwargs in each
-        extraction block
+        Return an iterator of dataclasses
         """
         raise NotImplementedError
 

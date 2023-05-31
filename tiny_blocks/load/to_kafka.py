@@ -1,8 +1,7 @@
 import logging
 import contextlib
 from typing import Iterator, Literal, List
-
-import pandas as pd
+from pydantic import BaseModel
 from kafka import KafkaProducer
 from tiny_blocks.load.base import LoadBase
 
@@ -45,7 +44,7 @@ class ToKafka(LoadBase):
         finally:
             producer.close()
 
-    def exhaust(self, source: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[BaseModel]):
         """
         - Loop the source
         - convert each chunk into JSON

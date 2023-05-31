@@ -1,9 +1,11 @@
-import logging
-import sqlite3
-import tempfile
 from pydantic import Field, BaseModel
-from typing import Iterator, Literal, List
+from typing import Iterator, Literal, Dict
 from tiny_blocks.transform.base import TransformBase
+from sqlmodel import Session, SQLModel, create_engine, select, text
+
+import itertools
+import logging
+import tempfile
 
 
 __all__ = ["Sort"]
@@ -28,28 +30,31 @@ class Sort(TransformBase):
     """
 
     name: Literal["sort"] = Field(default="sort")
-    by: List[str] = Field(description="Sorted by columns")
-    ascending: bool = Field(default=True, description="Ascending/Descending")
+    by: Dict[str, Literal["asc", "desc"]] = Field(description="Sorted by")
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".sqlite"
-        ) as file, sqlite3.connect(file.name) as con:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
 
             first_row = next(source)
+            model = first_row.__class__
 
-            # send records to a temp database (exhaust the generator)
-            for chunk in source:
-                chunk.to_sql(name="temp", con=con, index=False)
+            class SortTable(first_row.__class__, SQLModel, table=True):
+                pass
 
-            # order by column(s) ascending/descending.
-            sql = f"""
-            SELECT * FROM temp
-            ORDER BY {", ".join(self.by)}
-            {'ASC' if self.ascending else 'DESC'}
-            """
+            # create table
+            engine = create_engine(file.name, echo=True)
+            SQLModel.metadata.create_all(engine)
 
-            # yield sorted records
-            for row in con.execute(sql):
-                yield row
+            # write records in sqlite
+            with Session(engine) as session:
+                for row in itertools.chain([first_row], source):
+                    session.add(SortTable(**row.dict()))
+                session.commit()
+
+                # Sort by
+                group_by = ", ".join([f"{k} {v}" for k, v in self.by.items()])
+
+                statement = select(SortTable).group_by(text(group_by))
+                for row in session.exec(statement).fetchmany(size=1000):
+                    yield model(**row.dict())

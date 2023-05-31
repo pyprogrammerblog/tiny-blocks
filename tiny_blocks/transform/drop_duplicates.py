@@ -1,11 +1,10 @@
-import logging
-import sqlite3
-import tempfile
-from typing import Iterator, Literal
+from pydantic import BaseModel, Field
+from typing import Iterator, Literal, List
 from tiny_blocks.transform.base import TransformBase
-from typing import Optional, List
-from pydantic import BaseModel
-from sqlmodel import Field, SQLModel
+from sqlmodel import Session, SQLModel, create_engine, select, text
+
+import logging
+import tempfile
 
 
 __all__ = ["DropDuplicates"]
@@ -35,20 +34,29 @@ class DropDuplicates(TransformBase):
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".sqlite"
-        ) as file, sqlite3.connect(file.name) as con:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
 
             first_row = next(source)
+            model = first_row.__class__
 
-            # send records to a temp database (exhaust the generator)
-            for row in source:
-                row.to_sql(name="temp", con=con, index=False)
+            class SortTable(first_row.__class__, SQLModel, table=True):
+                pass
 
-            # select non-duplicated rows. It is also possible to select
-            # a non-duplicated subset of rows.
-            by = ", ".join(self.subset)
+            # create table
+            engine = create_engine(file.name, echo=True)
+            SQLModel.metadata.create_all(engine)
 
-            # yield records now without duplicates
-            for row in con.execute(sql=f"select * from temp group by {by}"):
-                yield row
+            # write records in sqlite
+            with Session(engine) as session:
+                for row in itertools.chain([first_row], source):
+                    session.add(SortTable(**row.dict()))
+                session.commit()
+
+                # Sort by
+                order = "asc" if self.ascending else "desc"
+                group_by = ", ".join(
+                    [f"{column} {order}" for column in self.by]
+                )
+                statement = select(SortTable).group_by(text(group_by))
+                for row in session.exec(statement).fetchmany(size=1000):
+                    yield model(**row.dict())

@@ -32,11 +32,29 @@ class DropColumns(TransformBase):
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # Create an output model
-        first_row = next(source)
-        input_model = first_row.__class__
-        output_model = ...
+        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
 
-        # Output regenerated data
-        for row in itertools.chain([first_row], source):
-            yield output_model(**row.dict())
+            first_row = next(source)
+            model = first_row.__class__
+
+            class SortTable(first_row.__class__, SQLModel, table=True):
+                pass
+
+            # create table
+            engine = create_engine(file.name, echo=True)
+            SQLModel.metadata.create_all(engine)
+
+            # write records in sqlite
+            with Session(engine) as session:
+                for row in itertools.chain([first_row], source):
+                    session.add(SortTable(**row.dict()))
+                session.commit()
+
+                # Sort by
+                order = "asc" if self.ascending else "desc"
+                group_by = ", ".join(
+                    [f"{column} {order}" for column in self.by]
+                )
+                statement = select(SortTable).group_by(text(group_by))
+                for row in session.exec(statement).fetchmany(size=1000):
+                    yield model(**row.dict())

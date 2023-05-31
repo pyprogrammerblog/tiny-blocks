@@ -1,7 +1,9 @@
 from pydantic import Field, BaseModel
 from typing import Iterator, Literal, List
 from tiny_blocks.transform.base import TransformBase
+from sqlmodel import Session, SQLModel, create_engine, select, text
 
+import tempfile
 import itertools
 import logging
 
@@ -32,16 +34,29 @@ class DropNone(TransformBase):
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # check the subset exists in the source
-        first_row = next(source)
-        if missing_columns := set(self.subset) - set(first_row.columns()):
-            raise ValueError(f"'{', '.join(missing_columns)}' do not exist.")
+        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
 
-        # fill none values
-        for row in itertools.chain([first_row], source):
-            for key, value in row.items():
-                if self.subset and key not in self.subset:
-                    continue
-                if value is None:
-                    row[key] = self.value
-            yield row
+            first_row = next(source)
+            model = first_row.__class__
+
+            class SortTable(first_row.__class__, SQLModel, table=True):
+                pass
+
+            # create table
+            engine = create_engine(file.name, echo=True)
+            SQLModel.metadata.create_all(engine)
+
+            # write records in sqlite
+            with Session(engine) as session:
+                for row in itertools.chain([first_row], source):
+                    session.add(SortTable(**row.dict()))
+                session.commit()
+
+                # Sort by
+                order = "asc" if self.ascending else "desc"
+                group_by = ", ".join(
+                    [f"{column} {order}" for column in self.by]
+                )
+                statement = select(SortTable).group_by(text(group_by))
+                for row in session.exec(statement).fetchmany(size=1000):
+                    yield model(**row.dict())

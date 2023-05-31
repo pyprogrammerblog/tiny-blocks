@@ -1,6 +1,7 @@
 import logging
-from pydantic import BaseModel, Field
-from typing import Iterator, Literal, Type
+
+from typing import Iterator, Type
+from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
 from tiny_blocks.extract.base import ExtractBase
 
@@ -26,14 +27,21 @@ class FromSQL(ExtractBase):
         >>> generator = read_sql.get_iter()
     """
 
-    name: Literal["read_sql"] = Field(default="read_sql")
-    dsn_conn: str = Field(..., description="Connection string")
-    row_model: Type[BaseModel] = Field(..., description="Row model")
-    size: int = Field(default=1000, description="Chunk size")
+    def __init__(
+        self,
+        row_model: Type[BaseModel],
+        dsn_conn: str,
+        table: str,
+        batch_size: int = 1000,
+    ):
+        self.row_model = row_model
+        self.dsn_conn = dsn_conn
+        self.table = table
+        self.size = batch_size
 
     def get_iter(self) -> Iterator[BaseModel]:
         class SQLRowModel(self.row_model, SQLModel):
-            pass
+            __tablename__ = self.table
 
         with Session(create_engine(self.dsn_conn)) as session:
             statement = select(SQLRowModel())

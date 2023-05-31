@@ -1,7 +1,6 @@
 from tiny_blocks.transform.drop_duplicates import DropDuplicates
 from tiny_blocks.transform.drop_none import DropNone
 from tiny_blocks.transform.drop_columns import DropColumns
-from tiny_blocks.transform.validate import Validate
 from tiny_blocks.transform.fill_none import FillNone
 from tiny_blocks.transform.merge import Merge
 from tiny_blocks.transform.rename import Rename
@@ -17,6 +16,5 @@ __all__ = [
     "Rename",
     "Sort",
     "DropColumns",
-    "Validate",
     "FillNone",
 ]
