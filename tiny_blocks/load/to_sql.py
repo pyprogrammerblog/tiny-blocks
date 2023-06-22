@@ -41,8 +41,7 @@ class ToSQL(LoadBase):
         """
         Exhaust
         """
-        # get the data model from the first row
-        # use first row for extracting fieldnames
+        # check iterator is not empty
         try:
             first_row = next(source)
         except StopIteration:
@@ -59,6 +58,7 @@ class ToSQL(LoadBase):
 
         # create SQL Model from the 'write_model'
         class SQLRowModel(write_model, SQLModel):
+            __table_args__ = {"extend_existing": True}
             __tablename__ = self.table
 
         # open session, write records, and commit.

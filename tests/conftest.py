@@ -1,49 +1,60 @@
 import csv
+import itertools
 import boto3
 import pytest
 import logging
 
+from pydantic import BaseModel
+from datetime import datetime
 from botocore.config import Config
 from tempfile import NamedTemporaryFile
-from typing import Iterator, Dict, Optional
+from typing import Iterator, Optional
+from sqlalchemy_utils import drop_database
 from sqlalchemy_utils import create_database
 from sqlalchemy_utils import database_exists
-from sqlalchemy_utils import drop_database
 from sqlmodel import create_engine, Field, SQLModel, Session
 
 
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(scope="function")
-def source_data() -> Iterator[Dict]:
+class Hero(BaseModel):
+    name: str
+    secret_name: str
+    age: Optional[int] = None
+    created: datetime = Field(default_factory=datetime.now)
+
+
+def source_data() -> Iterator[BaseModel]:
     data = [
         {"name": "Dive Wilson", "secret_name": "Deadpond", "age": 30},
         {"name": "Pedro Parqueador", "secret_name": "Spider-Boy", "age": 30},
         {"name": "Lucas Altos", "secret_name": "Wolf-Child", "age": 33},
         {"name": "Juan Benne", "secret_name": "La rana", "age": 33},
     ]
-    return (row for row in data)
+    for row in data:
+        yield Hero(**row)
 
 
 @pytest.fixture(scope="function")
-def csv_source(source_data) -> NamedTemporaryFile:
+def csv_source() -> NamedTemporaryFile:
     """
     Yield a CSV Source with a path to an existing CSV file
     """
+    data = source_data()
 
     with NamedTemporaryFile(encoding="utf-8", suffix=".csv", mode="w") as file:
 
         with open(file.name, mode="w", newline="") as csvfile:
             # from the first row we get the column names for the header
-            first_row = next(source_data)
-            writer = csv.DictWriter(csvfile, fieldnames=list(first_row.keys()))
+            first_row = next(data)
+            fieldnames = list(first_row.__fields__.keys())
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
             # write the data, including the first row
-            writer.writerow(first_row)
-            for row in source_data:
-                writer.writerow(row)
+            for row in itertools.chain([first_row], data):
+                writer.writerow(row.dict())
 
         yield file
 
@@ -59,6 +70,9 @@ def csv_sink():
 
 @pytest.fixture(scope="function")
 def s3_config() -> Config:
+    """
+    S3 Config
+    """
     config = Config(
         aws_access_key_id="access-key",
         aws_secret_access_key="secret-key",
@@ -104,23 +118,22 @@ def postgres_db(postgres_uri):
 
 
 @pytest.fixture(scope="function")
-def postgres_source(postgres_db, postgres_uri, source_data) -> Session:
+def postgres_source(postgres_db, postgres_uri):
     """
     Yield an SQL Source with a connection string to an existing Table DB
     """
+    data = source_data()
 
-    class Hero(SQLModel, table=True):
+    class SQLHero(Hero, SQLModel, table=True):
         id: Optional[int] = Field(default=None, primary_key=True)
-        name: str
-        secret_name: str
-        age: Optional[int] = None
+        __tablename__ = "Hero"
 
     engine = create_engine(postgres_uri, echo=True)
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
-        for row in source_data:
-            session.add(Hero(**row))
+        for row in data:
+            session.add(SQLHero(**row.dict()))
+            session.commit()
 
-        session.commit()
-        yield session
+    yield

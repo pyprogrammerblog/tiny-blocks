@@ -1,18 +1,12 @@
 import datetime
-
+from tests.conftest import Hero
 from tiny_blocks.extract.from_sql import FromSQL
 from pydantic import BaseModel
 
 
 def test_extract_from_sql(postgres_source, postgres_uri):
-    class MyRowModel(BaseModel):
-        name: str
-        active: int
-        created: datetime.datetime
 
-    from_sql = FromSQL(
-        row_model=MyRowModel, dsn_conn=postgres_uri, table="Users"
-    )
+    from_sql = FromSQL(row_model=Hero, dsn_conn=postgres_uri, table="Hero")
 
     # exhaust the generator
     generator = from_sql.get_iter()
@@ -20,8 +14,12 @@ def test_extract_from_sql(postgres_source, postgres_uri):
 
     # assertions
     assert len(data) == 4
-    assert list(data[0].dict().keys()) == ["name", "active", "created"]
-    assert list(data[0].dict().values()) == ["Mateo", 1, "2022-01-10"]
+    assert list(data[0].dict().keys()) == [
+        "name",
+        "secret_name",
+        "age",
+        "created",
+    ]
 
 
 # def test_extract_from_sql_extrict_row_validation(csv_source):

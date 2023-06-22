@@ -1,7 +1,9 @@
 import itertools
 import logging
-from pydantic import BaseModel
-from typing import List, Iterator, Union, NoReturn
+
+from dataclasses import fields, MISSING, is_dataclass
+from pydantic import BaseModel, create_model
+from typing import List, Iterator, Union, NoReturn, Type
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["FanIn", "FanOut", "Pipeline"]
+__all__ = ["FanIn", "FanOut", "Pipeline", "create_model_from_dataclass"]
 
 
 logger = logging.getLogger(__name__)
@@ -129,3 +131,18 @@ class FanIn:
 
     def get_iter(self) -> List[Iterator[BaseModel]]:
         return [pipe.get_iter() for pipe in self.pipes]
+
+
+def create_model_from_dataclass(row_model: is_dataclass) -> Type[BaseModel]:
+
+    field_kwargs = {}
+
+    for _field in fields(row_model):
+        if isinstance(_field.default, MISSING.__class__):
+            default = ...
+        else:
+            default = _field.default
+
+        field_kwargs[_field.name] = (_field.type, default)
+
+    return create_model(row_model.__name__, **field_kwargs)

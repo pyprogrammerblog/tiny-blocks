@@ -1,8 +1,9 @@
+import copy
 import logging
 import itertools
 
 from pydantic import Field, BaseModel
-from typing import Iterator, Literal, List
+from typing import Iterator, Literal, List, Type
 from tiny_blocks.transform.base import TransformBase
 
 
@@ -32,29 +33,19 @@ class DropColumns(TransformBase):
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
+        # extract first row to retrieve the model
+        first_row = next(source)
+        input_model = first_row.__class__
 
-            first_row = next(source)
-            model = first_row.__class__
+        # generate an output model and yield the rows
+        output_model = self._output_model(input_model=input_model)
+        for row in itertools.chain([first_row], source):
+            yield output_model(**row.dict())
 
-            class SortTable(first_row.__class__, SQLModel, table=True):
-                pass
+    def _output_model(self, input_model: Type[BaseModel]) -> Type[BaseModel]:
 
-            # create table
-            engine = create_engine(file.name, echo=True)
-            SQLModel.metadata.create_all(engine)
+        output_model = copy.deepcopy(input_model)
+        output_model.__name__ = f"Output_{self.name}_{self.uuid}"
+        [output_model.__fields__.pop(column) for column in self.columns]
 
-            # write records in sqlite
-            with Session(engine) as session:
-                for row in itertools.chain([first_row], source):
-                    session.add(SortTable(**row.dict()))
-                session.commit()
-
-                # Sort by
-                order = "asc" if self.ascending else "desc"
-                group_by = ", ".join(
-                    [f"{column} {order}" for column in self.by]
-                )
-                statement = select(SortTable).group_by(text(group_by))
-                for row in session.exec(statement).fetchmany(size=1000):
-                    yield model(**row.dict())
+        return output_model

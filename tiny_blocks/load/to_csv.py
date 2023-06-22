@@ -59,13 +59,9 @@ class ToCSV(LoadBase):
             fields = set(first_row.__fields__.keys())
             if self.columns and (not_exist := self.columns - fields):
                 raise ValueError(f"Not found: {', '.join(not_exist)}")
-            elif self.columns:
-                fieldnames = self.columns
-            else:
-                fieldnames = fields
 
             # create a dict writer, write the header and the records
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer = csv.DictWriter(csvfile, fieldnames=self.columns or fields)
             writer.writeheader()
             for row in itertools.chain([first_row], source):
                 writer.writerow(row.dict())

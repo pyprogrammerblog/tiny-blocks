@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel, Field
 
 import logging
@@ -15,6 +17,7 @@ class BaseBlock:
         """
         Constructor
         """
+        self.uuid = uuid.uuid4()
         self.name = self.__class__.__name__
         self.version = version
         self.description = description

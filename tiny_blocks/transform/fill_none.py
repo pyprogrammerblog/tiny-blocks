@@ -1,7 +1,7 @@
 import logging
 import itertools
-from pydantic import Field, BaseModel
-from typing import Iterator, Literal, Any, List
+from pydantic import Field, BaseModel, create_model
+from typing import Iterator, Literal, Any, Set, Type
 from tiny_blocks.transform.base import TransformBase
 
 
@@ -28,20 +28,28 @@ class FillNone(TransformBase):
 
     name: Literal["fill_none"] = "fill_none"
     value: Any = Field(description="Value to be filled")
-    subset: List[str] = Field(default_factory=list)
+    subset: Set[str] = Field(description="Subset to apply this default value")
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # check the subset exists in the source
+        # extract first row to retrieve the model
         first_row = next(source)
-        if not_exist := set(self.subset) - set(first_row.columns()):
-            raise ValueError(f"'{', '.join(not_exist)}' do not exist.")
+        input_model = first_row.__class__
 
-        # fill none values
+        # create an output model and yield the rows
+        output_model = self._output_model(input_model=input_model)
         for row in itertools.chain([first_row], source):
-            for key, value in row.items():
-                if self.subset and key not in self.subset:
-                    continue
-                if value is None:
-                    row[key] = self.value
-            yield row
+            yield output_model(**row.dict(exclude_none=True))
+
+    def _output_model(self, input_model: Type[BaseModel]) -> Type[BaseModel]:
+
+        if missing := set(input_model.__fields__.keys()) - self.subset:
+            raise ValueError(f"Fields {','.join(missing)} not found.")
+
+        output_model = create_model(
+            __base__=input_model,
+            __model_name=f"Output_{self.name}_{self.uuid}",
+            **{field_name: self.value for field_name in self.subset},
+        )
+
+        return output_model

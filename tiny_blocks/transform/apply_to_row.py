@@ -4,13 +4,13 @@ from typing import Literal, Iterator, Callable
 from tiny_blocks.transform.base import TransformBase
 
 
-__all__ = ["Apply"]
+__all__ = ["ApplyToRow"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class Apply(TransformBase):
+class ApplyToRow(TransformBase):
     """
     Apply function. Defines block to apply function.
 
