@@ -1,8 +1,7 @@
-import copy
 import logging
 import itertools
 
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, create_model
 from typing import Iterator, Literal, List, Type
 from tiny_blocks.transform.base import TransformBase
 
@@ -33,19 +32,30 @@ class DropColumns(TransformBase):
 
     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:
 
-        # extract first row to retrieve the model
         first_row = next(source)
         input_model = first_row.__class__
+        output_model = self.output_model(input_model=input_model)
 
-        # generate an output model and yield the rows
-        output_model = self._output_model(input_model=input_model)
         for row in itertools.chain([first_row], source):
-            yield output_model(**row.dict())
+            yield output_model(**row.model_dump())
 
-    def _output_model(self, input_model: Type[BaseModel]) -> Type[BaseModel]:
+    def output_model(self, input_model: Type[BaseModel]) -> Type[BaseModel]:
 
-        output_model = copy.deepcopy(input_model)
-        output_model.__name__ = f"Output_{self.name}_{self.uuid}"
-        [output_model.__fields__.pop(column) for column in self.columns]
+        model_fields = set(input_model.model_fields)
+        if not_found := set(self.columns) - model_fields:
+            logger.warning(
+                f"Mapping fields {','.join(not_found)} not found "
+                f"in model fields {','.join(model_fields)}. "
+                f"Mapping fields {','.join(set(self.columns))}"
+            )
 
+        new_model_fields = {
+            name: (field.outer_type_, field.default)
+            for name, field in input_model.__annotations__.items()
+            if name not in self.columns
+        }
+
+        output_model = create_model(
+            __model_name=f"{input_model}_output", **new_model_fields
+        )
         return output_model

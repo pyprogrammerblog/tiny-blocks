@@ -1,7 +1,6 @@
 from tiny_blocks.extract.from_csv import FromCSV
 from pydantic import ValidationError
 from tests.conftest import Hero
-from datetime import datetime
 from pathlib import Path
 
 

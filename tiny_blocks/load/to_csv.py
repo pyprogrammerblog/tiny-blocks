@@ -5,9 +5,8 @@ import itertools
 import csv
 
 from pathlib import Path
-from dataclasses import dataclass
-from pydantic import Field, validator, BaseModel
-from typing import Iterator, Literal, List, Set
+from pydantic import BaseModel
+from typing import Iterator, Set
 from tiny_blocks.load.base import LoadBase
 
 
@@ -32,20 +31,12 @@ class ToCSV(LoadBase):
         >>> to_csv.exhaust(generator)
     """
 
-    def __init__(
-        self, path: Path, columns: Set[str] = None, newline: str = "", **kwargs
-    ):
-        super().__init__(**kwargs)
-
-        if not Path(path).parent.is_dir():
-            raise ValueError(f"Folder '{Path(path).parent}' does not exists.")
-
-        self.path: Path = path
-        self.columns: Set[str] = columns
-        self.newline: str = newline
+    path: Path
+    columns: Set[str] = None
+    newline: str = ""
 
     def exhaust(self, source: Iterator[BaseModel]):
-        """ """
+
         with tempfile.NamedTemporaryFile(suffix=".csv") as file, open(
             file.name, "w", newline=self.newline
         ) as csvfile:
@@ -54,9 +45,9 @@ class ToCSV(LoadBase):
             try:
                 first_row = next(source)
             except StopIteration:
-                raise ValueError(f"Source is empty. No data to write.")
+                raise ValueError("Source is empty. No data to write.")
 
-            fields = set(first_row.__fields__.keys())
+            fields = set(first_row.model_fields.keys())
             if self.columns and (not_exist := self.columns - fields):
                 raise ValueError(f"Not found: {', '.join(not_exist)}")
 
@@ -64,7 +55,7 @@ class ToCSV(LoadBase):
             writer = csv.DictWriter(csvfile, fieldnames=self.columns or fields)
             writer.writeheader()
             for row in itertools.chain([first_row], source):
-                writer.writerow(row.dict())
+                writer.writerow(row.model_dump())
 
             # if no errors, we create the final file.
             shutil.copy(file.name, str(self.path))

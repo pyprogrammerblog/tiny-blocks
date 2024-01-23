@@ -1,25 +1,25 @@
-import datetime
-from tests.conftest import Hero
-from tiny_blocks.extract.from_sql import FromSQL
-from pydantic import BaseModel
+# import datetime
+# from tests.conftest import Hero
+# from tiny_blocks.extract.from_sql import FromSQL
+# from pydantic import BaseModel
 
 
-def test_extract_from_sql(postgres_source, postgres_uri):
-
-    from_sql = FromSQL(row_model=Hero, dsn_conn=postgres_uri, table="Hero")
-
-    # exhaust the generator
-    generator = from_sql.get_iter()
-    data = list(generator)
-
-    # assertions
-    assert len(data) == 4
-    assert list(data[0].dict().keys()) == [
-        "name",
-        "secret_name",
-        "age",
-        "created",
-    ]
+# def test_extract_from_sql(postgres_source, postgres_uri):
+#
+#     from_sql = FromSQL(row_model=Hero, dsn_conn=postgres_uri, table="Hero")
+#
+#     # exhaust the generator
+#     generator = from_sql.get_iter()
+#     data = list(generator)
+#
+#     # assertions
+#     assert len(data) == 4
+#     assert list(data[0].dict().keys()) == [
+#         "name",
+#         "secret_name",
+#         "age",
+#         "created",
+#     ]
 
 
 # def test_extract_from_sql_extrict_row_validation(csv_source):

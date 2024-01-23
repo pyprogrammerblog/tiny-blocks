@@ -37,13 +37,12 @@ class FromCSV(ExtractBase):
 
         self.path = path
         self.row_model = row_model
-        self.newline = newline
 
     def get_iter(self) -> Iterator[BaseModel]:
 
         collector = []
 
-        with open(self.path, newline=self.newline) as csvfile:
+        with open(self.path, newline="") as csvfile:
             for row in csv.DictReader(csvfile):
                 try:
                     yield self.row_model(**row)

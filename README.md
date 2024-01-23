@@ -72,14 +72,14 @@ with PipelineSystem(name="My Pipeline System") as system:
     fill_na = FillNone(value="Hola Mundo")
     to_sql = ToSQL(dsn_conn='psycopg2+postgres://...', table_name="sink")
 
-    system >> from_sql >> fill_na >> to_sql
+    from_sql >> fill_na >> to_sql
 
     # Pipeline 2
     from_csv = FromCSV(path='/path/to/source.csv')
     drop_column = DropColumns(columns=["wrong_column"])
     to_csv = ToCSV(path='/path/to/sink.csv')
 
-    system >> from_csv >> drop_column >> to_csv
+    from_csv >> drop_column >> to_csv
 
 ```
 

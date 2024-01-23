@@ -1,18 +1,13 @@
 import csv
-import itertools
-import boto3
 import pytest
 import logging
+import itertools
 
+from sqlmodel import Field
 from pydantic import BaseModel
 from datetime import datetime
-from botocore.config import Config
 from tempfile import NamedTemporaryFile
 from typing import Iterator, Optional
-from sqlalchemy_utils import drop_database
-from sqlalchemy_utils import create_database
-from sqlalchemy_utils import database_exists
-from sqlmodel import create_engine, Field, SQLModel, Session
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +43,7 @@ def csv_source() -> NamedTemporaryFile:
         with open(file.name, mode="w", newline="") as csvfile:
             # from the first row we get the column names for the header
             first_row = next(data)
-            fieldnames = list(first_row.__fields__.keys())
+            fieldnames = list(first_row.keys())
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
@@ -68,72 +63,72 @@ def csv_sink():
         yield file.name
 
 
-@pytest.fixture(scope="function")
-def s3_config() -> Config:
-    """
-    S3 Config
-    """
-    config = Config(
-        aws_access_key_id="access-key",
-        aws_secret_access_key="secret-key",
-        retries={"max_attempts": 10, "mode": "standard"},
-    )
-    yield config
-
-
-@pytest.fixture(scope="function")
-def s3_source(csv_source, s3_config):
-    """
-    Yield a s3 object
-    """
-    s3 = boto3.resource("s3", config=s3_config)
-    bucket = s3.Bucket("my-bucket")
-
-    if not bucket.creation_date:  # create if not exists
-        s3.create_bucket(Bucket="my-bucket")
-
-    bucket.upload_file(csv_source.name, "source.csv")  # overwrite
-    yield s3.Object(bucket.name, "source.csv")  # yield the s3 object
-    bucket.delete()
-
-
-@pytest.fixture(scope="function")
-def postgres_uri():
-    """
-    Sqlalchemy URI for Postgres DB Connection
-    """
-    yield "postgresql+psycopg2://user:pass@postgres:5432/db"
-
-
-@pytest.fixture(scope="function")
-def postgres_db(postgres_uri):
-    """
-    Creates a database
-    """
-    if database_exists(postgres_uri):
-        drop_database(postgres_uri)
-    create_database(postgres_uri)
-    yield
-    drop_database(postgres_uri)
-
-
-@pytest.fixture(scope="function")
-def postgres_source(postgres_db, postgres_uri):
-    """
-    Yield an SQL Source with a connection string to an existing Table DB
-    """
-    data = source_data()
-
-    class SQLHero(Hero, SQLModel, table=True):
-        id: Optional[int] = Field(default=None, primary_key=True)
-        __tablename__ = "Hero"
-
-    engine = create_engine(postgres_uri, echo=True)
-    SQLModel.metadata.create_all(engine)
-
-    with Session(engine) as session:
-        for row in data:
-            session.add(SQLHero(**row.dict()))
-            session.commit()
-
-    yield
+# @pytest.fixture(scope="function")
+# def s3_config() -> Config:
+#     """
+#     S3 Config
+#     """
+#     config = Config(
+#         aws_access_key_id="access-key",
+#         aws_secret_access_key="secret-key",
+#         retries={"max_attempts": 10, "mode": "standard"},
+#     )
+#     yield config
+#
+#
+# @pytest.fixture(scope="function")
+# def s3_source(csv_source, s3_config):
+#     """
+#     Yield a s3 object
+#     """
+#     s3 = boto3.resource("s3", config=s3_config)
+#     bucket = s3.Bucket("my-bucket")
+#
+#     if not bucket.creation_date:  # create if not exists
+#         s3.create_bucket(Bucket="my-bucket")
+#
+#     bucket.upload_file(csv_source.name, "source.csv")  # overwrite
+#     yield s3.Object(bucket.name, "source.csv")  # yield the s3 object
+#     bucket.delete()
+#
+#
+# @pytest.fixture(scope="function")
+# def postgres_uri():
+#     """
+#     Sqlalchemy URI for Postgres DB Connection
+#     """
+#     yield "postgresql+psycopg2://user:pass@postgres:5432/db"
+#
+#
+# @pytest.fixture(scope="function")
+# def postgres_db(postgres_uri):
+#     """
+#     Creates a database
+#     """
+#     if database_exists(postgres_uri):
+#         drop_database(postgres_uri)
+#     create_database(postgres_uri)
+#     yield
+#     drop_database(postgres_uri)
+#
+#
+# @pytest.fixture(scope="function")
+# def postgres_source(postgres_db, postgres_uri):
+#     """
+#     Yield an SQL Source with a connection string to an existing Table DB
+#     """
+#     data = source_data()
+#
+#     class SQLHero(Hero, SQLModel, table=True):
+#         id: Optional[int] = Field(default=None, primary_key=True)
+#         __tablename__ = "Hero"
+#
+#     engine = create_engine(postgres_uri, echo=True)
+#     SQLModel.metadata.create_all(engine)
+#
+#     with Session(engine) as session:
+#         for row in data:
+#             session.add(SQLHero(**row.dict()))
+#             session.commit()
+#
+#     yield

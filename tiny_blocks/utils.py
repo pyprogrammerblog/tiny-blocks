@@ -1,9 +1,8 @@
 import itertools
 import logging
 
-from dataclasses import fields, MISSING, is_dataclass
-from pydantic import BaseModel, create_model
-from typing import List, Iterator, Union, NoReturn, Type
+from pydantic import BaseModel
+from typing import List, Iterator, Union, NoReturn
 from tiny_blocks.transform.base import TransformBase
 from tiny_blocks.load.base import LoadBase
 
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
     from tiny_blocks.extract.base import ExtractBase
 
 
-__all__ = ["FanIn", "FanOut", "Pipeline", "create_model_from_dataclass"]
+__all__ = ["FanIn", "FanOut", "Pipeline"]
 
 
 logger = logging.getLogger(__name__)
@@ -70,21 +69,21 @@ class Pipeline:
         return self.source
 
     def __rshift__(
-        self, next: TransformBase | LoadBase | FanOut
+        self, right_block: TransformBase | LoadBase | FanOut
     ) -> "Pipeline" | NoReturn:
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.get_iter())
+        if isinstance(right_block, TransformBase):
+            source = right_block.get_iter(source=self.get_iter())
             return Pipeline(source)
-        elif isinstance(next, LoadBase):
-            return next.exhaust(source=self.get_iter())
-        elif isinstance(next, FanOut):
-            # a source per each load block + 1 for the next pipe
-            n = len(next.sinks) + 1
+        elif isinstance(right_block, LoadBase):
+            return right_block.exhaust(source=self.get_iter())
+        elif isinstance(right_block, FanOut):
+            # a source per each load block + 1 for the right_block pipe
+            n = len(right_block.sinks) + 1
             source, *sources = itertools.tee(self.get_iter(), n)
-            next.exhaust(*sources)
+            right_block.exhaust(*sources)
             return Pipeline(source=source)
         else:
             raise ValueError("Unsupported Block Type")
@@ -92,8 +91,8 @@ class Pipeline:
 
 class FanIn:
     """
-    Gather multiple operations and send them to the next block.
-    The next block must accept multiple arguments, for example,
+    Gather multiple operations and send them to the right_block_block block.
+    The right_block_block block must accept multiple arguments, for example,
     ``tiny_blocks.tranform.Merge``
 
     Usage::
@@ -111,7 +110,7 @@ class FanIn:
         >>> from_csv_2 = FromCSV(path='/path/to/file2.csv')
         >>> to_csv = ToCSV(path='/path/to/file3.csv')
         >>> fill_none = FillNone(value="Hola Mundo")
-        >>> merge = Merge(left_on="ColumnA", right_on="ColumnB")
+        >>> merge = Merge(left_on="ColumnA", right_block_on="ColumnB")
         >>>
         >>> FanIn(from_csv_1, from_csv_2 >> fill_none)  >> merge >> to_csv
     """
@@ -119,30 +118,15 @@ class FanIn:
     def __init__(self, *pipes: Union["ExtractBase", "Pipeline"]):
         self.pipes = pipes
 
-    def __rshift__(self, next: TransformBase) -> "Pipeline":
+    def __rshift__(self, right_block: TransformBase) -> "Pipeline":
         """
         The `>>` operator for the tiny-blocks library.
         """
-        if isinstance(next, TransformBase):
-            source = next.get_iter(source=self.get_iter())
+        if isinstance(right_block, TransformBase):
+            source = right_block.get_iter(source=self.get_iter())
             return Pipeline(source=source)
         else:
             raise ValueError("Unsupported Block Type")
 
     def get_iter(self) -> List[Iterator[BaseModel]]:
         return [pipe.get_iter() for pipe in self.pipes]
-
-
-def create_model_from_dataclass(row_model: is_dataclass) -> Type[BaseModel]:
-
-    field_kwargs = {}
-
-    for _field in fields(row_model):
-        if isinstance(_field.default, MISSING.__class__):
-            default = ...
-        else:
-            default = _field.default
-
-        field_kwargs[_field.name] = (_field.type, default)
-
-    return create_model(row_model.__name__, **field_kwargs)

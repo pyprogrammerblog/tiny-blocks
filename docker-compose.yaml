@@ -51,6 +51,7 @@ services:
     depends_on:
       - postgres
       - kafka
+      - oracle
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1
