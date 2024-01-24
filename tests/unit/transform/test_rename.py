@@ -1,17 +1,12 @@
-import pandas as pd
-from tiny_blocks.extract.from_sql_table import FromSQLTable
 from tiny_blocks.transform.rename import Rename
 
 
-def test_rename(sqlite_source, sqlite_sink):
+def test_rename(source_data):
 
-    extract_sql = FromSQLTable(dsn_conn=sqlite_source, table_name="test")
-    as_type = Rename(columns={"d": "Hola", "e": "a", "f": "todos"})
-
-    generator = extract_sql.get_iter()
-    generator = as_type.get_iter(source=generator)
+    rename = Rename(columns={"name": "nombre", "age": "edad"})
+    generator = rename.get_iter(source=source_data)
 
     # exhaust and assert
-    df = pd.concat(generator)
-    assert df.shape == (3, 3)
-    assert df.columns.to_list() == ["Hola", "a", "todos"]
+    data = list(generator)
+    assert len(data) == 4
+    assert data[0].columns() == ["nombre", "edad"]

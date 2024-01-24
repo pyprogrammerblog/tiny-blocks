@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiny_blocks"
-version = "0.1.15"
+version = "0.1.16"
 description = "Tiny Block Operations for Data Pipelines"
 readme = "README.md"
 license = "LICENSE"
@@ -19,20 +19,9 @@ create = true  # this creates a .venv folder
 in-project = true
 
 [tool.poetry.dependencies]
-python = "^3.9"
-pydantic = "^1.9.1"
-pandas = "^1.4.3"
-SQLAlchemy = "^1.4.39"
-PyMySQL = "^1.0.2"
-psycopg2 = "^2.9.3"
-cryptography = "^37.0.4"
-boto3 = "^1.24.43"
-minio = "^7.1.11"
-cx-Oracle = "^8.3.0"
-kafka-python = "^2.0.2"
-types-requests = "^2.28.9"
-requests = "^2.28.1"
-pandera = "^0.12.0"
+python = "^3.11"
+boto3 = "=1.34.26"
+sqlmodel = "=0.0.14"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
@@ -41,9 +30,13 @@ black = "^22.6.0"
 ipython = "^8.4.0"
 notebook = "^6.4.12"
 SQLAlchemy-Utils = "^0.38.3"
+minio = "^7.1.11"
+PyMySQL = "^1.0.2"
+psycopg2 = "^2.9.3"
 mock = "^4.0.3"
 mypy = "^0.971"
 Sphinx = "^5.1.1"
+sphinx-rtd-theme = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

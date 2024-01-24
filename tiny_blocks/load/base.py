@@ -1,17 +1,13 @@
 import logging
 from typing import Iterator
+from tiny_blocks.base import BaseBlock
+from pydantic import BaseModel
 
-import pandas as pd
-from tiny_blocks.base import BaseBlock, KwargsBase
 
-__all__ = ["LoadBase", "KwargsLoadBase"]
+__all__ = ["LoadBase"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsLoadBase(KwargsBase):
-    pass
 
 
 class LoadBase(BaseBlock):
@@ -22,7 +18,7 @@ class LoadBase(BaseBlock):
     the `exhaust` method.
     """
 
-    def exhaust(self, source: Iterator[pd.DataFrame]):
+    def exhaust(self, source: Iterator[BaseModel]):
         """
         Implement the exhaustion of the incoming iterator.
 

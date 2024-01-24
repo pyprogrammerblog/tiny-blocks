@@ -1,17 +1,6 @@
 version: "3.3"
 services:
 
-  mysql:
-    image: mysql:latest
-    command: mysqld --sql_mode=""
-    environment:
-      MYSQL_DATABASE: db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: pass
-      MYSQL_ROOT_PASSWORD: pass
-    ports:
-      - "3306:3306"
-
   postgres:
     image: postgres:latest
     environment:
@@ -21,39 +10,30 @@ services:
     ports:
       - "5432:5432"
 
-  zookeeper:
-    image: 'bitnami/zookeeper:latest'
-    ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-
-  kafka:
-    image: 'bitnami/kafka:latest'
-    ports:
-      - '9092:9092'
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      - zookeeper
+#  minio:
+#    image: minio/minio:latest
+#    ports:
+#      - '9000:9000'
+#      - '9001:9001'
+#    environment:
+#      - MINIO_ACCESS_KEY=access-key
+#      - MINIO_SECRET_KEY=secret-key
+#      - CONSOLE_ACCESS_KEY=test
+#      - CONSOLE_SECRET_KEY=test
+#    command: server --address ":9000" --console-address ":9001" /data
+#    volumes:
+#      - ./data:/code/data
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
     depends_on:
       - postgres
-      - mysql
-      - kafka
     environment:
       - DOCKER=True
       - PYTHONUNBUFFERED=1
-      - PYTHONPATH=$PYTHONPATH:/code
+      - PYTHONPATH=/code
       - POETRY_VIRTUALENVS_IN_PROJECT=true
       - SHELL=/bin/bash
     ports:

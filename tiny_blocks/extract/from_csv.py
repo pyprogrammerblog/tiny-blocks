@@ -1,74 +1,13 @@
+from tiny_blocks.extract.base import ExtractBase
+from typing import Iterator, Literal
+from pydantic import BaseModel, ValidationError, FilePath
 import logging
-from typing import Iterator, List, Literal, Sequence, Dict, Any, Callable
-
-import pandas as pd
-from pydantic import Field, FilePath, AnyUrl
-from tiny_blocks.extract.base import ExtractBase, KwargsExtractBase
+import csv
 
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["FromCSV", "KwargsFromCSV"]
-
-
-class KwargsFromCSV(KwargsExtractBase):
-    """
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
-    """
-
-    sep: str = "|"
-    header: str | int | List[int] | None = "infer"
-    names: List[str] = None
-    index_col: int | str | Sequence[str] | Sequence[int] = None
-    usecols: List[str] = None
-    squeeze: bool = False
-    prefix: str = None
-    mangle_dupe_cols: bool = True
-    dtype: Dict = None
-    converters: Dict = None
-    engine: Literal["c", "python"] = None
-    true_values: List = None
-    false_values: List = None
-    chunksize: int = 1000
-    storage_options: Dict[str, Any] = None
-    skipinitialspace: bool = False
-    skiprows: int = None
-    skipfooter: int = None
-    nrows: int = None
-    # NA and Missing Data Handling
-    na_values: str | List[str] | Dict = None
-    keep_default_na: bool = True
-    na_filter: bool = True
-    verbose: bool = False
-    skip_blank_lines: bool = True
-    # Datetime Handling
-    parse_dates: bool | List[int] | List[str] = None
-    infer_datetime_format: bool = False
-    keep_date_col: bool = False
-    date_parser: Callable = None
-    dayfirst: bool = False
-    cache_dates: bool = True
-    # Quoting, Compression, and File Format
-    compression: str = "infer"
-    thousands: str = None
-    decimal: str = "."
-    lineterminator: str = None
-    quotechar: str = None
-    quoting: int = None
-    doublequote: bool = True
-    escapechar: str = None
-    comment: str = None
-    encoding: str = None
-    encoding_errors: str | None = "strict"
-    dialect: str = None
-    # Error Handling
-    on_bad_lines: Literal["error", "warn", "skip"] | Callable = "skip"
-    # others
-    delim_whitespace: bool = False
-    low_memory: bool = True
-    memory_map: bool = False
-    float_precision: str = None
+__all__ = ["FromCSV"]
 
 
 class FromCSV(ExtractBase):
@@ -76,22 +15,30 @@ class FromCSV(ExtractBase):
     ReadCSV Block. Defines the read CSV Operation
 
     Basic example:
-        >>> import pandas as pd
         >>> from tiny_blocks.extract import FromCSV
         >>>
         >>> read_csv = FromCSV(path="/path/to/file.csv")
-        >>>
         >>> generator = read_csv.get_iter()
-        >>> df = pd.concat(generator)
-
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        >>> next(generator)
     """
 
-    name: Literal["read_csv"] = "read_csv"
-    path: FilePath | AnyUrl = Field(..., description="Destination path")
-    kwargs: KwargsFromCSV = KwargsFromCSV()
+    name: Literal["from_csv"] = "from_csv"
+    path: FilePath
+    separator: Literal[",", "|", ";"] = ";"
+    newline: str = ""
 
-    def get_iter(self) -> Iterator[pd.DataFrame]:
-        for chunk in pd.read_csv(self.path, **self.kwargs.to_dict()):
-            yield chunk
+    def get_iter(self) -> Iterator[BaseModel]:
+
+        errors = []
+
+        with open(str(self.path), newline=self.newline) as csvfile:
+            for row in csv.DictReader(csvfile):
+                try:
+                    yield self.row_model(**row)
+                except ValidationError as errs:
+                    if not self.lazy_validation:
+                        raise errs
+                    errors.extend(errs.errors())
+
+            if errors:
+                raise ValidationError(errors, self.row_model)

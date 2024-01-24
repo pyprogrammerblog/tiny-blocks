@@ -1,66 +1,72 @@
-import logging
-import sqlite3
-import tempfile
-from typing import Iterator, Literal, List
-
-import pandas as pd
-from tiny_blocks.transform.base import KwargsTransformBase, TransformBase
-
-__all__ = ["Sort", "KwargsSort"]
-
-
-logger = logging.getLogger(__name__)
-
-
-class KwargsSort(KwargsTransformBase):
-    """
-    Kwargs for DropDuplicates
-    """
-
-    chunksize: int = 1000
-
-
-class Sort(TransformBase):
-    """
-    Sort Block. Defines the Sorting operation
-
-    Basic example:
-        >>> import pandas as pd
-        >>> from tiny_blocks.transform import Sort
-        >>> from tiny_blocks.extract import FromCSV
-        >>>
-        >>> extract_csv = FromCSV(path='/path/to/file.csv')
-        >>> sort = Sort(by=["column_A"], ascending=False)
-        >>>
-        >>> generator = extract_csv.get_iter()
-        >>> generator = sort.get_iter(generator)
-        >>> df = pd.concat(generator)
-    """
-
-    name: Literal["sort"] = "sort"
-    by: List[str]
-    ascending: bool = True
-    kwargs: KwargsSort = KwargsSort()
-
-    def get_iter(
-        self, source: Iterator[pd.DataFrame]
-    ) -> Iterator[pd.DataFrame]:
-        with tempfile.NamedTemporaryFile(
-            suffix=".sqlite"
-        ) as file, sqlite3.connect(file.name) as con:
-
-            # send records to a temp database (exhaust the generator)
-            for chunk in source:
-                chunk.to_sql(name="temp", con=con, index=False)
-
-            # order by column(s) ascending/descending.
-            sql = f"""
-            SELECT * FROM temp
-            ORDER BY {", ".join(self.by)}
-            {'ASC' if self.ascending else 'DESC'}
-            """
-
-            # yield sorted records
-            chunk = self.kwargs.chunksize
-            for chunk in pd.read_sql_query(con=con, sql=sql, chunksize=chunk):
-                yield chunk
+# from pydantic import Field, BaseModel
+# from typing import Iterator, Literal, Dict
+# from tiny_blocks.transform.base import TransformBase
+# from sqlmodel import Session, SQLModel, create_engine, select, text
+#
+# import itertools
+# import logging
+# import tempfile
+#
+#
+# __all__ = ["Sort"]
+#
+#
+# logger = logging.getLogger(__name__)
+#
+#
+# class Sort(TransformBase):
+#     """
+#     Sort Block. Defines the Sorting operation
+#
+#     Basic example:
+#         >>> from tiny_blocks.transform import Sort
+#         >>> from tiny_blocks.extract import FromCSV
+#         >>>
+#         >>> extract_csv = FromCSV(path='/path/to/file.csv')
+#         >>> sort = Sort(by=["column_A"], ascending=False)
+#         >>>
+#         >>> generator = extract_csv.get_iter()
+#         >>> generator = sort.get_iter(generator)
+#     """
+#
+#     name: Literal["sort"] = Field(default="sort")
+#     by: Dict[str, Literal["asc", "desc"]] = Field(description="Sorted by")
+#
+#     def get_iter(self, source: Iterator[BaseModel]):
+#
+#         with tempfile.NamedTemporaryFile(suffix=".sqlite") as file:
+#
+#             # use first row for extracting fieldnames
+#             try:
+#                 first_row = next(source)
+#             except StopIteration:
+#                 raise ValueError(f"Source is empty. No data to write.")
+#
+#             # create table
+#             class ToBeSortTable(first_row.__class__, SQLModel, table=True):
+#                 pass
+#
+#             class SortedTable(first_row.__class__, SQLModel, table=True):
+#                 pass
+#
+#             engine = create_engine(file.name, echo=True)
+#             SQLModel.metadata.create_all(engine)
+#
+#             # write records in sql
+#             with Session(engine) as session:
+#                 for row in itertools.chain([first_row], source):
+#                     session.add(ToBeSortTable(**row.dict()))
+#                 session.commit()
+#
+#                 # Sort by statement
+#                 group_by = ", ".join([f"{k} {v}" for k, v
+#                 in self.by.items()])
+#                 statement = select(ToBeSortTable).group_by(text(group_by))
+#
+#                 # yield iterator
+#                 for row in session.exec(statement).fetchmany(size=1000):
+#                     session.add(SortedTable(**row.dict()))
+#                 session.commit()
+#
+#
+# # download >> read >> sort >> add_timestamp >>  write >> delete

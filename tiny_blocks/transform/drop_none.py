@@ -1,35 +1,35 @@
-# from pydantic import BaseModel, Field
+# from pydantic import Field, BaseModel
 # from typing import Iterator, Literal, List
 # from tiny_blocks.transform.base import TransformBase
 # from sqlmodel import Session, SQLModel, create_engine, select, text
 #
-# import logging
 # import tempfile
+# import itertools
+# import logging
 #
 #
-# __all__ = ["DropDuplicates"]
+# __all__ = ["DropNone"]
 #
 #
 # logger = logging.getLogger(__name__)
 #
 #
-# class DropDuplicates(TransformBase):
+# class DropNone(TransformBase):
 #     """
-#     Drop Duplicates Block. Defines the drop duplicates functionality
+#     Drop Nan Block. Defines the drop None values functionality
 #
 #     Basic example:
-#         >>> from tiny_blocks.transform import DropDuplicates
+#         >>> from tiny_blocks.transform import DropNone
 #         >>> from tiny_blocks.extract import FromCSV
 #         >>>
 #         >>> extract_csv = FromCSV(path='/path/to/file.csv')
-#         >>> drop_duplicates = DropDuplicates()
+#         >>> drop = DropNone()
 #         >>>
 #         >>> generator = extract_csv.get_iter()
-#         >>> generator = drop_duplicates.get_iter(generator)
+#         >>> generator = drop.get_iter(generator)
 #     """
 #
-#     name: Literal["drop_duplicates"] = "drop_duplicates"
-#     keep: Literal["first", "last"] | None = "first"
+#     name: Literal["drop_none"] = "drop_none"
 #     subset: List[str] = Field(default_factory=list)
 #
 #     def get_iter(self, source: Iterator[BaseModel]) -> Iterator[BaseModel]:

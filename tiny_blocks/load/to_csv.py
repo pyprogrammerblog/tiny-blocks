@@ -1,45 +1,19 @@
 import logging
 import shutil
-from pathlib import Path
-from typing import Iterator, Literal, Dict, Any, Sequence, List
 import tempfile
+import itertools
+import csv
 
-import pandas as pd
-from pydantic import Field, AnyUrl
-from tiny_blocks.load.base import KwargsLoadBase, LoadBase
+from pathlib import Path
+from pydantic import BaseModel
+from typing import Iterator, Set
+from tiny_blocks.load.base import LoadBase
 
-__all__ = ["ToCSV", "KwargsToCSV"]
+
+__all__ = ["ToCSV"]
 
 
 logger = logging.getLogger(__name__)
-
-
-class KwargsToCSV(KwargsLoadBase):
-    """
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
-    """
-
-    sep: str = "|"
-    na_rep: str = None
-    float_format: str = None
-    columns: Sequence = None
-    header: bool | List | str = True
-    index: bool = False
-    index_label: str | Sequence | Literal["False"] = None
-    mode: str = None
-    encoding: str = None
-    compression: str | Dict = "infer"
-    quoting: str = None
-    quotechar: str = None
-    line_terminator: str = None
-    chunksize: int = 1000
-    date_format: str = None
-    doublequote: bool = None
-    escapechar: str = None
-    decimal: str = None
-    errors: str = None
-    storage_options: Dict[str, Any] = None
 
 
 class ToCSV(LoadBase):
@@ -55,22 +29,33 @@ class ToCSV(LoadBase):
         >>>
         >>> generator = from_csv.get_iter()
         >>> to_csv.exhaust(generator)
-
-    See info about Kwargs:
-    https://pandas.pydata.org/docs/reference/api/pandas.to_csv.html
     """
 
-    name: Literal["to_csv"] = "to_csv"
-    kwargs: KwargsToCSV = KwargsToCSV()
-    path: Path | AnyUrl = Field(..., description="Destination path")
+    path: Path
+    columns: Set[str] = None
+    newline: str = ""
 
-    def exhaust(self, source: Iterator[pd.DataFrame]):
-        """
-        - Loop the source
-        - Send each chunk to CSV
-        """
-        with tempfile.NamedTemporaryFile(suffix=".csv") as file:
-            for chunk in source:
-                chunk.to_csv(path_or_buf=file, **self.kwargs.to_dict())
+    def exhaust(self, source: Iterator[BaseModel]):
 
+        with tempfile.NamedTemporaryFile(suffix=".csv") as file, open(
+            file.name, "w", newline=self.newline
+        ) as csvfile:
+
+            # use first row for extracting fieldnames
+            try:
+                first_row = next(source)
+            except StopIteration:
+                raise ValueError("Source is empty. No data to write.")
+
+            fields = set(first_row.model_fields.keys())
+            if self.columns and (not_exist := self.columns - fields):
+                raise ValueError(f"Not found: {', '.join(not_exist)}")
+
+            # create a dict writer, write the header and the records
+            writer = csv.DictWriter(csvfile, fieldnames=self.columns or fields)
+            writer.writeheader()
+            for row in itertools.chain([first_row], source):
+                writer.writerow(row.model_dump())
+
+            # if no errors, we create the final file.
             shutil.copy(file.name, str(self.path))
