@@ -1,13 +1,14 @@
 import csv
+import itertools
+
 import pytest
 import logging
-import itertools
 
 from sqlmodel import Field
 from pydantic import BaseModel
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Dict
 
 
 logger = logging.getLogger(__name__)
@@ -15,47 +16,43 @@ logger = logging.getLogger(__name__)
 
 class Hero(BaseModel):
     name: str
-    secret_name: str
-    age: Optional[int] = None
+    age: Optional[int]
+    secret_name: str = None
     created: datetime = Field(default_factory=datetime.now)
 
 
-def source_data() -> Iterator[BaseModel]:
+def source_data() -> Iterator[Dict]:
     data = [
-        {"name": "Dive Wilson", "secret_name": "Deadpond", "age": 30},
-        {"name": "Pedro Parqueador", "secret_name": "Spider-Boy", "age": 30},
-        {"name": "Lucas Altos", "secret_name": "Wolf-Child", "age": 33},
-        {"name": "Juan Benne", "secret_name": "La rana", "age": 33},
+        {"name": "Pedro", "secret_name": "Peter", "age": 18},
+        {"name": "Marcos", "secret_name": "Marc", "age": 18},
+        {"name": "Lucas", "secret_name": "Luck", "age": 16},
+        {"name": "Juan", "secret_name": "John", "age": 14},
     ]
     for row in data:
-        yield Hero(**row)
+        yield row
 
 
 @pytest.fixture(scope="function")
-def csv_source() -> NamedTemporaryFile:
+def csv_source() -> str:
     """
     Yield a CSV Source with a path to an existing CSV file
     """
-    data = source_data()
 
     with NamedTemporaryFile(encoding="utf-8", suffix=".csv", mode="w") as file:
 
         with open(file.name, mode="w", newline="") as csvfile:
-            # from the first row we get the column names for the header
-            first_row = next(data)
-            fieldnames = list(first_row.keys())
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            rows = source_data()
+            first_row = next(rows)
+            writer = csv.DictWriter(csvfile, fieldnames=list(first_row.keys()))
             writer.writeheader()
+            for row in itertools.chain([first_row], rows):
+                writer.writerow(row)
 
-            # write the data, including the first row
-            for row in itertools.chain([first_row], data):
-                writer.writerow(row.dict())
-
-        yield file
+        yield file.name
 
 
 @pytest.fixture(scope="function")
-def csv_sink():
+def csv_sink() -> str:
     """
     Yield a CSV Sink with a path to an existing CSV file
     """

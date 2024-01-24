@@ -1,10 +1,11 @@
 import logging
+from pydantic import BaseModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class BaseBlock:
+class BaseBlock(BaseModel):
     """
     Base Block class
     """

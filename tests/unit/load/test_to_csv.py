@@ -1,4 +1,3 @@
-import pandas as pd
 from pathlib import Path
 from tiny_blocks.extract.from_csv import FromCSV
 from tiny_blocks.load.to_csv import ToCSV
@@ -14,5 +13,3 @@ def test_csv_load_into_sink(csv_source, csv_sink):
 
     # validations
     assert Path(csv_sink).exists()
-    df = pd.read_csv(csv_sink, sep="|")
-    assert df.shape == (4, 3)

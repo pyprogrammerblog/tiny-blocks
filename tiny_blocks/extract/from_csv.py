@@ -1,8 +1,6 @@
 from tiny_blocks.extract.base import ExtractBase
-from typing import Iterator, Type
-from pydantic import BaseModel, ValidationError
-from pathlib import Path
-
+from typing import Iterator, Literal
+from pydantic import BaseModel, ValidationError, FilePath
 import logging
 import csv
 
@@ -21,35 +19,26 @@ class FromCSV(ExtractBase):
         >>>
         >>> read_csv = FromCSV(path="/path/to/file.csv")
         >>> generator = read_csv.get_iter()
+        >>> next(generator)
     """
 
-    def __init__(
-        self,
-        path: Path,
-        row_model: Type[BaseModel],
-        newline: str = "",
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-
-        if not Path(path).exists():
-            raise ValueError(f"Folder '{path}' does not exists")
-
-        self.path = path
-        self.row_model = row_model
+    name: Literal["from_csv"] = "from_csv"
+    path: FilePath
+    separator: Literal[",", "|", ";"] = ";"
+    newline: str = ""
 
     def get_iter(self) -> Iterator[BaseModel]:
 
-        collector = []
+        errors = []
 
-        with open(self.path, newline="") as csvfile:
+        with open(str(self.path), newline=self.newline) as csvfile:
             for row in csv.DictReader(csvfile):
                 try:
                     yield self.row_model(**row)
                 except ValidationError as errs:
                     if not self.lazy_validation:
                         raise errs
-                    collector.append(errs.errors())
+                    errors.extend(errs.errors())
 
-            if collector:
-                raise ValidationError(errors=collector, model=self.row_model)
+            if errors:
+                raise ValidationError(errors, self.row_model)
